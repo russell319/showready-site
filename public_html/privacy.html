@@ -101,7 +101,7 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
 <main class="inner">
 <h1>Privacy notice</h1>
 <p class="meta">Last updated 5 November 2026 · Pilot version</p>
-<p>This notice explains what personal information ShowReady collects, why, and what your rights are. ShowReady is run by Russell Bowers, a sole trader trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. We are the controller of your information under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018. We are registering with the Information Commissioner’s Office (ICO), and our registration number will be shown here.</p>
+<p>This notice explains what personal information ShowReady collects, why, and what your rights are. ShowReady is run by Russell Bowers, a sole trader trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. VAT number GB 494 3638 53. We are the controller of your information under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018. We are registering with the Information Commissioner’s Office (ICO), and our registration number will be shown here.</p>
 <p>Contact us about privacy at <strong>hello@beshowready.co.uk</strong>, by phone on <a href="tel:+447368988038">07368 988038</a>, or by post to RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW.</p>
 
 <h2>The short version</h2>
@@ -182,7 +182,7 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
 <p>When ShowReady adds accounts, payments or supplier matching, this notice will change to cover them. We'll update the date at the top, and tell founding members by email before any big change.</p>
 
 </main>
-<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a></span></div></footer>
+<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · VAT GB 494 3638 53</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a></span></div></footer>
 <script>
 /*SHARED-START*/
 window.SR_NAV_PAGE = 'privacy';
@@ -383,7 +383,7 @@ window.SR_NAV_PAGE = 'privacy';
   function renderEnterprise() {
     var a = window.SRAccount, em = (a && a.user && a.user.email) || '';
     document.getElementById('srnEnBody').innerHTML = '<h2 id="srnEnTitle">Enterprise: ask for a quote</h2>' +
-      '<p>For national suppliers and firms with several depots. Enterprise starts from £99 a month; we’ll price it for your business. No commission, ever.</p>' +
+      '<p>For national suppliers and firms with several depots. Enterprise is £99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot. No commission, ever.</p>' +
       '<form id="srnEnForm" novalidate>' + EN.map(function (f) {
         return '<label class="f" for="' + f[0] + '">' + f[1] + '</label><input id="' + f[0] + '" type="' + f[2] + '" autocomplete="' + f[3] + '" maxlength="200"' + (f[0] === 'enEmail' ? ' value="' + fbEsc(em) + '"' : '') + (f[4] ? ' required' : '') + '>';
       }).join('') +

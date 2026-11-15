@@ -101,7 +101,7 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
 <main class="inner">
 <h1>Terms of use</h1>
 <p class="meta">Last updated 14 November 2026 · Pilot version</p>
-<p>These terms apply when you use the ShowReady website, planner and Supplier desk. ShowReady is run by Russell Bowers, a sole trader trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. By using ShowReady you agree to these terms.</p>
+<p>These terms apply when you use the ShowReady website, planner and Supplier desk. ShowReady is run by Russell Bowers, a sole trader trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. VAT number GB 494 3638 53. By using ShowReady you agree to these terms.</p>
 
 <h2>1. ShowReady is a pilot</h2>
 <p>ShowReady is in its pilot stage and free to use until 1 May 2027. Free use may show adverts; paid plans and founding members don't see them. Adverts are from Google or sponsors, not recommendations by us. Features may change, pause or stop. Without an account your work is saved only in your own browser. Either way, keep your own copies, for example by downloading the spreadsheet.</p>
@@ -157,7 +157,8 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
 <li>You can cancel any time from Manage billing on your Supplier desk or account. Your plan carries on until the end of the period you've paid for, then stops; we don't refund part periods unless the law says we must.</li>
 <li>If you're buying as a consumer (not for a business), you can cancel within 14 days of buying for a refund. If you start using paid features in that time, we may keep a fair amount for what you've used.</li>
 <li>For suppliers, being listed for organisers and receiving their enquiries needs an active paid plan once the pilot ends, except for founding members during their free period. We may extend a free period at our choice.</li>
-<li>Supplier plans are per business. Vendor Pro covers one login and one base, with a travel area of up to 50 miles. Vendor Business covers up to 100 miles from each base, and Enterprise any distance. A business with more than one person logging in, or more than one van, trailer or depot taking enquiries, needs Vendor Business (up to 3 logins and 5 bases) or Enterprise (10 logins, £99 a month for up to 10 depots, then £8 a month for each extra depot). Don't open several Vendor Pro accounts for one business; if we find accounts that belong to the same business, we may merge them or move them to the right plan after telling you.</li>
+<li>VAT: prices for organiser plans (Event pass, Pro, Pro Plus) and Film plans include VAT. Prices for supplier plans (Vendor Pro, Vendor Business, Enterprise) and the Combined plan are shown before VAT, which is added at the standard rate (20%) and shown on your invoice.</li>
+<li>Supplier plans are per business. Vendor Pro covers one login and one base, with a travel area of up to 50 miles. Vendor Business covers up to 100 miles from each base, and Enterprise any distance. A business with more than one person logging in, or more than one van, trailer or depot taking enquiries, needs Vendor Business (up to 3 logins and 5 bases) or Enterprise (10 logins, £99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot). Don't open several Vendor Pro accounts for one business; if we find accounts that belong to the same business, we may merge them or move them to the right plan after telling you.</li>
 <li>Team members you invite act for your business: enquiries, quotes and messages they send go out in your business's name, and you're responsible for them.</li>
 <li>We'll give you at least 30 days' notice by email before a price change applies to you. Payments are handled by Stripe; we never see your full card number.</li>
 <li>Our <a href="/refunds.html">cancellations and refunds policy</a> sets out in full when you can get your money back.</li>
@@ -175,7 +176,7 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
 <p>Email <strong>hello@beshowready.co.uk</strong>, call <a href="tel:+447368988038">07368 988038</a>, or write to RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW.</p>
 
 </main>
-<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a> · <a href="/refunds.html">Refunds</a></span></div></footer>
+<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · VAT GB 494 3638 53</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a> · <a href="/refunds.html">Refunds</a></span></div></footer>
 <script>
 /*SHARED-START*/
 window.SR_NAV_PAGE = 'terms';
@@ -376,7 +377,7 @@ window.SR_NAV_PAGE = 'terms';
   function renderEnterprise() {
     var a = window.SRAccount, em = (a && a.user && a.user.email) || '';
     document.getElementById('srnEnBody').innerHTML = '<h2 id="srnEnTitle">Enterprise: ask for a quote</h2>' +
-      '<p>For national suppliers and firms with several depots. Enterprise is £99 a month for up to 10 depots and 10 logins, then £8 a month for each extra depot. Tell us about your business and we’ll set it up. No commission, ever.</p>' +
+      '<p>For national suppliers and firms with several depots. Enterprise is £99 a month + VAT for up to 10 depots and 10 logins, then £8 a month + VAT for each extra depot. Tell us about your business and we’ll set it up. No commission, ever.</p>' +
       '<form id="srnEnForm" novalidate>' + EN.map(function (f) {
         return '<label class="f" for="' + f[0] + '">' + f[1] + '</label><input id="' + f[0] + '" type="' + f[2] + '" autocomplete="' + f[3] + '" maxlength="200"' + (f[0] === 'enEmail' ? ' value="' + fbEsc(em) + '"' : '') + (f[4] ? ' required' : '') + '>';
       }).join('') +
