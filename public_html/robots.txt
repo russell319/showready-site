@@ -1,0 +1,6 @@
+# ShowReady: everyone is welcome to read and cite the public pages, including AI assistants.
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://beshowready.co.uk/sitemap.xml

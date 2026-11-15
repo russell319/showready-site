@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-adsense-account" content="ca-pub-8382733964734609">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="theme-color" content="#1E5A43">
+<link rel="apple-touch-icon" href="/app-icons/app-organiser-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ShowReady">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>ShowReady: free event planning, licences and suppliers for England and Wales</title>
+<meta name="description" content="Describe your event and get your plan: the licences and permissions it needs for your council, every deadline, supplier quotes, a draft risk assessment and an event folder. Free to start.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: full-width colour bands, each with a centred 1120px inner column; hero splits copy and a sample plan card, everything stacks on phones. */
+:root {
+  --bg: #F3F5F0;
+  --surface: #FFFFFF;
+  --surface-2: #E8ECE5;
+  --ink: #15231C;
+  --muted: #4B5A52;
+  --line: #D9DFD5;
+  --brand: #1E5A43;
+  --brand-deep: #123A2B;
+  --brand-ink: #FFFFFF;
+  --brand-soft: #E0ECE5;
+  --brand-text: #15402F;
+  --pennant: #E0892E;
+  --amber-soft: #F8EADB;
+  --amber-text: #763C06;
+  --red-soft: #F7E0DC;
+  --red-text: #8A1F18;
+  --on-deep: #DCEBE3;
+  --font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+    --brand: #2E7A5B; --brand-deep: #0B2219; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3; --pennant: #F0A04B;
+    --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; --on-deep: #C4D8CD; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+  --brand: #2E7A5B; --brand-deep: #0B2219; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3; --pennant: #F0A04B;
+  --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; --on-deep: #C4D8CD; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.025em; line-height: 1.08; }
+p { margin: 0; }
+a { color: var(--brand-text); }
+:focus-visible { outline: 3px solid var(--pennant); outline-offset: 3px; border-radius: 6px; }
+.inner { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band { padding-block: 72px; }
+@media (max-width: 640px) { .band { padding-block: 52px; } }
+.eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brand-text); }
+.lede { font-size: 18px; color: var(--muted); max-width: 60ch; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 14px; font-weight: 800; font-size: 16px; text-decoration: none; border: 1.5px solid var(--line); color: var(--ink); background: var(--surface); cursor: pointer; font-family: inherit; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+@media (prefers-reduced-motion: no-preference) { .btn { transition: transform .15s ease; } .btn:hover { transform: translateY(-1px); } }
+
+/* Header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top .inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.logo .word { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: -0.03em; }
+.logo .word span { color: var(--brand); }
+:root[data-theme="dark"] .logo .word span { color: var(--brand-text); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo .word span { color: var(--brand-text); } }
+.nav { display: flex; align-items: center; gap: 20px; font-weight: 700; font-size: 15px; }
+.nav a { text-decoration: none; color: var(--ink); }
+.nav .btn { min-height: 42px; padding: 0 16px; font-size: 14px; }
+@media (max-width: 760px) { .nav a:not(.btn) { display: none; } }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; padding-block: 56px 72px; }
+.bunting { position: absolute; left: 0; right: 0; top: 0; height: 46px; pointer-events: none; }
+.hero .inner { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; position: relative; }
+@media (max-width: 900px) { .hero .inner { grid-template-columns: minmax(0, 1fr); gap: 36px; } }
+.hero h1 { isolation: isolate; font-size: clamp(44px, 7vw, 84px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.98; }
+.hero h1 em { font-style: normal; color: var(--brand); position: relative; white-space: nowrap; }
+:root[data-theme="dark"] .hero h1 em { color: var(--brand-text); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero h1 em { color: var(--brand-text); } }
+.hero h1 em::after { content: ""; position: absolute; left: 2%; right: 2%; bottom: 0.06em; height: 0.12em; background: var(--pennant); border-radius: 4px; z-index: -1; }
+.hero .copy { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero .small { font-size: 14px; color: var(--muted); }
+/* Build 55: "Who are you?" home */
+.hero.who { background: #123A2B; color: #DCEBE3; padding-block: 44px 96px; }
+.hero.who .inner { display: block; }
+.hero.who .copy { gap: 18px; }
+.hero.who .eyebrow { color: #F0A04B; }
+.hero.who h1 { color: #FFFFFF; font-size: clamp(40px, 6.4vw, 76px); max-width: 15em; }
+.hero.who h1 em, :root[data-theme="dark"] .hero.who h1 em { color: #A9DCC3; white-space: normal; }
+.hero.who .lede { color: #DCEBE3; max-width: 760px; font-size: clamp(17px, 2vw, 20px); line-height: 1.5; margin: 0; }
+.who-q { margin: 18px 0 0; font-size: 26px; color: #FFFFFF; }
+.who-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 900px) { .who-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .who-tiles { grid-template-columns: minmax(0, 1fr); gap: 10px; } }
+.who-tile { display: flex; gap: 14px; align-items: flex-start; min-height: 96px; padding: 16px 18px; border-radius: 18px; background: #1C2A22; color: #E7EEE9; border: 1px solid #2E4A3C; text-align: left; font: inherit; cursor: pointer; transition: transform .15s; }
+.who-tile:hover { transform: translateY(-2px); }
+.who-tile:focus-visible { outline: 3px solid #F0A04B; outline-offset: 3px; }
+.who-tile .ic { flex: none; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #123A2B; color: #A9DCC3; }
+.who-tile b { display: block; font-family: var(--font-display); font-size: 20px; line-height: 1.15; }
+.who-tile small { display: block; margin-top: 4px; font-size: 14px; line-height: 1.4; opacity: .85; }
+.who-offer { display: inline-block; margin-top: 8px; font-style: normal; font-size: 12px; font-weight: 800; padding: 3px 9px; border-radius: 999px; background: #F0A04B; color: #15231C; }
+.who-tile[aria-pressed="true"] .who-offer { background: var(--accsoft); color: #15231C; }
+.who-panel .offer { margin: 0; font-size: 14px; font-weight: 800; color: var(--ink); }
+.who-offers { margin: 0; font-weight: 700; }
+.who-tile[aria-pressed="true"] { background: #FFFFFF; color: #15231C; border: 3px solid var(--acc); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.who-tile[aria-pressed="true"] .ic { background: var(--accsoft); color: var(--acc); }
+@media (max-width: 560px) { .who-tile { min-height: 72px; align-items: center; } .who-tile small { font-size: 13px; } .who-tile .ic { width: 44px; height: 44px; } }
+.who-band { margin-top: -48px; position: relative; padding-bottom: 24px; }
+.who-panel { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 36px; background: var(--surface); color: var(--ink); border-radius: 24px; padding: 36px; border-top: 6px solid var(--acc); box-shadow: 0 20px 50px rgba(18,58,43,.12); }
+@media (max-width: 900px) { .who-panel { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 24px; } }
+.who-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.who-panel .kick, .who-ex .exk { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--acc); }
+:root[data-theme="dark"] .who-panel .kick, :root[data-theme="dark"] .who-ex .exk { color: var(--brand-text); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .who-panel .kick, :root:not([data-theme="light"]) .who-ex .exk { color: var(--brand-text); } }
+.who-panel h2 { margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: 1.08; }
+.who-panel .lead { margin: 0; font-size: 18px; line-height: 1.55; color: var(--muted); }
+.who-panel ul { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.who-panel li { position: relative; padding-left: 30px; font-size: 16px; line-height: 1.45; }
+.who-panel li::before { content: ""; position: absolute; left: 2px; top: 3px; width: 14px; height: 8px; border-left: 3px solid var(--acc); border-bottom: 3px solid var(--acc); transform: rotate(-45deg); }
+.who-panel .acts { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; margin-top: 6px; }
+.who-panel .btn.go { background: var(--acc); border-color: var(--acc); color: #FFFFFF; min-height: 52px; padding-inline: 26px; font-size: 17px; }
+.who-panel .more { font-weight: 700; }
+.who-panel .cost { margin: 0; font-size: 14px; color: var(--muted); }
+.who-ex { background: var(--bg); border-radius: 18px; padding: 22px; align-self: start; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.who-ex .q { margin: 0; font-size: 17px; line-height: 1.5; font-style: italic; }
+.who-ex .becomes { font-size: 13px; font-weight: 700; color: var(--muted); }
+.who-ex .exrow { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.who-ex .exrow b { font-size: 15px; }
+.who-ex .exrow span { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: var(--acc); color: #FFFFFF; white-space: nowrap; }
+.trust { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
+@media (max-width: 820px) { .trust { grid-template-columns: minmax(0, 1fr); } }
+.trust div { border-top: 3px solid var(--brand); padding-top: 14px; }
+.trust b { display: block; font-family: var(--font-display); font-size: 24px; }
+.trust p { margin: 6px 0 0; font-size: 15px; line-height: 1.5; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.quote { font-size: 15px; line-height: 1.55; background: var(--surface-2); border-radius: 14px; padding: 12px 14px; color: var(--ink); }
+.quote b { font-weight: 800; }
+.arrow { text-align: center; font-size: 13px; font-weight: 700; color: var(--muted); }
+.plan-head { background: var(--brand); color: var(--brand-ink); border-radius: 16px; padding: 14px; display: flex; gap: 12px; align-items: center; }
+.plan-head strong { display: block; font-size: 16px; }
+.plan-head span { font-size: 13px; color: var(--on-deep); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 2px; border-top: 1px solid var(--line); font-size: 14px; }
+.row:first-of-type { border-top: 0; }
+.row b { display: block; font-size: 14px; }
+.row small { color: var(--muted); font-size: 12.5px; }
+.pill { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.red { background: var(--red-soft); color: var(--red-text); }
+.pill.amber { background: var(--amber-soft); color: var(--amber-text); }
+.pill.green { background: var(--brand-soft); color: var(--brand-text); }
+
+/* Built for */
+.strip { background: var(--surface); border-block: 1px solid var(--line); }
+.strip .inner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding-block: 22px; }
+.strip .label { font-weight: 800; font-size: 14px; margin-right: 6px; }
+.tag { font-size: 14px; font-weight: 700; padding: 8px 14px; border-radius: 999px; background: var(--surface-2); }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
+@media (max-width: 820px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.step { display: flex; flex-direction: column; gap: 10px; }
+.step .n { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 1; color: var(--pennant); }
+.step h3 { font-size: 24px; font-weight: 800; }
+.step p { color: var(--muted); }
+.head { display: flex; flex-direction: column; gap: 12px; max-width: 720px; }
+.head h2 { font-size: clamp(32px, 4.6vw, 52px); font-weight: 800; }
+
+/* Permissions band */
+.deep { background: var(--brand-deep); color: var(--brand-ink); }
+.deep .eyebrow { color: var(--pennant); }
+.deep .lede { color: var(--on-deep); }
+.rules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 36px; }
+@media (max-width: 960px) { .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .rules { grid-template-columns: minmax(0, 1fr); } }
+.rule { border: 1px solid rgba(255,255,255,0.18); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.rule .big { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+.rule .big small { font-size: 16px; font-weight: 600; margin-left: 4px; }
+.rule h3 { font-family: var(--font-body); font-size: 16px; font-weight: 800; letter-spacing: 0; }
+.rule p { color: var(--on-deep); font-size: 14px; }
+.deep .fine { margin-top: 20px; font-size: 13px; color: var(--on-deep); }
+
+/* Two audiences */
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
+@media (max-width: 820px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.aud { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+.aud h3 { font-size: 28px; font-weight: 800; }
+.aud ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.aud li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+.aud li svg { margin-top: 3px; }
+.aud .price { font-weight: 800; color: var(--brand-text); }
+
+/* Join */
+.join .inner { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
+@media (max-width: 900px) { .join .inner { grid-template-columns: minmax(0, 1fr); } }
+form { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.f { display: flex; flex-direction: column; gap: 6px; }
+.f label, .f .lbl { font-size: 14px; font-weight: 700; }
+.f input, .f select { min-height: 48px; border: 1px solid var(--line); border-radius: 12px; padding: 0 14px; font: inherit; font-size: 16px; background: var(--surface); color: var(--ink); width: 100%; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 520px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+.role { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.role label { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border: 1px solid var(--line); border-radius: 12px; font-weight: 700; cursor: pointer; }
+.role input { accent-color: var(--brand); width: 18px; height: 18px; }
+.err { color: var(--red-text); font-size: 13px; font-weight: 700; }
+.done { background: var(--brand-soft); color: var(--brand-text); border-radius: 14px; padding: 14px 16px; font-weight: 600; display: flex; flex-direction: column; gap: 8px; }
+.done[hidden], [hidden] { display: none !important; }
+.done code { font-family: inherit; font-weight: 800; user-select: all; }
+.copyrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copyrow .btn { min-height: 38px; padding: 0 12px; font-size: 14px; }
+
+/* FAQ */
+.faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin-top: 28px; }
+@media (max-width: 820px) { .faq { grid-template-columns: minmax(0, 1fr); } }
+details { border-top: 1px solid var(--line); padding-block: 14px; }
+summary { font-weight: 800; cursor: pointer; font-size: 17px; }
+details p { color: var(--muted); margin-top: 8px; }
+
+/* Toolkit */
+.toolkit { background: var(--surface); border-block: 1px solid var(--line); }
+.tools { list-style: none; margin: 36px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1000px) { .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .tools { grid-template-columns: minmax(0, 1fr); } }
+.tool { border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); }
+.tool h3 { font-size: 19px; font-weight: 800; }
+.tool p { color: var(--muted); font-size: 15px; }
+.ticon { width: 44px; height: 44px; border-radius: 12px; background: var(--brand-soft); color: var(--brand-text); display: inline-flex; align-items: center; justify-content: center; }
+.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+@media (max-width: 760px) { .compare { grid-template-columns: minmax(0, 1fr); } }
+.compare > div { border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.compare .was { background: var(--surface-2); }
+.compare .was .eyebrow { color: var(--muted); }
+.compare .now { background: var(--brand); color: var(--brand-ink); }
+.compare .now .eyebrow { color: var(--pennant); }
+.compare p { font-size: 17px; }
+.toolkit .ctas { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* Pricing */
+.pricing { background: var(--bg); }
+.pilot-note { margin-top: 28px; background: var(--amber-soft); color: var(--amber-text); border-radius: 16px; padding: 14px 18px; font-size: 16px; }
+.pricing .group { margin-top: 32px; font-size: 22px; font-weight: 800; }
+.plans { display: grid; gap: 16px; margin-top: 14px; }
+.plans.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.plans.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .plans.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .plans.three { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .plans.four { grid-template-columns: minmax(0, 1fr); } }
+.plan { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.plan.featured { border: 2px solid var(--brand); }
+.plan .flag { align-self: flex-start; font-size: 12px; font-weight: 800; color: var(--brand-text); background: var(--brand-soft); padding: 4px 10px; border-radius: 999px; margin-bottom: 4px; }
+.plan h3 { font-size: 20px; font-weight: 800; }
+.plan .price { font-family: var(--font-display); font-size: 40px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.plan .per { font-size: 14px; color: var(--muted); }
+.plan .for { font-size: 14px; font-weight: 700; margin-top: 4px; }
+.plan ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.plan li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; }
+.plan li svg { margin-top: 2px; }
+.fine-print { margin-top: 18px; font-size: 13px; color: var(--muted); }
+
+footer { border-top: 1px solid var(--line); background: var(--surface); }
+.consent { font-size: 13px; color: var(--muted); margin: 0; }
+footer a { color: inherit; }
+footer .inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-block: 24px; font-size: 14px; color: var(--muted); }
+.head h1 { font-size: clamp(36px, 5vw, 58px); font-weight: 800; }
+.paths { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 36px; }
+@media (max-width: 1000px) { .paths { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .paths { grid-template-columns: minmax(0, 1fr); } }
+.path { border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); }
+.path .who { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pennant); }
+.path h3 { font-size: 22px; font-weight: 800; }
+.path p { color: var(--muted); margin: 0; flex: 1; }
+.path .btn { align-self: flex-start; }
+.path.sup { background: var(--brand-soft); border-color: transparent; }
+.paths-note { margin-top: 18px; color: var(--muted); font-size: 15px; }
+.soon { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; background: var(--amber-soft); color: var(--amber-text); border-radius: 999px; padding: 2px 8px; margin-left: 6px; white-space: nowrap; }
+.price-lines { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .price-lines { grid-template-columns: minmax(0, 1fr); } }
+.price-lines div { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: var(--surface); }
+.price-lines h3 { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+.price-lines p { margin: 0; color: var(--muted); }
+.sr-banner { background: var(--pennant, #E0892E); color: #1A1A1A; font-weight: 700; font-size: 14px; text-align: center; padding: 10px 16px; }
+.sr-banner a { color: inherit; text-decoration: underline; }
+</style>
+<link rel="canonical" href="https://beshowready.co.uk/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ShowReady">
+<meta property="og:title" content="ShowReady: free event planning, licences and suppliers for England and Wales">
+<meta property="og:description" content="Describe your event and get your plan: the licences and permissions it needs for your council, every deadline, supplier quotes, a draft risk assessment and an event folder. Free to start.">
+<meta property="og:url" content="https://beshowready.co.uk/">
+<meta property="og:image" content="https://beshowready.co.uk/share-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://beshowready.co.uk/#org", "name": "ShowReady", "url": "https://beshowready.co.uk/", "logo": "https://beshowready.co.uk/icon-512.png", "description": "ShowReady is a free UK event planning tool. Organisers describe their event and get the licences, permissions and deadlines it needs for their council in England or Wales, plus a supplier marketplace, risk assessment and event folder.", "email": "hello@beshowready.co.uk", "areaServed": ["England", "Wales"], "founder": {"@type": "Person", "name": "Russell Bowers"}, "parentOrganization": {"@type": "Organization", "name": "RSB Entertainment"}, "sameAs": ["https://www.facebook.com/beshowready"]}, {"@type": "WebSite", "@id": "https://beshowready.co.uk/#site", "name": "ShowReady", "url": "https://beshowready.co.uk/", "inLanguage": "en-GB", "publisher": {"@id": "https://beshowready.co.uk/#org"}}, {"@type": "WebApplication", "name": "ShowReady", "url": "https://beshowready.co.uk/", "applicationCategory": "BusinessApplication", "operatingSystem": "Any (web browser)", "description": "ShowReady is a free UK event planning tool. Organisers describe their event and get the licences, permissions and deadlines it needs for their council in England or Wales, plus a supplier marketplace, risk assessment and event folder.", "areaServed": ["England", "Wales"], "publisher": {"@id": "https://beshowready.co.uk/#org"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP", "description": "Free to plan; optional paid plans"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "I've never organised an event. Is this for me?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, it's made for you. Pick \"This is my first\" and you only see the essentials: the licences you need, what to book and a list of jobs in order. Everything else stays out of the way until you want it."}}, {"@type": "Question", "name": "Is this legal advice?", "acceptedAnswer": {"@type": "Answer", "text": "No. ShowReady tells you what usually applies and who decides, with links to each authority's own guidance. Always confirm with the council or authority named in your plan."}}, {"@type": "Question", "name": "Where does it work?", "acceptedAnswer": {"@type": "Answer", "text": "Everywhere in England and Wales: every council area has its own page, forms and deadlines. Scotland and Northern Ireland have different licensing law and will follow later."}}, {"@type": "Question", "name": "What does it cost?", "acceptedAnswer": {"@type": "Answer", "text": "Everything is free during the pilot, which runs until 1 May 2027. After that, planning stays free forever, with optional paid plans from £6 a month for extra tools. See Pricing above for the details."}}, {"@type": "Question", "name": "Does ShowReady take a cut of bookings?", "acceptedAnswer": {"@type": "Answer", "text": "No, never. Suppliers and organisers deal with each other directly and agree their own prices, contracts and payments. ShowReady isn't part of the deal and takes no commission. Paid plans are a flat subscription for extra tools."}}, {"@type": "Question", "name": "How big an event does it handle?", "acceptedAnswer": {"@type": "Answer", "text": "Anything from a garden party to a multi-day festival. The plan changes at the points the law does, such as 200, 499 and 800 people."}}]}]}</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <a class="logo" href="#top" aria-label="ShowReady home">
+      <svg width="38" height="38" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#1E5A43"/><g transform="translate(9 10) scale(0.82)"><path d="M29.5 21 L39 15.5 L30.5 13 Z" fill="#F0A04B"/><path d="M71.5 15 L81 9.5 L72.5 7 Z" fill="#F0A04B"/><path d="M6 72 Q18 50 30 20 Q42 34 52 32 Q62 28 72 14 Q84 40 94 68 Q74 60 64 80 Q50 64 36 80 Q26 60 6 72 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/><circle cx="51" cy="54" r="21" fill="#FFFFFF"/><circle cx="51" cy="54" r="15" fill="none" stroke="#C9DAD1" stroke-width="6.5"/><circle cx="51" cy="54" r="15" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="75.4 94.2" transform="rotate(-90 51 54)"/><circle cx="36.7" cy="49.4" r="4.2" fill="#F0A04B"/><path d="M44 54.5 L49 59.5 L58.5 48.5" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <span class="word">Show<span>Ready</span></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#permissions">Licences</a>
+      <a href="/toolkit.html">Tools and pricing</a>
+      <a class="btn primary" href="/app/?account=signup&amp;role=organiser" id="hdrSignup" data-planner-link>Sign up</a>
+    </nav>
+  </div>
+</header>
+<div class="sr-banner" id="srBanner" role="status" hidden></div>
+
+
+<main id="top">
+  <section class="hero who">
+    <svg class="bunting" viewBox="0 0 1200 46" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 4 Q300 26 600 8 Q900 -6 1200 14" fill="none" stroke="#2E4A3C" stroke-width="2"/>
+      <g fill="var(--pennant)"><path d="M60 9 L84 11 L71 34 Z"/><path d="M300 17 L324 16 L311 40 Z" fill="#2E7A5B"/><path d="M520 10 L544 9 L531 33 Z"/><path d="M760 4 L784 4 L771 28 Z" fill="#2E7A5B"/><path d="M990 6 L1014 8 L1001 31 Z"/></g>
+    </svg>
+    <div class="inner">
+      <div class="copy">
+        <span class="eyebrow">Events across England and Wales</span>
+        <h1>Everyone who makes an event happen, <em>in one place.</em></h1>
+        <p class="lede">Organisers, suppliers, acts, venues, film crews and councils. Pick who you are and ShowReady takes you to the part built for you.</p>
+        <h2 class="who-q" id="whoQ">Who are you?</h2>
+        <div class="who-tiles" role="group" aria-labelledby="whoQ">
+          <button type="button" class="who-tile" data-sector="organiser" aria-pressed="true" style="--acc:#1E5A43;--accsoft:#E0ECE5"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1z M8 6H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-2 M9 14l2 2 4-4"/></svg></span><span><b>I’m organising an event</b><small>Fetes, weddings, shows, festivals, school and charity events</small><em class="who-offer" data-cat="organisers" hidden></em></span></button>
+          <button type="button" class="who-tile" data-sector="supplier" aria-pressed="false" style="--acc:#9A5B12;--accsoft:#F8EADB"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z M14 10h4l3 3v3h-7 M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></span><span><b>I supply or trade at events</b><small>Food and drink, toilets, marquees, power, staging, security</small><em class="who-offer" data-cat="suppliers" hidden></em></span></button>
+          <button type="button" class="who-tile" data-sector="act" aria-pressed="false" style="--acc:#8A2F63;--accsoft:#F5E3EE"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13 M9 18a3 3 0 1 1-3-3 3 3 0 0 1 3 3z M21 16a3 3 0 1 1-3-3 3 3 0 0 1 3 3z"/></svg></span><span><b>I perform or entertain</b><small>Bands, DJs, children’s entertainers, walkabout acts and displays</small><em class="who-offer" data-cat="suppliers" hidden></em></span></button>
+          <button type="button" class="who-tile" data-sector="venue" aria-pressed="false" style="--acc:#3D4D8A;--accsoft:#E4E8F4"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18 M5 20V10l7-6 7 6v10 M10 20v-5h4v5"/></svg></span><span><b>I run a venue or event site</b><small>Halls, fields, farms, estates, parks and hotels</small><em class="who-offer" data-cat="suppliers" hidden></em></span></button>
+          <button type="button" class="who-tile" data-sector="film" aria-pressed="false" style="--acc:#542C6E;--accsoft:#EDE5F2"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16v10H4z M4 10l2-5 14-1 1 4 M8 5l2 4 M13 4.5l2 4"/></svg></span><span><b>I work in film and TV</b><small>Locations, unit bases, crew catering and filming permits</small><em class="who-offer" data-cat="film" hidden></em></span></button>
+          <button type="button" class="who-tile" data-sector="council" aria-pressed="false" style="--acc:#24676F;--accsoft:#DFEEEF"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18 M4 10h16 M12 3l9 5H3z M6 10v8 M10 10v8 M14 10v8 M18 10v8"/></svg></span><span><b>I’m a council or partner</b><small>Licensing teams, Safety Advisory Groups, insurers and trade bodies</small></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="who-band" aria-label="Your part of ShowReady">
+    <div class="inner">
+      <div class="who-panel" id="whoPanel" aria-live="polite" style="--acc:#1E5A43">
+        <div class="who-main">
+          <span class="kick">For organisers</span>
+          <h2>Describe your event. Get your plan.</h2>
+          <p class="lead">Tell ShowReady what you’re planning in your own words. You get the licences that apply, who to contact, every deadline and what to book, with the next job always at the top.</p>
+          <ul><li>Licences and deadlines worked out for your council</li><li>Suppliers, acts and venues matched to your event and audience</li><li>Site plan, risk assessment and council pack in one folder</li></ul>
+          <div class="acts"><a class="btn go" href="/app/" data-planner-link>Plan my event free</a><a class="more" href="#start">Your first event or your fiftieth</a></div>
+          <p class="cost">Free to plan, always.</p>
+        </div>
+        <div class="who-ex">
+          <span class="exk">Example</span>
+          <p class="q">“Charity dog show, about 800 people, one Saturday in June on a farm field near Hebden Bridge. A bar, a local band and 15 food traders.”</p>
+          <span class="becomes">becomes</span>
+          <div class="exrow"><b>Premises licence</b><span>Action</span></div><div class="exrow"><b>Safety Advisory Group</b><span>Likely</span></div><div class="exrow"><b>Food traders registered</b><span>Check</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="start">
+    <div class="inner">
+      <div class="head">
+        <span class="eyebrow">For organisers, wherever you're starting from</span>
+        <h2>Your first event or your fiftieth</h2>
+        <p class="lede">ShowReady asks how much you've done before and shows you the right amount. Change it any time.</p>
+      </div>
+      <div class="paths">
+        <div class="path"><span class="who">First event</span><h3>Just the essentials</h3><p>The licences you need, what to book and one list of jobs in the right order, with the next one always at the top. Nothing to learn first.</p><a class="btn primary" href="/app/" data-planner-link>Plan my first event</a></div>
+        <div class="path"><span class="who">Done a few</span><h3>Everything in one place</h3><p>Adds supplier quotes side by side and a draft risk assessment, plus vendor money and a schedule when your event needs them.</p><a class="btn" href="/app/" data-planner-link>Start planning</a></div>
+        <div class="path"><span class="who">Run events regularly</span><h3>Every tool switched on</h3><p>Pitch fees and % of takings worked out, a planning chart with busy weeks flagged, full status tracking and a spreadsheet export.</p><a class="btn" href="/app/" data-planner-link>Open the full planner</a></div>
+        <div class="path sup"><span class="who">Supplier or trader</span><h3>Win more of the right work</h3><p>Every enquiry in one place, what each job really earns, and a profile organisers can find, built in two minutes.</p><a class="btn" href="/suppliers/" data-supplier-link>Open the supplier desk</a></div>
+      </div>
+      <p class="paths-note">Every level gets the same licences and deadlines. The law doesn't change with experience, so neither does that part. <a href="/toolkit.html">See every tool</a></p>
+    </div>
+  </section>
+
+
+
+
+
+  <section class="band" id="how">
+    <div class="inner">
+      <div class="head">
+        <span class="eyebrow">How it fits together</span>
+        <h2>One event, everyone on the same page</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><span class="n">1</span><h3>Organisers plan</h3><p>They describe the event in their own words and get the licences, deadlines and what to book for their council, in plain English.</p></div>
+        <div class="step"><span class="n">2</span><h3>Suppliers, acts and venues are found</h3><p>Matched on what the event needs, its size, where it is and who the audience is. Enquiries arrive with the details filled in, and there’s no commission.</p></div>
+        <div class="step"><span class="n">3</span><h3>Councils get a complete pack</h3><p>The site plan, risk assessment and event plan arrive together and on time, with the right forms for that council.</p></div>
+      </div>
+      <div class="trust">
+        <div><b>No commission, ever</b><p>Prices and payment are agreed directly between organiser and supplier.</p></div>
+        <div><b>Free during the pilot, until 1 May 2027</b><p>Planning stays free for organisers after the pilot too.</p></div>
+        <div><b>Every council covered</b><p>All 339 councils in England and Wales, with their own forms and contacts.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band deep" id="permissions">
+    <div class="inner">
+      <div class="head">
+        <span class="eyebrow">The part everyone dreads</span>
+        <h2>Licences, councils and deadlines, worked out for your postcode</h2>
+        <p class="lede">Small organisers lose events to paperwork they didn't know about. ShowReady checks your event against the rules and counts the deadlines back from your date.</p>
+      </div>
+      <div class="rules">
+        <div class="rule"><span class="big">499<small>people</small></span><h3>TEN or full licence</h3><p>Alcohol or music for up to 499 at once can use a Temporary Event Notice. Above that, you need a premises licence.</p></div>
+        <div class="rule"><span class="big">10<small>working days</small></span><h3>TEN deadline</h3><p>Your notice must reach the council at least 10 clear working days before the event. ShowReady gives you the exact date.</p></div>
+        <div class="rule"><span class="big">28<small>days</small></span><h3>Food trader registration</h3><p>Every food business must register with its home council at least 28 days before it starts trading. Check it before you take their pitch fee.</p></div>
+        <div class="rule"><span class="big">800+<small>people</small></span><h3>Martyn's Law</h3><p>Ticketed public events this size face new security duties, starting no earlier than April 2027. ShowReady flags it when it applies.</p></div>
+      </div>
+      <p class="fine">ShowReady gives guidance to help you plan, not legal advice. Every report links to the authority's own page and names who to confirm with.</p>
+    </div>
+  </section>
+
+
+
+
+  <section class="band" id="pricing">
+    <div class="inner">
+      <div class="head">
+        <span class="eyebrow">Pricing</span>
+        <h2>Free to plan, forever</h2>
+        <p class="lede">Licences, deadlines, contacts and the risk assessment basics are always free, because safety shouldn't sit behind a paywall.</p>
+      </div>
+      <div class="pilot-note" id="pilotNote"><strong>Everything is free during the pilot, which runs until 1 May 2027.</strong> Founding members get 6 months free, then 30% off for life (excludes Enterprise). Founding suppliers stay free until 31 October 2027. Charities, PTAs and parish councils get 50% off.</div>
+      <div class="price-lines">
+        <div><h3>Organisers</h3><p id="sumOrg">Free for one event at a time. Optional extras from £29 for a single event, or £8 a month if you run events through the year.</p></div>
+        <div><h3>Suppliers and traders</h3><p id="sumSup">Free profile and supplier desk. Vendor Pro is £6 a month to quote on matched briefs and keep unlimited enquiries.</p></div>
+      </div>
+      <p style="margin-top:18px"><a class="btn" href="/toolkit.html#pricing">See full pricing</a></p>
+    </div>
+  </section>
+
+  <section class="band join" id="join" style="background: var(--surface-2)">
+    <div class="inner">
+      <div class="head">
+        <span class="eyebrow" id="joinEyebrow">Founding members</span>
+        <h2>Be ready for the 2027 season</h2>
+        <p class="lede">ShowReady launches on 1 May 2027. Basic planning is always free for organisers. Founding places go to the first 100 suppliers and 100 Film &amp; TV accounts to <a href="/suppliers/?account=signup&amp;role=supplier">create a free account</a> and save their first profile or project, and to the first 100 organisers who upgrade to a paid plan. Leave your details below and we'll keep you posted.</p>
+        <p class="who-offers" id="joinOffers" hidden></p>
+      </div>
+      <form id="joinForm" novalidate>
+        <div class="f">
+          <span class="lbl" id="roleLbl">I am</span>
+          <div class="role" role="radiogroup" aria-labelledby="roleLbl">
+            <label><input type="radio" name="role" id="roleOrg" value="Organiser" checked> An organiser</label>
+            <label><input type="radio" name="role" id="roleSup" value="Supplier or trader"> A supplier or trader</label>
+          </div>
+        </div>
+        <div class="pair">
+          <div class="f"><label for="jName">Your name</label><input id="jName" name="name" type="text" autocomplete="name"></div>
+          <div class="f"><label for="jEmail">Email</label><input id="jEmail" name="email" type="email" autocomplete="email"></div>
+        </div>
+        <div class="pair">
+          <div class="f"><label for="jBiz">Business or event</label><input id="jBiz" name="business" type="text"></div>
+          <div class="f"><label for="jArea">Area</label><input id="jArea" name="area" type="text" placeholder="e.g. Tameside, Calderdale"></div>
+        </div>
+        <div class="f">
+          <label for="jWhat">What do you run or supply?</label>
+          <select id="jWhat" name="what">
+            <option>Community event or fete</option><option>Wedding or private party</option><option>Show or fair</option><option>Equestrian or motorsport</option><option>Festival</option><option>Food or drink</option><option>Venue, hall or event site</option><option>Entertainment: band, DJ or act</option><option>Film or TV production</option><option>Accommodation, motorhomes or glamping</option><option>Toilets, power or site services</option><option>Staging, sound or lighting</option><option>Safety, medics or security</option><option>Something else</option>
+          </select>
+        </div>
+        <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label for="jWeb">Leave this empty</label><input id="jWeb" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <p class="err" id="jErr" hidden></p>
+        <p class="consent">We'll use these details to contact you about the pilot and launch. You can ask us to delete them at any time. See our <a href="/privacy.html" data-privacy-link>privacy notice</a>.</p>
+        <p class="consent" id="joinCloses" hidden></p>
+        <button class="btn primary" type="submit" id="joinBtn">Join as a founding member</button>
+        <div class="done" id="jDone" hidden></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="inner">
+      <div class="head"><span class="eyebrow">Questions</span><h2>Before you ask</h2></div>
+      <div class="faq">
+        <details><summary>I've never organised an event. Is this for me?</summary><p>Yes, it's made for you. Pick "This is my first" and you only see the essentials: the licences you need, what to book and a list of jobs in order. Everything else stays out of the way until you want it.</p></details>
+        <details><summary>Is this legal advice?</summary><p>No. ShowReady tells you what usually applies and who decides, with links to each authority's own guidance. Always confirm with the council or authority named in your plan.</p></details>
+        <details><summary>Where does it work?</summary><p>Everywhere in England and Wales: every council area has its own page, forms and deadlines. Scotland and Northern Ireland have different licensing law and will follow later.</p></details>
+        <details><summary>What does it cost?</summary><p id="faqCost">Everything is free during the pilot, which runs until 1 May 2027. After that, planning stays free forever, with optional paid plans from £6 a month for extra tools. See Pricing above for the details.</p></details>
+        <details><summary>Does ShowReady take a cut of bookings?</summary><p>No, never. Suppliers and organisers deal with each other directly and agree their own prices, contracts and payments. ShowReady isn't part of the deal and takes no commission. Paid plans are a flat subscription for extra tools.</p></details>
+        <details><summary>How big an event does it handle?</summary><p>Anything from a garden party to a multi-day festival. The plan changes at the points the law does, such as 200, 499 and 800 people.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="inner">
+    <span>ShowReady is run by Russell Bowers, trading as RSB Entertainment · Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · <a href="tel:+447368988038" id="footPhone">07368 988038</a></span>
+    <span>Guidance to help you plan, not legal advice.</span>
+    <span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a> · <a href="/partners/">Insurers and brokers</a> · <a href="/guides/">Event guides</a></span>
+    <span data-social-links>Follow ShowReady: <a href="https://www.facebook.com/beshowready" rel="me noopener">Facebook</a></span>
+    <span>© 2026 ShowReady</span>
+  </div>
+</footer>
+
+<script>
+/*SETTINGS-START*/
+// Site settings. Defaults live here; /settings.json on the live site overrides them, so prices and text can change without a rebuild.
+var SR_DEFAULTS = {"banner": {"show": false, "text": "", "link": "", "linkText": ""}, "contact": {"email": "hello@beshowready.co.uk", "phone": "07368 988038"}, "offers": {"pilotText": "Everything is free during the pilot, which runs until 1 May 2027.", "foundingText": "Founding members get 6 months free, then 30% off for life (excludes Enterprise). Founding suppliers stay free until 31 October 2027.", "charityText": "Charities, PTAs and parish councils get 50% off.", "priceNote": "Planned prices from summer 2027, shown before VAT. They may change before launch; founding members keep their discount.", "studentText": "Students get 50% off Film plans when they sign up with a university or college email (ending .ac.uk).", "hae": {"enabled": false, "vendorText": "HAE members: Vendor Pro free for the first 12 months, then the normal subscription.", "enterpriseText": "HAE members on Enterprise: 3 months free, then 20% off the first paid year."}, "earlyText": "After that, the next 200 in each category who join by 31 August 2027 get 20% off for life (excludes Enterprise). Offers never add together: you get the single best one."}, "pricingSummary": {"organisers": "Free for one event at a time. Optional extras from {event-pass} for a single event, or {pro} a month if you run events through the year.", "suppliers": "Free supplier desk for work you find yourself. Vendor Pro is {vendor-pro} a month, or £60 a year, to be listed for organisers and receive their enquiries. Everything is free during the pilot, and founding suppliers stay free until 31 October 2027.", "faq": "Everything is free during the pilot, which runs until 1 May 2027. After that, planning stays free forever. Suppliers pay from {vendor-pro} a month to be listed and receive enquiries, and organisers can add paid extras. Annual plans save about two months. See Pricing above for the details."}, "plans": {"organisers": [{"id": "free", "name": "Free", "price": "£0", "per": "Free forever", "for": "For anyone planning an event", "featured": false, "flag": "", "features": ["One event at a time", "Plan, licences, deadlines, costs and contacts", "Event folder: readiness checks, ShowReady’s PDFs and 5 document uploads", "Activities: bonfires, rides, animals, raffles and more", "Insurance guidance for your event", "Basic risk assessment and tracker", "Supplier quotes, up to 10", "Basic spreadsheet"]}, {"id": "event-pass", "name": "Event pass", "price": "£29", "per": "per event, 12 months’ access", "for": "For a once-a-year event, like a fete or wedding", "featured": false, "flag": "", "features": ["Everything in Free", "3D site plan to scale: figures, routes and a council PDF, sent with your enquiries", "Event folder with 25 document uploads", "Full spreadsheet with colour timeline", "Event management plan export", "Vendor money and budget", "Two people on the team", "Cheaper than Pro if you plan for 4 months or more"]}, {"id": "pro", "name": "Pro", "price": "£8", "per": "a month, or £79 a year (save £17)", "for": "For organisers who run events through the year", "featured": true, "flag": "Best for regular organisers", "features": ["Everything in Event pass", "Up to 5 events at once", "Event folder with 100 document uploads", "Copy last year’s plan", "Three people on the team"]}, {"id": "pro-plus", "name": "Pro Plus", "price": "£24", "per": "a month, or £240 a year (save £48)", "for": "For shows, festivals and professionals", "featured": false, "flag": "", "features": ["Everything in Pro", "Unlimited events", "Event folder with 500 document uploads", "Trader applications and pitch allocation", "Automatic trader checks", "Volunteer rotas and branded exports", "Collect pitch fees in the app", "Ten people on the team"]}], "suppliers": [{"id": "supplier-free", "name": "Free", "price": "£0", "per": "Free forever", "for": "A free desk for work you find yourself", "featured": false, "flag": "", "features": ["Supplier desk: every enquiry, quote and follow-up", "What each job really earns after fees and costs", "Your profile and review links, kept ready", "Listed for organisers free during the pilot. From 1 May 2027 the desk stays free, but you need Vendor Pro to be listed and get enquiries"]}, {"id": "vendor-pro", "name": "Vendor Pro", "price": "£6", "per": "a month, or £60 a year (save £12)", "for": "For food traders and sole traders", "featured": true, "flag": "Needed to be found and get enquiries", "features": ["Everything in Free", "One login and one base, listed for organisers up to 50 miles away", "Receive enquiries and messages, unlimited", "Your Google and Trustpilot reviews on every quote", "Document vault with expiry reminders (coming 2027)"]}, {"id": "vendor-business", "name": "Vendor Business", "price": "£20", "per": "a month, or £199 a year (save £41)", "for": "For hire firms and traders with more than one van, trailer or person", "featured": false, "flag": "", "features": ["Everything in Vendor Pro", "Up to 3 logins: your team works on one shared desk", "Up to 5 bases: each van, trailer or depot with its own base and travel area", "Travel up to 100 miles from each base", "Organisers are matched to your nearest base, and told which one", "First notice of new briefs (coming 2027)", "Overflow network: post and take jobs (coming 2027)", "Featured in your area (coming 2027)"]}, {"id": "enterprise", "name": "Enterprise", "price": "£99", "per": "a month for up to 10 depots, then £8 a month for each extra depot", "for": "For national suppliers and firms with several depots", "featured": false, "flag": "", "quote": true, "features": ["Everything in Vendor Business", "10 logins included", "Up to 10 depots included, then £8 a month for each extra depot", "Any distance: national coverage from every depot", "Enquiries matched to your nearest depot", "Invoice billing and enquiry exports", "Not part of the founding offer"]}], "combined": [{"id": "combined", "name": "Combined", "price": "£12", "per": "a month, or £115 a year (save £29)", "for": "For businesses that organise events and supply them", "featured": false, "flag": "Organiser and supplier", "features": ["Everything in organiser Pro", "Everything in Vendor Pro: listed and receiving enquiries", "One account: switch between planner and Supplier desk", "Needed if you’re both an organiser and a supplier"]}], "film": [{"id": "film-free", "name": "Free", "price": "£0", "per": "Free forever", "for": "For trying ShowReady Film", "featured": false, "flag": "", "features": ["1 shoot with up to 2 locations", "Permits, deadlines and costs for each location", "Risk assessments and unit base plans on screen", "Contact unit caterers", "Printing, PDFs and the spreadsheet are on paid plans"]}, {"id": "film-pass", "name": "Production Pass", "price": "£39", "per": "per shoot, 6 months’ access", "for": "For a single production", "featured": false, "flag": "", "features": ["Everything in Free", "1 shoot, unlimited locations", "Print or save PDFs: location plan, risk assessments, call sheets", "Download the spreadsheet"]}, {"id": "film-pro", "name": "Film Pro", "price": "£12", "per": "a month, or £120 a year (save £24)", "for": "For location managers and freelancers", "featured": true, "flag": "Best for regular shoots", "features": ["Everything in Production Pass", "Unlimited shoots and locations", "PDFs and spreadsheet for every shoot"]}, {"id": "film-studio", "name": "Film Studio", "price": "£39", "per": "a month, or £390 a year (save £78)", "for": "For production companies", "featured": false, "flag": "", "features": ["Everything in Film Pro", "Five people on the team (coming 2027)", "Extra people £6 a month each", "Your company name on exports (coming 2027)"]}]}, "mailerlite": {"account": "2753714", "organiserForm": "202687711498208740", "supplierForm": "202687712187123319"}, "supplierServices": ["Hot food", "Bar and drinks", "Coffee and cakes", "Ice cream and desserts", "Portable toilets", "Power and generators", "Marquees and tents", "Stage, sound and lighting", "Fencing and barriers", "Security and stewarding", "First aid and medical", "Waste and recycling", "Venue hire", "Accommodation, glamping and motorhomes", "Entertainment and activities", "Photography and video", "Furniture and decor", "Signs and printing", "Something else"], "eventTypes": ["Weddings", "Private parties", "Fetes and community", "Shows and fairs", "Festivals", "Markets", "Corporate", "Equestrian", "Motorsport", "Sport", "Film and TV"], "estimates": {"peoplePerToilet": 100, "alcoholToiletFactor": 1.25, "campingToiletFactor": 1.5, "peoplePerSteward": 250, "peoplePerBin": 75}, "founding": {"goLiveDate": "2027-05-01", "closesOn": "", "autoCloseMonths": 6, "openText": "Limited to the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade to a paid plan. Basic planning stays free for organisers.", "closedText": "Founding places are full. Early adopters who join by 31 August 2027 get 20% off for life (excludes Enterprise).", "joinEyebrowOpen": "Founding members", "joinEyebrowClosed": "Join the pilot", "joinButtonOpen": "Keep me posted", "joinButtonClosed": "Keep me posted", "showBannerWhileOpen": true, "bannerText": "Founding places: the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade get 6 months free, then 30% off for life (excludes Enterprise)."}, "councils": {"tameside": {"name": "Tameside Council", "checked": "2026-10-30", "events": {"url": "https://tameside.gov.uk/licensing/eventnotification", "label": "Tameside: event notification form", "weeks": 8, "note": "Tameside asks for its event notification form at least 8 weeks before the event, emailed to licensing@tameside.gov.uk."}, "roadClosure": {"url": "https://tameside.gov.uk/licensing/eventnotification", "label": "Tameside: event road closure application", "weeks": 6, "note": "Road closure application at least 6 weeks before, sent with the event notification. £32 admin fee."}, "email": "licensing@tameside.gov.uk"}, "oldham": {"name": "Oldham Council", "checked": "2026-10-30", "events": {"url": "https://www.oldham.gov.uk/eventnotification", "label": "Oldham: online event notification form", "weeks": 3, "note": "Oldham asks for its online event notification at least 3 weeks before; bigger events need more notice."}, "roadClosure": {"url": "https://www.oldham.gov.uk/eventnotification", "label": "Oldham: road closure requests", "weeks": 5, "note": "Road closures need at least 5 weeks' notice."}, "ten": {"url": "https://www.oldham.gov.uk/download/downloads/id/7082/guidance_on_temporary_event_notices.docx", "label": "Oldham: TEN guidance"}, "email": "events@oldham.gov.uk"}, "calderdale": {"name": "Calderdale Council", "checked": "2026-10-30", "ten": {"url": "https://www.gov.uk/apply-for-a-licence/temporary-event-notice/calderdale/apply-1", "label": "Calderdale: apply for a TEN online (GOV.UK)"}, "events": {"url": "https://www.visitcalderdale.com/wp-content/uploads/2026/01/Event-Application-Guide-V0.2.pdf", "label": "Calderdale: event application guide", "weeks": 12, "note": "Calderdale publishes an event application guide; check its notice periods for your event size."}, "email": "licensing@calderdale.gov.uk"}, "manchester": {"name": "Manchester City Council", "checked": "2026-10-30", "ten": {"url": "https://www.manchester.gov.uk/directory_record/451830/temporary_event_notice_ten", "label": "Manchester: Temporary Event Notice"}, "roadClosure": {"url": "https://www.manchester.gov.uk/online-directories/licences-and-permissions-directories/licensing/highways-and-pavements/request-a-streetroad-closure-for-your-event", "label": "Manchester: request a street or road closure"}, "parks": {"url": "https://www.manchester.gov.uk/parks-leisure-and-the-arts/parks-playgrounds-allotments-and-open-spaces/host-your-event-in-one-of-our-parks", "label": "Manchester: host your event in a park"}}}, "ticketing": {"enabled": true, "intro": "Selling tickets? These sites handle ticket sales and payments for you.", "community": [{"name": "Ticket Tailor", "url": "https://get.tickettailor.com/rdauuamkwimv", "note": "Low flat fee per ticket; good for fetes, fairs and community events. Signing up through this link gets you 50 free ticket credits."}, {"name": "TicketSource", "url": "https://www.ticketsource.com/signup/162353", "note": "Free for free events; simple for charities, schools and local shows."}], "music": [{"name": "Skiddle", "url": "https://www.skiddle.com/?sktag=15972", "note": "Gigs, club nights and festivals, with Skiddle’s own audience finding your event."}], "disclosure": "ShowReady may earn a small fee from these links. It costs you nothing extra."}, "billing": {"enabled": false}};
+function srMerge(a, b) {
+  if (b === null || typeof b !== 'object' || Array.isArray(b) || a === null || typeof a !== 'object' || Array.isArray(a)) return b === undefined ? a : b;
+  var out = {}, k;
+  for (k in a) out[k] = a[k];
+  for (k in b) if (k.charAt(0) !== '_') out[k] = (k in a) ? srMerge(a[k], b[k]) : b[k];
+  return out;
+}
+function srValid(s) {
+  function str(x) { return typeof x === 'string'; }
+  function plansOk(list) { return Array.isArray(list) && list.length > 0 && list.every(function (p) { return p && str(p.name) && str(p.price) && Array.isArray(p.features); }); }
+  return s && plansOk(s.plans && s.plans.organisers) && plansOk(s.plans && s.plans.suppliers) && Array.isArray(s.supplierServices) && s.supplierServices.length > 0 &&
+    Array.isArray(s.eventTypes) && s.estimates && ['peoplePerToilet', 'peoplePerSteward', 'peoplePerBin'].every(function (k) { return typeof s.estimates[k] === 'number' && s.estimates[k] > 0; });
+}
+function srPlan(s, id) { var all = s.plans.organisers.concat(s.plans.suppliers); for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i]; return null; }
+function srFill(s, text) { return String(text || '').replace(/\{([a-z-]+)\}/g, function (m, id) { var p = srPlan(s, id); return p ? p.price : m; }); }
+function srDate(v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v || '').trim()); if (!m) return null; var d = new Date(+m[1], +m[2] - 1, +m[3]); return (d.getMonth() === +m[2] - 1) ? d : null; }
+function srFmtDate(d) { return d.getDate() + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()] + ' ' + d.getFullYear(); }
+// Founding offer: "pending" until a go-live date is set, then "open" until the closing date (inclusive), then "closed".
+function srFounding(s, now) {
+  // Build 58: founding places are limited by number (100 per category), not by date. Open while any category has places left.
+  var o = window.SR_OFFERS, c = o && o.categories;
+  if (c) { var open = ['organisers', 'suppliers', 'film'].some(function (k) { return c[k] && (o.founding_cap - c[k].founding_taken) > 0; }); return { state: open ? 'open' : 'closed', closes: null, closesText: '' }; }
+  return { state: 'open', closes: null, closesText: '' };
+}
+function srFoundingText(s, text) { return String(text || '').replace(/\{closes\}/g, ''); }
+// Live founding and early-adopter counts from the database. Fires "sr-offers" on window when they arrive.
+var SR_OFFER_NAMES = { organisers: 'organisers who upgrade', suppliers: 'suppliers', film: 'Film & TV accounts' };
+function srOfferCat(role) { return role === 'film' ? 'film' : (role === 'supplier' || role === 'both' || role === 'supplier-side') ? 'suppliers' : 'organisers'; }
+function srOfferState(cat) {
+  var o = window.SR_OFFERS, c = o && o.categories && o.categories[cat]; if (!c) return null;
+  var fl = o.founding_cap - c.founding_taken, el = o.early_cap - c.early_taken, d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(o.early_deadline || '');
+  var dl = d ? srFmtDate(new Date(+d[1], +d[2] - 1, +d[3])) : '';
+  // Organisers: basic planning is always free; places go to organisers who upgrade to a paid plan
+  var up = cat === 'organisers', on = up ? ' on paid upgrades' : '';
+  if (fl > 0) return { tier: 'founding', left: fl, cap: o.founding_cap, deadline: dl, short: 'Founding' + on + ': ' + fl + ' of ' + o.founding_cap + ' left', text: (up ? 'Basic planning is always free. Founding offer on paid upgrades: ' : 'Founding offer: ') + fl + ' of ' + o.founding_cap + ' places left' };
+  if (o.early_open && el > 0) return { tier: 'early', left: el, cap: o.early_cap, deadline: dl, short: 'Early adopter ' + o.early_discount_pct + '% off' + on + ': ' + el + ' left', text: (up ? 'Basic planning is always free. ' : '') + 'Founding places full. Early adopters' + on + ': ' + o.early_discount_pct + '% off for life, ' + el + ' of ' + o.early_cap + ' places left until ' + dl };
+  return { tier: 'none', deadline: dl, short: '', text: '' };
+}
+(function () {
+  if (window.SR_OFFERS_LOADING || !window.fetch || !/^https?:$/.test(location.protocol)) return; window.SR_OFFERS_LOADING = true;
+  var K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  fetch('https://osqlwddeobiklrpdnons.supabase.co/rest/v1/rpc/offer_counts', { method: 'POST', headers: { apikey: K, Authorization: 'Bearer ' + K, 'Content-Type': 'application/json' }, body: '{}' })
+    .then(function (r) { if (!r.ok) throw new Error('offers'); return r.json(); })
+    .then(function (j) { if (!j || !j.categories) return; window.SR_OFFERS = j; try { window.dispatchEvent(new Event('sr-offers')); } catch (e) {} })
+    .catch(function () {});
+})();
+function srLoadSettings(apply) {
+  apply(SR_DEFAULTS, false);
+  if (!window.fetch || !/^https?:$/.test(location.protocol)) return;
+  fetch('/settings.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('none'); return r.json(); }).then(function (j) {
+    var s = srMerge(SR_DEFAULTS, j);
+    if (!srValid(s)) { if (window.console) console.warn('ShowReady: settings.json has a problem, using built-in settings'); return; }
+    window.SR_SETTINGS_LIVE = s; apply(s, true);
+  }).catch(function () {});
+}
+function srBanner(s) {
+  var el = document.getElementById('srBanner'); if (!el) return;
+  var b = s.banner || {}, fo = srFounding(s), f = s.founding || {};
+  if ((!b.show || !b.text) && fo.state === 'open' && f.showBannerWhileOpen && f.bannerText) b = { show: true, text: srFoundingText(s, f.bannerText), link: '/#join', linkText: 'Join now' };
+  if (!b.show || !b.text) { el.hidden = true; return; }
+  el.textContent = '';
+  var t = document.createElement('span'); t.textContent = b.text; el.appendChild(t);
+  if (b.link && /^(https:\/\/|\/)/.test(b.link)) { var a = document.createElement('a'); a.href = b.link; a.textContent = b.linkText || 'Find out more'; el.appendChild(document.createTextNode(' ')); el.appendChild(a); }
+  el.hidden = false;
+}
+/*SETTINGS-END*/
+</script>
+<script>
+(function () {
+  // Sign-ups are saved in ShowReady's own database (Supabase, table founding_signups),
+  // with the consent wording they agreed to. The website can add a sign-up but never read them back.
+  var SIGNUPS = {
+    url: 'https://osqlwddeobiklrpdnons.supabase.co',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk'
+  };
+  var FOUNDING_OPEN = true;
+  var CONTACT_EMAIL = 'hello@beshowready.co.uk';
+  var form = document.getElementById('joinForm');
+  var err = document.getElementById('jErr');
+  var done = document.getElementById('jDone');
+  function val(id) { return document.getElementById(id).value.trim(); }
+  ['jName', 'jEmail'].forEach(function (id) { document.getElementById(id).addEventListener('input', function () { err.hidden = true; }); });
+
+  function showFallback(summary) {
+    done.innerHTML = '';
+    var p1 = document.createElement('span');
+    p1.textContent = 'Thanks. Sign-ups open fully at launch. Until then, email your details to:';
+    var row = document.createElement('div'); row.className = 'copyrow';
+    var addr = document.createElement('code'); addr.textContent = CONTACT_EMAIL;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = 'Copy details';
+    b.addEventListener('click', function () {
+      var text = 'To: ' + CONTACT_EMAIL + '\n' + summary;
+      try { navigator.clipboard.writeText(text).then(function () { b.textContent = 'Copied'; }, function () { b.textContent = 'Select the address to copy'; }); } catch (e) { b.textContent = 'Select the address to copy'; }
+    });
+    row.appendChild(addr); row.appendChild(b);
+    done.appendChild(p1); done.appendChild(row);
+    done.hidden = false;
+  }
+
+
+function srPhone(s) { var el = document.getElementById('footPhone'); if (!el || !s.contact || !s.contact.phone) return; var digits = s.contact.phone.replace(/[^\d+]/g, ''); el.textContent = s.contact.phone; el.href = 'tel:' + (digits.charAt(0) === '0' ? '+44' + digits.slice(1) : digits); }
+function srPilot(s) {
+  var el = document.getElementById('pilotNote'); if (!el) return;
+  var fo = srFounding(s), f = s.founding || {}, bits = [];
+  if (fo.state !== 'closed') { bits.push(s.offers.foundingText); if (fo.state === 'open') bits.push(srFoundingText(s, f.openText)); bits.push(s.offers.earlyText); }
+  else bits.push(f.closedText);
+  bits.push(s.offers.charityText);
+  el.textContent = ''; var b = document.createElement('strong'); b.textContent = s.offers.pilotText; el.appendChild(b);
+  el.appendChild(document.createTextNode(' ' + bits.filter(Boolean).join(' ')));
+}
+function srJoin(s) {
+  var fo = srFounding(s), f = s.founding || {}, closed = fo.state === 'closed';
+  var eb = document.getElementById('joinEyebrow'); if (eb) eb.textContent = closed ? f.joinEyebrowClosed : f.joinEyebrowOpen;
+  ['joinBtn', 'joinCta'].forEach(function (id) { var x = document.getElementById(id); if (x) x.textContent = closed ? f.joinButtonClosed : f.joinButtonOpen; });
+  var cl = document.getElementById('joinCloses'); if (cl) { cl.textContent = fo.state === 'open' ? srFoundingText(s, f.openText) : ''; cl.hidden = fo.state !== 'open'; }
+}
+  srLoadSettings(function (st) {
+    CONTACT_EMAIL = st.contact.email || CONTACT_EMAIL;
+    if (st.accounts && /^https:\/\/[a-z0-9]+\.supabase\.co$/.test(st.accounts.url || '') && st.accounts.anonKey) { SIGNUPS.url = st.accounts.url; SIGNUPS.key = st.accounts.anonKey; }
+    srBanner(st); srPhone(st); srPilot(st); srJoin(st); FOUNDING_OPEN = srFounding(st).state !== 'closed';
+    window.addEventListener('sr-offers', function () { srBanner(st); srPilot(st); srJoin(st); FOUNDING_OPEN = srFounding(st).state !== 'closed'; });
+    document.getElementById('sumOrg').textContent = srFill(st, st.pricingSummary.organisers);
+    document.getElementById('sumSup').textContent = srFill(st, st.pricingSummary.suppliers);
+    document.getElementById('faqCost').textContent = srFill(st, st.pricingSummary.faq);
+  });
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var name = val('jName'), email = val('jEmail');
+    if (!name) { err.textContent = 'Enter your name.'; err.hidden = false; document.getElementById('jName').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Enter an email address like name@example.co.uk.'; err.hidden = false; document.getElementById('jEmail').focus(); return; }
+    var role = form.querySelector('input[name="role"]:checked').value;
+    var summary = ['Role: ' + role, 'Name: ' + name, 'Email: ' + email, 'Business or event: ' + val('jBiz'), 'Area: ' + val('jArea'), 'Runs or supplies: ' + val('jWhat')].join('\n');
+    var btn = form.querySelector('button[type="submit"]');
+    var trap = document.getElementById('jWeb');
+    function ok(already) { btn.disabled = false; done.textContent = 'Thanks, ' + name.split(' ')[0] + '. ' + (already ? 'You’re already on the list, so there’s nothing more to do.' : FOUNDING_OPEN ? 'You’re on the founding member list. We’ll email you before launch.' : 'You’re on the list. We’ll email you before launch.'); done.hidden = false; err.hidden = true; form.reset(); }
+    if (trap && trap.value) { ok(false); return; } // filled in by a spam robot, not a person
+    var consent = form.querySelector('.consent') ? form.querySelector('.consent').textContent.replace(/\s+/g, ' ').trim() : 'Contact about the pilot and launch.';
+    var row = { role: role, name: name.slice(0, 120), email: email.slice(0, 254), company: val('jBiz').slice(0, 160) || null, area: val('jArea').slice(0, 120) || null, runs_or_supplies: val('jWhat').slice(0, 200) || null, consent_text: consent.slice(0, 1000), founding_offer: FOUNDING_OPEN };
+    btn.disabled = true;
+    fetch(SIGNUPS.url + '/rest/v1/founding_signups', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SIGNUPS.key, 'Authorization': 'Bearer ' + SIGNUPS.key, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(row)
+    }).then(function (r) {
+      if (r.ok) { ok(false); return; }
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 409 || (j && j.code === '23505')) { ok(true); return; }
+        btn.disabled = false;
+        if (j && j.code === '23514') { err.textContent = 'Something in the form wasn’t accepted. Check your email address and keep each answer short.'; err.hidden = false; return; }
+        err.textContent = 'Something went wrong saving that. Try again, or use the email option below.'; err.hidden = false; showFallback(summary);
+      });
+    }, function () { btn.disabled = false; err.textContent = 'Couldn’t reach ShowReady just now. Check your connection, or use the email option below.'; err.hidden = false; showFallback(summary); });
+  });
+})();
+</script>
+<script>
+/*SHARED-START*/
+window.SR_NAV_PAGE = 'home';
+/*NAV-START*/
+// ShowReady menu (top left) and, on pages without the account panel, Log in / Sign up buttons (top right).
+(function () {
+  var HOME = '/', APP = '/app/', DESK = '/suppliers/',
+    TOOLS = '/toolkit.html', PRIV = '/privacy.html', TERMS = '/terms.html';
+  var here = document.documentElement.getAttribute('data-page') || (window.SR_NAV_PAGE || '');
+  var ITEMS = [
+    { id: 'home', href: HOME, t: 'Home', d: 'What ShowReady does' },
+    { id: 'planner', href: APP, t: 'Plan an event', d: 'Licences, suppliers, deadlines' },
+    { id: 'desk', href: DESK, t: 'Supplier desk', d: 'Enquiries and your profile' },
+    { id: 'film', href: '/film/', t: 'Film & TV', d: 'Locations, permits and shoot days' },
+    { id: 'tools', href: TOOLS, t: 'Tools and pricing', d: 'Every tool and plan' },
+    { id: 'join', href: HOME + '#join', t: 'Join the pilot', d: 'Founding member sign-up' },
+    { id: 'install', href: '#install', t: 'Install the apps', d: 'Organiser, Supplier and Film & TV on your phone or computer', install: true },
+    { id: 'feedback', href: '#feedback', t: 'Send feedback', d: 'A problem, an idea or a question', feedback: true },
+    { sep: true },
+    { id: 'privacy', href: PRIV, t: 'Privacy notice', small: true },
+    { id: 'terms', href: TERMS, t: 'Terms of use', small: true },
+    { id: 'contact', href: 'mailto:hello@beshowready.co.uk', t: 'Contact us', small: true, contact: true }
+  ];
+  var bar = document.querySelector('.topbar .wrap, .top .inner, header.top[data-srn-bar]'); if (!bar) return;
+  var css = '.srn{position:relative;display:flex;align-items:center;flex:0 0 auto}' +
+    '.srn-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;min-width:40px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer}' +
+    '.srn-btn svg{width:20px;height:20px}.srn-btn .lbl{display:inline}@media (max-width:520px){.srn-btn .lbl{display:none}}' +
+    '.srn-menu{position:absolute;left:0;top:calc(100% + 8px);z-index:40;width:min(300px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:6px;margin:0;list-style:none}' +
+    '.srn-menu[hidden]{display:none}.srn-menu a{display:block;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--ink);font-weight:700;font-size:15px;line-height:1.25}' +
+    '.srn-menu a span{display:block;font-weight:500;font-size:13px;color:var(--muted)}.srn-menu a.small{font-size:14px;font-weight:600;padding:8px 12px}' +
+    '.srn-menu a:hover,.srn-menu a:focus-visible{background:var(--brand-soft)}.srn-menu a[aria-current="page"]{background:var(--brand-soft);color:var(--brand-text)}' +
+    '.srn-menu .sep{height:1px;background:var(--line);margin:6px 8px}' +
+    '.srn-left{display:flex;align-items:center;gap:10px;min-width:0}' +
+    '.srn-acct{display:flex;align-items:center;gap:8px;flex:0 0 auto}' +
+    '.srn-acct a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid var(--line);color:var(--ink);background:var(--surface)}' +
+    '.srn-acct a.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink,#fff)}' +
+    '.top .nav .srn-acct a{display:inline-flex!important}.top .nav .btn[data-planner-link]{display:none}.top .inner>a[data-home-link]:not(.logo){display:none}' +
+    '@media (max-width:440px){.srn-left{gap:8px}.srn-btn{min-height:38px;min-width:38px;padding:0 8px}.srn-acct a,.sr-acct-btn{padding:0 10px!important;font-size:13px!important;min-height:36px}.srn-acct,.sr-acct-btns,.sr-acct-right{gap:5px!important}.top .logo,.topbar .brand{gap:6px}.top .logo svg,.topbar .brand svg{width:30px;height:30px}.top .logo .word,.topbar .brand .word{font-size:18px}.top .inner,.topbar .wrap{gap:8px}}' +
+    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}';
+  var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  var box = document.createElement('div'); box.className = 'srn';
+  var html = '<button class="srn-btn" type="button" id="srnBtn" aria-expanded="false" aria-controls="srnMenu" aria-label="Menu">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl">Menu</span></button>' +
+    '<ul class="srn-menu" id="srnMenu" hidden>';
+  ITEMS.forEach(function (it) {
+    if (it.sep) { html += '<li class="sep" role="separator"></li>'; return; }
+    html += '<li><a href="' + it.href + '"' + (it.small ? ' class="small"' : '') + (it.id === here ? ' aria-current="page"' : '') + (it.contact ? ' data-contact' : '') + (it.install ? ' data-install' : '') + (it.feedback ? ' data-feedback' : '') + '>' + it.t + (it.d ? '<span>' + it.d + '</span>' : '') + '</a></li>';
+  });
+  box.innerHTML = html + '</ul>';
+  // Put the menu and the logo together on the left.
+  var logo = bar.querySelector('.brand, .logo');
+  var left = document.createElement('div'); left.className = 'srn-left';
+  bar.insertBefore(left, bar.firstChild); left.appendChild(box); if (logo) left.appendChild(logo);
+
+  var btn = box.querySelector('#srnBtn'), menu = box.querySelector('#srnMenu');
+  function setOpen(o) { menu.hidden = !o; btn.setAttribute('aria-expanded', String(o)); }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(menu.hidden); if (!menu.hidden) { var a = menu.querySelector('a'); if (a) try { a.focus(); } catch (x) {} } });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !box.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { setOpen(false); try { btn.focus(); } catch (x) {} } });
+  menu.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a')) setOpen(false); });
+  window.SRNav = { open: function () { setOpen(true); }, close: function () { setOpen(false); } };
+
+  // ---- Install ShowReady as an app (home screen / desktop icon)
+  var deferred = null;
+  function standalone() { try { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true; } catch (e) { return false; } }
+  function device() {
+    var ua = navigator.userAgent || '', touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+    if (/iPhone|iPad|iPod/.test(ua) || touchMac) return /CriOS|FxiOS|EdgiOS/.test(ua) ? 'ios-other' : 'ios';
+    if (/Android/.test(ua)) return /SamsungBrowser/.test(ua) ? 'samsung' : /Firefox/.test(ua) ? 'android-firefox' : 'android';
+    if (/Firefox/.test(ua)) return 'desktop-firefox';
+    if (/Safari/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua)) return 'mac-safari';
+    return 'desktop';
+  }
+  var STEPS = {
+    ios: ['Tap the <b>Share</b> button (the square with an arrow, at the bottom or top of Safari).', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Tap <b>Add</b>. The ShowReady icon appears on your home screen.'],
+    'ios-other': ['Open this page in <b>Safari</b> (Apple only allows home-screen apps from Safari on older iPhones).', 'Tap <b>Share</b>, then <b>Add to Home Screen</b>, then <b>Add</b>.'],
+    android: ['Tap the <b>⋮</b> menu at the top right of Chrome.', 'Tap <b>Install app</b> (or <b>Add to Home screen</b>).', 'Tap <b>Install</b>. The ShowReady icon appears with your other apps.'],
+    samsung: ['Tap the <b>☰</b> menu at the bottom of Samsung Internet.', 'Tap <b>Add page to</b>, then <b>Home screen</b>.'],
+    'android-firefox': ['Tap the <b>⋮</b> menu.', 'Tap <b>Install</b> (or <b>Add to Home screen</b>).'],
+    desktop: ['In Chrome or Edge, click the <b>install icon</b> at the right-hand end of the address bar (a small screen with an arrow).', 'Or open the <b>⋮</b> (Chrome) or <b>…</b> (Edge) menu and choose <b>Cast, save and share → Install page as app</b>, or <b>Apps → Install this site as an app</b>.', 'Click <b>Install</b>. ShowReady opens in its own window and gets an icon in your Start menu, taskbar or Dock.'],
+    'mac-safari': ['In Safari, open the <b>File</b> menu (or the Share button).', 'Choose <b>Add to Dock</b>, then <b>Add</b>.'],
+    'desktop-firefox': ['Firefox on a computer can’t install web apps. Open beshowready.co.uk in <b>Chrome</b> or <b>Edge</b> and use its install icon in the address bar.']
+  };
+  var ip = document.createElement('div'); ip.className = 'srn-inst-back'; ip.hidden = true; ip.id = 'srnInstall';
+  ip.innerHTML = '<div class="srn-inst" role="dialog" aria-modal="true" aria-labelledby="srnInstTitle"><button type="button" class="srn-x" data-inst-close aria-label="Close">×</button><div id="srnInstBody"></div></div>';
+  document.body.appendChild(ip);
+  var cssI = '.srn-inst-back{position:fixed;inset:0;z-index:60;background:rgba(10,20,15,.35);display:flex;align-items:flex-start;justify-content:center;padding:72px 12px 16px;overflow-y:auto}.srn-inst-back[hidden]{display:none}' +
+    '.srn-inst{position:relative;background:var(--surface);color:var(--ink);width:100%;max-width:420px;border-radius:16px;border:1px solid var(--line);border-top:6px solid var(--brand);box-shadow:0 18px 50px rgba(0,0,0,.35);padding:18px 20px 20px;font-size:15px;line-height:1.5}' +
+    '.srn-inst h2{margin:0 0 6px;font-size:20px}.srn-inst ol{margin:10px 0;padding-left:22px}.srn-inst li{margin:6px 0}.srn-inst p{margin:8px 0}.srn-inst .muted{color:var(--muted);font-size:13px}' +
+    '.srn-inst .go{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:12px;border:0;background:var(--brand);color:var(--brand-ink,#fff);font:inherit;font-weight:700;cursor:pointer;margin-top:6px}' +
+    '.srn-apps{list-style:none;margin:6px 0 10px;padding:0;display:grid;gap:8px}.srn-apps li{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px}.srn-apps li.on{border-color:var(--brand);background:var(--brand-soft)}.srn-apps img{border-radius:9px;flex:0 0 auto}.srn-apps li>span{flex:1 1 auto;min-width:0;line-height:1.3}.srn-apps a,.srn-apps em{flex:0 0 auto;font-size:13px;font-weight:700;font-style:normal;white-space:nowrap}' +
+    '.srn-x{position:absolute;top:8px;right:10px;background:none;border:0;font-size:26px;line-height:1;cursor:pointer;color:var(--muted);padding:4px}';
+  var stI = document.createElement('style'); stI.textContent = cssI; document.head.appendChild(stI);
+  // Four apps (build 51). Each page installs as its own app, with its own icon.
+  var APPS = [
+    { k: 'organiser', t: 'Organiser', d: 'Plan events: licences, suppliers, deadlines', href: '/app/' },
+    { k: 'supplier', t: 'Supplier desk', d: 'Enquiries, quotes and your listing', href: '/suppliers/' },
+    { k: 'film', t: 'Film & TV', d: 'Locations, permits and shoot days', href: '/film/' },
+    { k: 'admin', t: 'Admin', d: 'Only for ShowReady admins', href: '/admin/', admin: true }
+  ];
+  function appHere() { var p = location.pathname; return /^\/suppliers\//.test(p) ? 'supplier' : /^\/film\//.test(p) ? 'film' : /^\/admin\//.test(p) ? 'admin' : 'organiser'; }
+  function isAdmin() { var a = window.SRAccount; return !!(a && a.profile && a.profile.is_admin); }
+  function renderInstall() {
+    var b = document.getElementById('srnInstBody'), here = appHere(), cur = APPS.filter(function (x) { return x.k === here; })[0] || APPS[0];
+    var h = '<h2 id="srnInstTitle">Install the ShowReady apps</h2>';
+    if (standalone()) h += '<p>You’re using the <b>' + cur.t + '</b> app. To add another, open it below and choose Install the apps again.</p>';
+    else {
+      h += '<p>ShowReady has a separate app for each job, each with its own icon. They open in their own window, without the browser around them. <b>This page installs the ' + cur.t + ' app.</b></p>';
+      if (deferred) h += '<button type="button" class="go" id="srnInstallNow">Install the ' + cur.t + ' app now</button><p class="muted">Or do it yourself:</p>';
+      h += '<ol>' + (STEPS[device()] || STEPS.desktop).map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>';
+    }
+    h += '<p style="font-weight:700;margin-top:14px">The apps</p><ul class="srn-apps">' + APPS.filter(function (x) { return !x.admin || isAdmin() || here === 'admin'; }).map(function (x) {
+      return '<li' + (x.k === here ? ' class="on"' : '') + '><img src="/app-icons/app-' + x.k + '-192.png" alt="" width="40" height="40"><span><b>' + x.t + '</b><br><span class="muted">' + x.d + '</span></span>' +
+        (x.k === here ? '<em>This page</em>' : '<a href="' + x.href + '#install">Open to install</a>') + '</li>';
+    }).join('') + '</ul>';
+    h += '<p class="muted">Each app is the same ShowReady account, and updates appear by themselves. On iPhone and iPad each app keeps its own log-in: log in once inside it.</p>';
+    b.innerHTML = h;
+    var go = document.getElementById('srnInstallNow');
+    if (go) go.addEventListener('click', function () {
+      var d = deferred; deferred = null; d.prompt();
+      Promise.resolve(d.userChoice).then(function (c) { if (c && c.outcome === 'accepted') { closeInstall(); } else renderInstall(); }, function () { renderInstall(); });
+    });
+  }
+  function openInstall() { setOpen(false); renderInstall(); ip.hidden = false; }
+  function closeInstall() { ip.hidden = true; }
+  ip.addEventListener('click', function (e) { if (e.target === ip || (e.target.closest && e.target.closest('[data-inst-close]'))) closeInstall(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ip.hidden) closeInstall(); });
+  menu.querySelector('[data-install]').addEventListener('click', function (e) { e.preventDefault(); openInstall(); });
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; if (!ip.hidden) renderInstall(); });
+  window.addEventListener('appinstalled', function () { deferred = null; if (!ip.hidden) renderInstall(); });
+  if (standalone()) { var li = menu.querySelector('[data-install]'); if (li) li.parentNode.hidden = true; }
+  if (/^#install$/.test(location.hash)) setTimeout(openInstall, 0);
+  window.SRNav.install = openInstall;
+
+  // ---- Send feedback: goes to the ShowReady inbox (stored in Supabase, emailed to hello@).
+  var FB_URL = 'https://osqlwddeobiklrpdnons.supabase.co/rest/v1/feedback';
+  var FB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  var KINDS = [['problem', 'Something isn’t working'], ['idea', 'An idea'], ['question', 'A question'], ['praise', 'Something I like']];
+  var fp = document.createElement('div'); fp.className = 'srn-inst-back'; fp.hidden = true; fp.id = 'srnFeedback';
+  fp.innerHTML = '<div class="srn-inst" role="dialog" aria-modal="true" aria-labelledby="srnFbTitle"><button type="button" class="srn-x" data-fb-close aria-label="Close">×</button><div id="srnFbBody"></div></div>';
+  document.body.appendChild(fp);
+  var cssF = '.srn-fb-kinds{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px;padding:0;border:0}.srn-fb-kinds legend{font-weight:700;margin-bottom:6px;padding:0}' +
+    '.srn-fb-kinds label{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px;cursor:pointer}' +
+    '.srn-fb-kinds input{position:absolute;opacity:0;width:1px;height:1px}.srn-fb-kinds input:checked+span{color:var(--brand-text,var(--brand))}.srn-fb-kinds label:has(input:checked){background:var(--brand-soft);border-color:var(--brand)}.srn-fb-kinds label:has(input:focus-visible){outline:2px solid var(--brand);outline-offset:2px}' +
+    '.srn-inst label.f{display:block;font-weight:700;margin:10px 0 4px}.srn-inst textarea,.srn-inst input[type=email],.srn-inst input[type=text],.srn-inst input[type=tel]{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}' +
+    '.srn-inst form{border:0;padding:0;margin:0;background:none;box-shadow:none;max-width:none}' +
+    '.srn-inst textarea{min-height:120px;resize:vertical}.srn-fb-hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}.srn-fb-err{color:#B3261E;font-weight:600}';
+  var stF = document.createElement('style'); stF.textContent = cssF; document.head.appendChild(stF);
+  function fbEsc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function renderFeedback(kind) {
+    var em = (window.SRAccount && window.SRAccount.user && window.SRAccount.user.email) || '';
+    var b = document.getElementById('srnFbBody');
+    b.innerHTML = '<h2 id="srnFbTitle">Send feedback</h2><p>Tell us what’s working, what isn’t, or what you’d like ShowReady to do. It comes straight to us.</p>' +
+      '<form id="srnFbForm" novalidate><fieldset class="srn-fb-kinds"><legend>What’s it about?</legend>' +
+      KINDS.map(function (k) { return '<label><input type="radio" name="kind" value="' + k[0] + '"' + (k[0] === (kind || 'idea') ? ' checked' : '') + '><span>' + k[1] + '</span></label>'; }).join('') + '</fieldset>' +
+      '<label class="f" for="srnFbMsg">Your feedback</label><textarea id="srnFbMsg" name="message" maxlength="4000" placeholder="What happened, or what would help?"></textarea>' +
+      '<label class="f" for="srnFbEmail">Your email <span class="muted" style="font-weight:500">(optional, if you’d like a reply)</span></label><input type="email" id="srnFbEmail" name="email" autocomplete="email" maxlength="254" value="' + fbEsc(em) + '">' +
+      '<div class="srn-fb-hp" aria-hidden="true"><label>Leave this empty <input type="text" name="website" id="srnFbHp" tabindex="-1" autocomplete="off"></label></div>' +
+      '<p class="srn-fb-err" id="srnFbErr" role="alert" hidden></p>' +
+      '<button type="submit" class="go" id="srnFbSend">Send feedback</button>' +
+      '<p class="muted">We also note which page you were on and your browser type, to help us fix problems. See our <a href="' + PRIV + '">privacy notice</a>.</p></form>';
+    var f = document.getElementById('srnFbForm');
+    f.addEventListener('submit', function (e) { e.preventDefault(); sendFeedback(f); });
+  }
+  function fbError(t) { var p = document.getElementById('srnFbErr'); p.textContent = t; p.hidden = !t; }
+  function sendFeedback(f) {
+    var kind = (f.querySelector('input[name=kind]:checked') || {}).value || 'idea';
+    var msg = (document.getElementById('srnFbMsg').value || '').trim();
+    var em = (document.getElementById('srnFbEmail').value || '').trim();
+    if (document.getElementById('srnFbHp').value) { thanks(); return; }   // a bot filled the hidden box: pretend it worked
+    if (msg.length < 2) { fbError('Please write a few words first.'); document.getElementById('srnFbMsg').focus(); return; }
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { fbError('That email doesn’t look right. Check it, or leave it empty.'); document.getElementById('srnFbEmail').focus(); return; }
+    fbError(''); var go = document.getElementById('srnFbSend'); go.disabled = true; go.textContent = 'Sending…';
+    var body = { kind: kind, message: msg.slice(0, 4000), email: em || null, page: (location.pathname + ' · ' + (document.title || '')).slice(0, 200), device: (navigator.userAgent || '').slice(0, 300) };
+    fetch(FB_URL, { method: 'POST', headers: { apikey: FB_KEY, Authorization: 'Bearer ' + FB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(body) })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); thanks(); })
+      .catch(function () { go.disabled = false; go.textContent = 'Try again'; fbError('Sorry, that didn’t send. Check you’re online and try again, or email hello@beshowready.co.uk.'); });
+  }
+  function thanks() {
+    document.getElementById('srnFbBody').innerHTML = '<h2 id="srnFbTitle">Thank you</h2><p>Your feedback has reached us. If you left your email and asked something, we’ll reply as soon as we can.</p><button type="button" class="go" data-fb-close>Close</button>';
+  }
+  function openFeedback(kind) { setOpen(false); if (!ip.hidden) closeInstall(); renderFeedback(kind); fp.hidden = false; setTimeout(function () { var m = document.getElementById('srnFbMsg'); if (m) try { m.focus(); } catch (x) {} }, 0); }
+  function closeFeedback() { fp.hidden = true; if (/^#feedback$/.test(location.hash)) try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {} }
+  fp.addEventListener('click', function (e) { if (e.target === fp || (e.target.closest && e.target.closest('[data-fb-close]'))) closeFeedback(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !fp.hidden) closeFeedback(); });
+  menu.querySelector('[data-feedback]').addEventListener('click', function (e) { e.preventDefault(); openFeedback(); });
+  if (/^#feedback$/.test(location.hash)) setTimeout(function () { openFeedback(); }, 0);
+  window.addEventListener('hashchange', function () { if (/^#feedback$/.test(location.hash) && fp.hidden) openFeedback(); });
+  window.SRNav.feedback = openFeedback;
+
+  // ---- Enterprise: ask for a quote (build 51). Comes to hello@ and into admin Contacts automatically.
+  var ep = document.createElement('div'); ep.className = 'srn-inst-back'; ep.hidden = true; ep.id = 'srnEnterprise';
+  ep.innerHTML = '<div class="srn-inst" role="dialog" aria-modal="true" aria-labelledby="srnEnTitle"><button type="button" class="srn-x" data-en-close aria-label="Close">×</button><div id="srnEnBody"></div></div>';
+  document.body.appendChild(ep);
+  var EN = [['enName', 'Your name', 'text', 'name', true], ['enBiz', 'Business name', 'text', 'organization', true], ['enEmail', 'Email', 'email', 'email', true], ['enPhone', 'Phone (optional)', 'tel', 'tel', false],
+    ['enDepots', 'How many depots or bases?', 'text', 'off', false], ['enAreas', 'Where do you cover?', 'text', 'off', false], ['enLogins', 'How many people need a log-in?', 'text', 'off', false]];
+  function renderEnterprise() {
+    var a = window.SRAccount, em = (a && a.user && a.user.email) || '';
+    document.getElementById('srnEnBody').innerHTML = '<h2 id="srnEnTitle">Enterprise: ask for a quote</h2>' +
+      '<p>For national suppliers and firms with several depots. Enterprise is £99 a month for up to 10 depots and 10 logins, then £8 a month for each extra depot. Tell us about your business and we’ll set it up. No commission, ever.</p>' +
+      '<form id="srnEnForm" novalidate>' + EN.map(function (f) {
+        return '<label class="f" for="' + f[0] + '">' + f[1] + '</label><input id="' + f[0] + '" type="' + f[2] + '" autocomplete="' + f[3] + '" maxlength="200"' + (f[0] === 'enEmail' ? ' value="' + fbEsc(em) + '"' : '') + (f[4] ? ' required' : '') + '>';
+      }).join('') +
+      '<label class="f" for="enMsg">Anything else? (optional)</label><textarea id="enMsg" maxlength="1500" placeholder="What you supply, typical number of events, anything we should know"></textarea>' +
+      '<div class="srn-fb-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="enHp" tabindex="-1" autocomplete="off"></label></div>' +
+      '<p class="srn-fb-err" id="srnEnErr" role="alert" hidden></p>' +
+      '<button type="submit" class="go" id="srnEnSend">Send my request</button>' +
+      '<p class="muted">We’ll use these details to reply about Enterprise. See our <a href="' + PRIV + '">privacy notice</a>.</p></form>';
+    document.getElementById('srnEnForm').addEventListener('submit', function (e) { e.preventDefault(); sendEnterprise(); });
+  }
+  function enErr(t) { var p = document.getElementById('srnEnErr'); p.textContent = t; p.hidden = !t; }
+  function enVal(id) { return (document.getElementById(id).value || '').trim(); }
+  function sendEnterprise() {
+    if (enVal('enHp')) { enThanks(); return; }
+    var miss = EN.filter(function (f) { return f[4] && !enVal(f[0]); })[0];
+    if (miss) { enErr('Please fill in ' + miss[1].toLowerCase() + '.'); document.getElementById(miss[0]).focus(); return; }
+    var em = enVal('enEmail');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { enErr('That email doesn’t look right.'); document.getElementById('enEmail').focus(); return; }
+    enErr(''); var go = document.getElementById('srnEnSend'); go.disabled = true; go.textContent = 'Sending…';
+    var msg = 'Business: ' + enVal('enBiz') + '\nName: ' + enVal('enName') + '\nPhone: ' + (enVal('enPhone') || '-') + '\nDepots: ' + (enVal('enDepots') || '-') +
+      '\nCovers: ' + (enVal('enAreas') || '-') + '\nLog-ins: ' + (enVal('enLogins') || '-') + '\n\n' + enVal('enMsg');
+    var body = { kind: 'enterprise', message: msg.slice(0, 4000), email: em, page: (location.pathname + ' · Enterprise quote').slice(0, 200), device: (navigator.userAgent || '').slice(0, 300) };
+    fetch(FB_URL, { method: 'POST', headers: { apikey: FB_KEY, Authorization: 'Bearer ' + FB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(body) })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); enThanks(); })
+      .catch(function () { go.disabled = false; go.textContent = 'Try again'; enErr('Sorry, that didn’t send. Try again, or email hello@beshowready.co.uk.'); });
+  }
+  function enThanks() { document.getElementById('srnEnBody').innerHTML = '<h2 id="srnEnTitle">Thank you</h2><p>Your request has reached us. We’ll be in touch within two working days with a quote.</p><button type="button" class="go" data-en-close>Close</button>'; }
+  function openEnterprise() { setOpen(false); renderEnterprise(); ep.hidden = false; setTimeout(function () { var n = document.getElementById('enName'); if (n) try { n.focus(); } catch (x) {} }, 0); }
+  function closeEnterprise() { ep.hidden = true; if (/^#enterprise$/.test(location.hash)) try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {} }
+  ep.addEventListener('click', function (e) { if (e.target === ep || (e.target.closest && e.target.closest('[data-en-close]'))) closeEnterprise(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ep.hidden) closeEnterprise(); });
+  document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('[data-enterprise]'); if (t) { e.preventDefault(); openEnterprise(); } });
+  if (/^#enterprise$/.test(location.hash)) setTimeout(openEnterprise, 0);
+  window.addEventListener('hashchange', function () { if (/^#enterprise$/.test(location.hash) && ep.hidden) openEnterprise(); });
+  window.SRNav.enterprise = openEnterprise;
+  // The service worker makes the site installable and keeps a copy of pages for when you're offline.
+  try {
+    if ('serviceWorker' in navigator && /(^|\.)beshowready\.co\.uk$|(^|\.)showready\.uk$|^localhost$|^127\.0\.0\.1$/.test(location.hostname))
+      window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {}); });
+  } catch (e) {}
+
+  // Contact email follows settings.json.
+  if (typeof srLoadSettings === 'function') srLoadSettings(function (s) {
+    var em = s && s.contact && s.contact.email; var a = menu.querySelector('[data-contact]');
+    if (em && a && /^[^@\s]+@[^@\s]+$/.test(em)) a.href = 'mailto:' + em;
+  });
+
+  // Website pages: Log in / Sign up go to the planner, which holds the account panel.
+  if (!window.SR_ACCOUNT_PAGE) {
+    var signedIn = false;
+    try { for (var i = 0; i < localStorage.length; i++) if (/^sb-.*-auth-token$/.test(localStorage.key(i))) signedIn = true; } catch (e) {}
+    var acct = document.createElement('div'); acct.className = 'srn-acct';
+    acct.innerHTML = signedIn ? '<a class="primary" href="' + APP + '?account=open">My account</a>'
+      : '<a href="' + APP + '?account=login">Log in</a><a class="primary" href="' + APP + '?account=signup' + (here === 'film' ? '&role=film' : '') + '">Sign up</a>';
+    var nav = bar.querySelector('.nav');
+    if (nav) nav.appendChild(acct); else bar.appendChild(acct);
+  }
+})();
+/*NAV-END*/
+/*ADS-START*/
+// Google AdSense (anchor ad along the bottom) for visitors on the free plan.
+// Off until settings.json has "ads": { "enabled": true, "client": "ca-pub-..." }.
+// Paid plans, founding members and anyone marked ad-free in their profile never load it.
+(function () {
+  var S = window.SRAds = { state: 'off', loaded: false, settings: null };
+  S._host = function () { return location.hostname; };
+  function live() { return /(^|\.)beshowready\.co\.uk$|(^|\.)showready\.uk$/.test(S._host()); }
+  function signedIn() { try { for (var i = 0; i < localStorage.length; i++) if (/^sb-.*-auth-token$/.test(localStorage.key(i))) return true; } catch (e) {} return false; }
+  function cached() { try { var c = JSON.parse(localStorage.getItem('showready-adfree') || 'null'); return c && typeof c.adFree === 'boolean' ? c.adFree : null; } catch (e) { return null; } }
+  S.decide = function () {
+    var a = (S.settings && S.settings.ads) || {};
+    try { if (/[?&]noads=1(&|$)/.test(location.search) || sessionStorage.getItem('sr_noads') === '1') return 'off'; } catch (e) {}
+    if (a.enabled !== true || !/^ca-pub-\d{10,20}$/.test(String(a.client || ''))) return 'off';
+    if (!live()) return 'off';
+    if (signedIn()) { var c = cached(); if (c === true) return 'adfree'; if (c === null) return 'wait'; }
+    return 'show';
+  };
+  S.update = function () {
+    S.state = S.decide();
+    if (S.state !== 'show' || S.loaded) return;
+    S.loaded = true;
+    var sc = document.createElement('script'); sc.async = true; sc.crossOrigin = 'anonymous';
+    sc.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(S.settings.ads.client);
+    document.head.appendChild(sc);
+  };
+  if (typeof srLoadSettings === 'function') srLoadSettings(function (s, isLive) { S.settings = s; if (isLive || !S.loaded) S.update(); });
+})();
+/*ADS-END*/
+/*SHARED-END*/
+</script>
+
+<script>
+/* Build 55: "Who are you?" home. Picking a tile shows that group's part of ShowReady, sets Sign up and the
+   founding form to match, and is remembered on this device so returning visitors land on their own section. */
+(function () {
+  var D = {
+    organiser: { kick: 'For organisers', h: 'Describe your event. Get your plan.', lead: 'Tell ShowReady what you’re planning in your own words. You get the licences that apply, who to contact, every deadline and what to book, with the next job always at the top.',
+      pts: ['Licences and deadlines worked out for your council', 'Suppliers, acts and venues matched to your event and audience', 'Site plan, risk assessment and council pack in one folder'],
+      cta: 'Plan my event free', href: '/app/', more: 'Your first event or your fiftieth', moreHref: '#start', cost: 'Free to plan, always.', signup: '/app/?account=signup&role=organiser', role: 'roleOrg', what: 'Community event or fete',
+      q: 'Charity dog show, about 800 people, one Saturday in June on a farm field near Hebden Bridge. A bar, a local band and 15 food traders.', rows: [['Premises licence', 'Action'], ['Safety Advisory Group', 'Likely'], ['Food traders registered', 'Check']] },
+    supplier: { kick: 'For suppliers and traders', h: 'Win more of the right work.', lead: 'Organisers near you who need what you offer find you and send enquiries with the date, size and details already filled in.',
+      pts: ['Matched only to events that fit your size, area and services', 'Every enquiry, quote and follow-up on one desk', 'Date clash alerts when two jobs overlap'],
+      cta: 'Open the supplier desk', href: '/suppliers/', more: 'See supplier plans', moreHref: '/toolkit.html#pricing', cost: 'Free during the pilot, then from £6 a month to be listed. No commission on any booking.', signup: '/suppliers/?account=signup&role=supplier', role: 'roleSup', what: 'Food or drink',
+      q: 'Village fete, 400 people, a Saturday in June, Mossley. Needs a coffee van with its own power.', rows: [['New enquiry: coffee van', 'Matches you'], ['Your quote sent', 'Quoted'], ['No clash with your other bookings', 'Clear']] },
+    act: { kick: 'For acts and entertainers', h: 'Get booked by the right crowd.', lead: 'Set out your act once: set lengths, own PA, space and power, who you perform for and your DBS check. Organisers see it before they enquire.',
+      pts: ['Matched to the event’s audience, from under 5s to adults only', 'DBS and insurance shown while in date, with reminders', 'Weddings: first dance, ceremony, drinks and evening sets'],
+      cta: 'Set up my act', href: '/suppliers/?offer=entertainment', more: 'See supplier plans', moreHref: '/toolkit.html#pricing', cost: 'Free during the pilot, then from £6 a month to be listed. No commission on any booking.', signup: '/suppliers/?account=signup&role=supplier', role: 'roleSup', what: 'Entertainment: band, DJ or act',
+      q: 'Family fun day, children and families. Looking for a children’s entertainer with their own PA.', rows: [['Children’s entertainer, own PA', 'Matches you'], ['DBS checked', 'Shown'], ['Adult acts kept out', 'Automatic']] },
+    venue: { kick: 'For venues and sites', h: 'Fill your dates with events that fit.', lead: 'List your space with its capacity, catering rules, parking and power. Organisers searching your area find you when their event fits.',
+      pts: ['Seated and standing capacity checked against the event', 'Catering, parking and power set out up front', 'Organisers can plan their layout on your site'],
+      cta: 'List my venue', href: '/suppliers/?offer=venue', more: 'See supplier plans', moreHref: '/toolkit.html#pricing', cost: 'Free during the pilot, then from £6 a month to be listed. No commission on any booking.', signup: '/suppliers/?account=signup&role=supplier', role: 'roleSup', what: 'Venue, hall or event site',
+      q: 'Wedding reception, seated meal for 110 guests, evening DJ, external caterers.', rows: [['Fits your seated capacity', 'Fits'], ['External caterers allowed', 'Fits'], ['New enquiry', 'New']] },
+    film: { kick: 'For film and TV', h: 'Every location checked before you scout.', lead: 'Plan each location with listed buildings, protected sites and the nearest A&E flagged, then lay out the unit base and find crew catering.',
+      pts: ['Site checks for heritage and nature designations', 'Unit base plans and same-day location warnings', 'Students get 50% off with a .ac.uk email'],
+      cta: 'Open ShowReady Film', href: '/film/', more: 'See Film plans', moreHref: '/toolkit.html#pricing', cost: 'Free basic tier. Production Pass for a single shoot.', signup: '/app/?account=signup&role=film', role: 'roleOrg', what: 'Film or TV production',
+      q: 'Two-day shoot in a village square and a country house, with a unit base for the trucks.', rows: [['Listed building on site', 'Flagged'], ['Nearest A&E', 'Found'], ['Unit base plan', 'Drawn']] },
+    council: { kick: 'For councils and partners', h: 'Fewer incomplete applications.', lead: 'ShowReady sends organisers to your own forms and tells them your notice periods, so what reaches you is on time and complete.',
+      pts: ['A page for each council with its forms and contacts', 'Organisers arrive with a site plan and risk assessment', 'Insurers and trade bodies can offer members a listing'],
+      cta: 'Work with ShowReady', href: '/partners/', more: 'Licences and deadlines', moreHref: '#permissions', cost: 'Free for councils.', signup: 'mailto:hello@beshowready.co.uk?subject=ShowReady%20for%20councils%20and%20partners', role: '', what: '',
+      q: 'Community gala on a public park, 2,500 people, a bar and a road closure.', rows: [['TEN not enough: premises licence', 'Told early'], ['Road closure notice', 'On time'], ['Site plan and risk assessment', 'Attached']] }
+  };
+  var tiles = document.querySelectorAll('.who-tile'), panel = document.getElementById('whoPanel'); if (!tiles.length || !panel) return;
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function show(id, remember) {
+    var s = D[id]; if (!s) return;
+    var tile = document.querySelector('.who-tile[data-sector="' + id + '"]');
+    tiles.forEach(function (t) { t.setAttribute('aria-pressed', String(t === tile)); });
+    panel.style.setProperty('--acc', tile.style.getPropertyValue('--acc'));
+    panel.innerHTML = '<div class="who-main"><span class="kick">' + esc(s.kick) + '</span><h2>' + esc(s.h) + '</h2><p class="lead">' + esc(s.lead) + '</p><ul>' +
+      s.pts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul><div class="acts"><a class="btn go" href="' + esc(s.href) + '">' + esc(s.cta) + '</a><a class="more" href="' + esc(s.moreHref) + '">' + esc(s.more) + '</a></div><p class="cost">' + esc(s.cost) + '</p></div>' +
+      '<div class="who-ex"><span class="exk">Example</span><p class="q">“' + esc(s.q) + '”</p><span class="becomes">becomes</span>' +
+      s.rows.map(function (r) { return '<div class="exrow"><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span></div>'; }).join('') + '</div>';
+    var oc = { organiser: 'organisers', supplier: 'suppliers', act: 'suppliers', venue: 'suppliers', film: 'film' }[id], os = oc && typeof srOfferState === 'function' ? srOfferState(oc) : null;
+    if (os && os.text) { var op = document.createElement('p'); op.className = 'offer'; op.textContent = os.text + '.'; var cost = panel.querySelector('.cost'); if (cost) cost.parentNode.insertBefore(op, cost.nextSibling); }
+    var su = document.getElementById('hdrSignup'); if (su) { su.href = s.signup; su.textContent = id === 'council' ? 'Get in touch' : 'Sign up'; }
+    if (s.role) { var r = document.getElementById(s.role); if (r && !r.form.dataset.touched) r.checked = true; }
+    var w = document.getElementById('jWhat'); if (w && s.what && !w.dataset.touched) w.value = s.what;
+    if (remember) try { localStorage.setItem('showready-sector', id); } catch (e) {}
+  }
+  tiles.forEach(function (t) { t.addEventListener('click', function () { show(t.getAttribute('data-sector'), true); }); });
+  var jf = document.getElementById('joinForm'); if (jf) jf.addEventListener('change', function (e) { if (e.target.name === 'role') jf.dataset.touched = '1'; if (e.target.id === 'jWhat') e.target.dataset.touched = '1'; });
+  // Founding counts on each tile, the open panel and the join section
+  function offers() {
+    document.querySelectorAll('.who-offer').forEach(function (b) { var st = srOfferState(b.getAttribute('data-cat')); b.textContent = st && st.short ? st.short : ''; b.hidden = !(st && st.short); });
+    var cur = document.querySelector('.who-tile[aria-pressed="true"]'); if (cur) show(cur.getAttribute('data-sector'), false);
+    var jo = document.getElementById('joinOffers'); if (jo) { var bits = ['organisers', 'suppliers', 'film'].map(function (k) { var st = srOfferState(k); return st && st.tier === 'founding' ? st.left + ' founding places left for ' + SR_OFFER_NAMES[k] : st && st.tier === 'early' ? 'founding places full for ' + SR_OFFER_NAMES[k] + ' (' + st.left + ' early-adopter places left)' : ''; }).filter(Boolean); jo.textContent = bits.length ? 'Right now: ' + bits.join(', ') + '.' : ''; jo.hidden = !bits.length; }
+  }
+  window.addEventListener('sr-offers', offers); if (window.SR_OFFERS) offers();
+  var saved = null; try { saved = localStorage.getItem('showready-sector'); } catch (e) {}
+  // Build 68: links from social posts open the right part, e.g. /?for=act
+  var want = (location.search.match(/[?&]for=(organiser|supplier|act|venue|film|council)\b/) || [])[1];
+  if (want && D[want]) { show(want, true); setTimeout(function () { var p = document.getElementById('whoPanel'); if (p) window.scrollTo(0, Math.max(0, p.getBoundingClientRect().top + window.scrollY - 90)); }, 300); }
+  else if (saved && D[saved]) show(saved, false);
+})();
+</script>
+</body>
+</html>

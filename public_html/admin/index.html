@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-adsense-account" content="ca-pub-8382733964734609">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="theme-color" content="#1E5A43">
+<link rel="apple-touch-icon" href="/app-icons/app-admin-192.png">
+<link rel="manifest" href="/manifest-admin.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SR Admin">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>ShowReady Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F5F0; --surface: #FFFFFF; --surface-2: #E8ECE5; --ink: #15231C; --muted: #4B5A52; --line: #D9DFD5;
+  --brand: #1E5A43; --brand-ink: #FFFFFF; --brand-soft: #E0ECE5; --brand-text: #15402F;
+  --amber-soft: #F8EADB; --amber-text: #763C06; --red-soft: #F7E0DC; --red-text: #8A1F18;
+  --font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+    --brand: #2E7A5B; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3;
+    --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+  --brand: #2E7A5B; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3;
+  --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+header.top { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+header.top .wrap { display: flex; align-items: center; gap: 12px; min-height: 60px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 800; font-size: 20px; }
+.brand .word span { color: var(--brand); }
+.who { margin-left: auto; font-size: 14px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-size: 28px; margin: 20px 0 4px; }
+h2 { font-size: 20px; margin: 0 0 8px; }
+p.lead { color: var(--muted); margin: 0 0 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin: 0 0 16px; }
+.tabs { display: flex; gap: 6px; margin: 8px 0 16px; flex-wrap: wrap; }
+.tabs button { font: inherit; font-weight: 700; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; min-height: 44px; }
+.tabs button[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn { font: inherit; font-weight: 700; font-size: 15px; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; min-height: 42px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn.small { font-size: 14px; padding: 6px 12px; min-height: 36px; }
+.btn.danger { color: var(--red-text); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid .wide { grid-column: 1 / -1; }
+@media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 700; }
+label small { font-weight: 500; color: var(--muted); }
+input, select, textarea { font: inherit; font-size: 16px; font-weight: 400; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); width: 100%; }
+textarea { min-height: 90px; resize: vertical; }
+fieldset { border: 0; padding: 0; margin: 14px 0 0; }
+legend { font-weight: 800; font-size: 15px; padding: 0; margin-bottom: 8px; color: var(--brand-text); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.msg { font-weight: 600; font-size: 14px; }
+.msg.ok { color: var(--brand-text); } .msg.bad { color: var(--red-text); }
+.hint { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); }
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); white-space: nowrap; }
+.pill.due { background: var(--amber-soft); color: var(--amber-text); }
+.list .item { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; background: var(--surface); }
+.list .item h3 { margin: 0 0 2px; font-size: 16px; }
+.list .item .meta { font-size: 14px; color: var(--muted); }
+.filters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
+@media (max-width: 620px) { .filters { grid-template-columns: 1fr 1fr; } .filters .q { grid-column: 1 / -1; } }
+[hidden] { display: none !important; }
+.gate { max-width: 420px; margin: 40px auto; }
+</style>
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="/" aria-label="ShowReady home"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#1E5A43"/><g transform="translate(9 10) scale(0.82)"><path d="M29.5 21 L39 15.5 L30.5 13 Z" fill="#F0A04B"/><path d="M71.5 15 L81 9.5 L72.5 7 Z" fill="#F0A04B"/><path d="M6 72 Q18 50 30 20 Q42 34 52 32 Q62 28 72 14 Q84 40 94 68 Q74 60 64 80 Q50 64 36 80 Q26 60 6 72 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/><circle cx="51" cy="54" r="21" fill="#FFFFFF"/><circle cx="51" cy="54" r="15" fill="none" stroke="#C9DAD1" stroke-width="6.5"/><circle cx="51" cy="54" r="15" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="75.4 94.2" transform="rotate(-90 51 54)"/><circle cx="36.7" cy="49.4" r="4.2" fill="#F0A04B"/><path d="M44 54.5 L49 59.5 L58.5 48.5" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg><span class="word">Show<span>Ready</span></span></a>
+  <span style="font-weight:700;color:var(--muted)">Admin</span>
+  <div class="who" id="who"></div>
+</div></header>
+
+<main class="wrap">
+  <section class="gate card" id="gate">
+    <h1 style="margin-top:0">Admin</h1>
+    <p class="lead">Log in with your ShowReady account. Only admin accounts can use this page.</p>
+    <form id="loginForm">
+      <label>Email<input id="lEmail" type="email" autocomplete="email" required></label>
+      <label style="margin-top:10px">Password<span class="sr-pw"><input id="lPass" type="password" autocomplete="current-password" required><button type="button" class="sr-pwt" data-pwt aria-label="Show password" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
+      <div class="row"><button class="btn primary" type="submit">Log in</button><span class="msg" id="lMsg" role="status"></span></div>
+    </form>
+  </section>
+
+  <section id="app" hidden>
+    <h1>Councils and contacts</h1>
+    <p class="lead">Council details you save here show in the planner and on that council's page straight away. Contacts are private: only admin accounts can see them.</p>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-tab="councils">Councils</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="contacts">Contacts <span id="dueCount"></span></button>
+      <button type="button" role="tab" aria-selected="false" data-tab="partners">Partners <span id="partnerDue"></span></button>
+      <button type="button" role="tab" aria-selected="false" data-tab="links">Link checks <span id="linkDue"></span></button>
+      <button type="button" role="tab" aria-selected="false" data-tab="accounts">Accounts <span id="acctFlag"></span></button>
+      <button type="button" role="tab" aria-selected="false" data-tab="numbers">Numbers</button>
+    </div>
+
+    <div id="tab-councils">
+      <div class="card">
+        <h2>Find a council</h2>
+        <label>Council name<input id="cSearch" list="councilNames" placeholder="Start typing, for example Conwy or Tameside" autocomplete="off"></label>
+        <datalist id="councilNames"></datalist>
+        <p class="hint" id="cFound"></p>
+      </div>
+      <form class="card" id="cForm" hidden>
+        <h2 id="cTitle"></h2>
+        <div class="row" style="margin-top:0"><a class="btn small" id="cPreview" target="_blank" rel="noopener">See their council page ↗</a><span class="pill" id="cEventapp" hidden>Uses EventApp</span><span class="pill" id="cChecked"></span></div>
+        <fieldset><legend>Who organisers contact</legend><div class="grid">
+          <label>Licensing email<input name="licensing_email" type="email" placeholder="licensing@council.gov.uk"></label>
+          <label>Events team email<input name="events_email" type="email"></label>
+          <label>Phone<input name="phone" type="tel"></label>
+        </div></fieldset>
+        <fieldset><legend>Forms and pages</legend><div class="grid">
+          <label class="wide">Tell the council about your event (event notification form)<input name="events_url" type="url" placeholder="https://"></label>
+          <label>How many weeks' notice for that<input name="events_weeks" type="number" min="0" max="52" inputmode="numeric"></label>
+          <label>Safety Advisory Group page<input name="sag_url" type="url" placeholder="https://"></label>
+          <label>Temporary Event Notice<input name="ten_url" type="url" placeholder="https://"></label>
+          <label>Premises licence<input name="premises_url" type="url" placeholder="https://"></label>
+          <label>Road closure<input name="road_url" type="url" placeholder="https://"></label>
+          <label>Weeks' notice for road closures<input name="road_weeks" type="number" min="0" max="52" inputmode="numeric"></label>
+          <label>Events in parks<input name="parks_url" type="url" placeholder="https://"></label>
+          <label>Street trading<input name="street_trading_url" type="url" placeholder="https://"></label>
+        </div></fieldset>
+        <fieldset><legend>Notes organisers will see</legend><div class="grid">
+          <label class="wide">Notice periods and anything specific<small>Shown in the planner with this council's steps. Keep it short and factual.</small><textarea name="events_note" maxlength="400"></textarea></label>
+          <label class="wide">Anything else for organisers<textarea name="notes_public" maxlength="600"></textarea></label>
+        </div></fieldset>
+        <div class="row"><button class="btn primary" type="submit">Save council details</button><button class="btn danger small" type="button" id="cClear">Remove all added details</button><span class="msg" id="cMsg" role="status"></span></div>
+        <div style="margin-top:18px" id="cBadge"><h2 style="font-size:17px">Badge for their website</h2>
+          <p class="hint" style="margin-top:0">Send this code to the council's web team. It shows a ShowReady button that opens this council's page. Visitors from it see no adverts.</p>
+          <div class="row" style="margin-top:6px"><label style="margin:0">Style<select id="bStyle"><option value="showready-badge">White</option><option value="showready-badge-green">Green</option><option value="showready-badge-small">White, smaller text</option></select></label></div>
+          <p id="bPreview" style="margin:10px 0"></p>
+          <label>Code to paste into their web page<textarea id="bCode" readonly rows="4" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px"></textarea></label>
+          <div class="row"><button class="btn small" type="button" id="bCopy">Copy code</button><a class="btn small" id="bImg" target="_blank" rel="noopener" download>Download the image</a><span class="msg" id="bMsg" role="status"></span></div>
+        </div>
+        <div style="margin-top:18px"><h2 style="font-size:17px">Your contacts at this council</h2><div class="list" id="cContacts"></div>
+          <button class="btn small" type="button" id="cAddContact">Add a contact at this council</button></div>
+      </form>
+      <div class="card"><h2>Councils with details added</h2><div id="cAdded"><p class="hint">None yet.</p></div></div>
+    </div>
+
+    <div id="tab-contacts" hidden>
+      <div class="card">
+        <div class="filters">
+          <label class="q">Search<input id="kQ" placeholder="Name, organisation, area, services"></label>
+          <label>Type<select id="kKind"><option value="">All</option></select></label>
+          <label>Status<select id="kStatus"><option value="">All</option></select></label>
+        </div>
+        <div class="row"><button class="btn primary" type="button" id="kNew">Add a contact</button><button class="btn small" type="button" id="kCsv">Download as CSV</button><span class="msg" id="kMsg" role="status"></span></div>
+      </div>
+      <form class="card" id="kForm" hidden>
+        <h2 id="kTitle">Add a contact</h2>
+        <div class="grid">
+          <label>Type<select name="kind"></select></label>
+          <label>Status<select name="status"></select></label>
+          <label>Organisation<input name="organisation" maxlength="160"></label>
+          <label>Person<input name="person" maxlength="120"></label>
+          <label>Role<input name="role" maxlength="120" placeholder="e.g. Licensing officer, Owner"></label>
+          <label>Council area<input name="council_name" list="councilNames" autocomplete="off" placeholder="Optional"></label>
+          <label>Email<input name="email" type="email"></label>
+          <label>Phone<input name="phone" type="tel"></label>
+          <label>Area or town<input name="area" maxlength="120"></label>
+          <label>Next follow-up<input name="next_date" type="date"></label>
+          <label class="wide">Services or what they cover<input name="services" maxlength="400" placeholder="e.g. Toilets and showers; or Licensing and SAG"></label>
+          <label class="wide">Notes<textarea name="notes" maxlength="4000"></textarea></label>
+        </div>
+        <div class="row"><button class="btn primary" type="submit">Save contact</button><button class="btn" type="button" id="kCancel">Cancel</button><button class="btn danger small" type="button" id="kDelete" hidden>Delete</button><span class="msg" id="kFormMsg" role="status"></span></div>
+      </form>
+      <div class="list" id="kList"></div>
+    </div>
+
+    <div id="tab-partners" hidden>
+      <div class="card">
+        <h2>Insurance partners</h2>
+        <p class="hint" style="margin-top:0">Check each firm on the FCA register before approving: the name and FRN should match, the firm should be authorised for insurance distribution, and an appointed representative's principal should be listed. Partners sign up at <a href="/partners/" target="_blank" rel="noopener">beshowready.co.uk/partners/</a>.</p>
+        <div class="row" style="margin-top:6px"><label style="margin:0">Show<select id="ptShow"><option value="pending">Waiting for a check</option><option value="approved">Live</option><option value="paused">Paused</option><option value="declined">Not approved</option><option value="all">All</option></select></label><span class="msg" id="ptMsg" role="status"></span></div>
+      </div>
+      <div class="list" id="ptList"><p class="hint">Loading…</p></div>
+    </div>
+
+    <div id="tab-links" hidden>
+      <div class="card">
+        <h2>Weekly link checks</h2>
+        <p class="hint" style="margin-top:0">Every Monday night each council link is opened automatically. Anything broken, unreachable or changed since last week shows here. Open the link, update the council’s details if anything’s different (saving clears its checks), or press Looks fine.</p>
+        <p class="hint" id="lkLast"></p>
+      </div>
+      <div class="list" id="lkList"><p class="hint">Loading…</p></div>
+    </div>
+
+    <div id="tab-accounts" hidden>
+      <div class="card"><h2>Accounts and plans</h2><p class="hint">Everyone who has signed up, what they are and their plan. "Needs" flags organiser-and-supplier accounts that will need the Combined plan after the pilot. Enterprise quote requests arrive in Contacts.</p><div id="aBody"><p class="hint">Loading…</p></div></div>
+      <div class="card"><h2>Founding and early-adopter places</h2><p class="hint">Places are claimed automatically when an account saves its first plan, profile or Film project. Accounts from before the offer (yours and the demo accounts) are marked internal and never count. To make another account internal, run in Supabase: update public.offer_places set tier = 'internal', place_no = null where owner = (select id from auth.users where email = 'their@email');</p><div id="oBody"><p class="hint">Loading…</p></div></div>
+    </div>
+
+    <div id="tab-numbers" hidden>
+      <div class="card"><h2>At a glance</h2><div id="nBody"><p class="hint">Loading…</p></div></div>
+    </div>
+  </section>
+</main>
+
+<script src="/vendor/supabase-js@2.45.4/supabase.js" crossorigin="anonymous"></script>
+<script>
+(function () {
+  var URL_ = 'https://osqlwddeobiklrpdnons.supabase.co';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  var KINDS = ['council', 'supplier', 'organiser', 'venue', 'partner', 'other'];
+  var STATUSES = ['to contact', 'contacted', 'replied', 'meeting', 'signed up', 'not now'];
+  var COUNCIL_FIELDS = ['licensing_email', 'events_email', 'phone', 'events_url', 'events_weeks', 'sag_url', 'ten_url', 'premises_url', 'road_url', 'road_weeks', 'parks_url', 'street_trading_url', 'events_note', 'notes_public'];
+  var S = window.SRAdmin = { councils: [], bySlug: {}, byName: {}, info: {}, contacts: [], current: null, editing: null };
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function say(id, t, bad) { var m = $(id); m.textContent = t || ''; m.className = 'msg' + (t ? (bad ? ' bad' : ' ok') : ''); }
+  function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function fmt(d) { var m = String(d || '').match(/^(\d{4})-(\d\d)-(\d\d)/); return m ? +m[3] + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+m[2] - 1] + ' ' + m[1] : ''; }
+  function nice(err) {
+    var m = (err && err.message) || String(err || '');
+    if (/row-level security|permission denied/i.test(m)) return 'This account isn’t an admin, so it can’t save here.';
+    if (/check constraint/i.test(m)) return 'Something in the form isn’t valid: links must start with https://, emails need an @, weeks must be 0 to 52.';
+    if (/relation .* does not exist|schema cache/i.test(m)) return 'The database isn’t set up for this yet. Run the update file in Supabase first.';
+    return m || 'Something went wrong. Try again.';
+  }
+  var sb = S.sb = window.supabase && window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  function q(r) { if (r.error) throw r.error; return r.data; }
+
+  // ---- sign in and check this is an admin account
+  function start(user) {
+    if (!user) { $('gate').hidden = false; $('app').hidden = true; $('who').textContent = ''; return; }
+    return sb.from('profiles').select('is_admin').eq('id', user.id).maybeSingle().then(function (r) {
+      if (r.error || !r.data || r.data.is_admin !== true) {
+        $('gate').hidden = false; $('app').hidden = true;
+        say('lMsg', r.error ? nice(r.error) : 'This account isn’t an admin. Log in with your admin account.', true);
+        $('who').innerHTML = esc(user.email) + ' <button class="btn small" type="button" data-out>Log out</button>';
+        return;
+      }
+      $('gate').hidden = true; $('app').hidden = false;
+      $('who').innerHTML = esc(user.email) + ' <button class="btn small" type="button" data-out>Log out</button>';
+      return loadAll();
+    });
+  }
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault(); say('lMsg', 'Logging in…');
+    sb.auth.signInWithPassword({ email: $('lEmail').value.trim(), password: $('lPass').value }).then(function (r) {
+      if (r.error) { say('lMsg', /invalid/i.test(r.error.message) ? 'Email or password not right.' : nice(r.error), true); return; }
+      say('lMsg', ''); start(r.data.user);
+    });
+  });
+  document.addEventListener('click', function (e) { if (e.target.closest('[data-out]')) sb.auth.signOut().then(function () { location.reload(); }); });
+
+  function loadAll() {
+    return Promise.all([
+      sb.rpc('council_list').then(q).then(function (rows) {
+        S.councils = rows || []; S.bySlug = {}; S.byName = {};
+        var opts = '';
+        S.councils.forEach(function (c) { S.bySlug[c.slug] = c; S.byName[c.name.toLowerCase()] = c; opts += '<option value="' + esc(c.name) + '">'; });
+        $('councilNames').innerHTML = opts;
+      }),
+      loadInfo(), loadContacts(), loadPartners(), loadLinks(), loadAccounts()
+    ]).then(function () { renderAdded(); renderContacts(); renderPartners(); renderLinks(); }).catch(function (err) { say('cMsg', nice(err), true); $('cFound').textContent = nice(err); });
+  }
+  function loadInfo() { return sb.from('council_info').select('*').order('name').then(q).then(function (rows) { S.info = {}; S.hasFilledBy = (rows || []).some(function (r) { return 'filled_by' in r; }); (rows || []).forEach(function (r) { S.info[r.slug] = r; }); }); }
+  function loadContacts() { return sb.from('outreach_contacts').select('*').order('next_date', { ascending: true, nullsFirst: false }).order('updated_at', { ascending: false }).then(q).then(function (rows) { S.contacts = rows || []; }); }
+
+  // ---- tabs
+  document.querySelector('.tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tab]'); if (!b) return;
+    document.querySelectorAll('.tabs [data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); $('tab-' + x.dataset.tab).hidden = x !== b; });
+    if (b.dataset.tab === 'numbers') renderNumbers();
+    if (b.dataset.tab === 'accounts') loadAccounts();
+  });
+
+  // ---- councils
+  function pickCouncil(c) {
+    S.current = c; var f = $('cForm'); f.hidden = false;
+    $('cTitle').textContent = c.name;
+    $('cPreview').href = '/plan/' + c.slug;
+    $('cEventapp').hidden = !c.eventapp;
+    var i = S.info[c.slug] || {};
+    var src = { research: 'Looked up by Claude on the council’s website ', auto: 'Filled in automatically ' }[i.filled_by];
+    $('cChecked').textContent = i.checked ? (src ? src + fmt(i.checked) + ': please check' : 'Details checked ' + fmt(i.checked)) : 'No details added yet';
+    $('cChecked').className = 'pill' + (src ? ' due' : '');
+    COUNCIL_FIELDS.forEach(function (k) { f.elements[k].value = i[k] == null ? '' : i[k]; });
+    $('cFound').textContent = '';
+    say('cMsg', ''); renderCouncilContacts(); renderBadge();
+  }
+  // ---- badge code for the council's own website
+  function badgeCode(c, style) {
+    var src = 'https://beshowready.co.uk/badge/' + style + '.png', w = style === 'showready-badge-small' ? 273 : 310, h = style === 'showready-badge-small' ? 51 : 56;
+    return '<a href="https://beshowready.co.uk/plan/' + c.slug + '" target="_blank" rel="noopener" title="Plan your event with ShowReady">' +
+      '<img src="' + src + '" width="' + w + '" height="' + h + '" alt="Plan your event free with ShowReady: licences, deadlines and contacts for ' + c.name.replace(/"/g, '') + '" style="border:0;max-width:100%;height:auto"></a>';
+  }
+  function renderBadge() {
+    var c = S.current; if (!c) return;
+    var style = $('bStyle').value, code = badgeCode(c, style);
+    $('bCode').value = code; $('bPreview').innerHTML = code.replace('https://beshowready.co.uk/badge/', '/badge/');
+    $('bImg').href = '/badge/' + style + '.png'; say('bMsg', '');
+  }
+  $('bStyle').addEventListener('change', renderBadge);
+  $('bCopy').addEventListener('click', function () {
+    var t = $('bCode'); t.select();
+    var done = function () { say('bMsg', 'Copied.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(done, function () { try { document.execCommand('copy'); done(); } catch (e) { say('bMsg', 'Select the code and copy it.', true); } });
+    else { try { document.execCommand('copy'); done(); } catch (e) { say('bMsg', 'Select the code and copy it.', true); } }
+  });
+  $('cSearch').addEventListener('input', function () {
+    var c = S.byName[this.value.trim().toLowerCase()];
+    if (c) pickCouncil(c);
+    else if (this.value.trim().length > 2) {
+      var v = this.value.trim().toLowerCase(), hits = S.councils.filter(function (x) { return x.name.toLowerCase().indexOf(v) >= 0; });
+      $('cFound').textContent = hits.length === 1 ? '' : hits.length ? hits.length + ' councils match. Pick one from the list.' : 'No council with that name.';
+      if (hits.length === 1) pickCouncil(hits[0]);
+    }
+  });
+  $('cForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var c = S.current; if (!c) return;
+    var f = this, row = { slug: c.slug, name: c.name, checked: today() };
+    if (S.hasFilledBy) row.filled_by = 'russell'; // saved by you = checked by you
+    COUNCIL_FIELDS.forEach(function (k) { var v = String(f.elements[k].value || '').trim(); row[k] = v === '' ? null : (/_weeks$/.test(k) ? Number(v) : v); });
+    var bad = COUNCIL_FIELDS.filter(function (k) { return /_url$/.test(k) && row[k] && !/^https:\/\//.test(row[k]); });
+    if (bad.length) { say('cMsg', 'Links must start with https://', true); f.elements[bad[0]].focus(); return; }
+    say('cMsg', 'Saving…');
+    sb.from('council_info').upsert(row, { onConflict: 'slug' }).select('*').single().then(q).then(function (saved) {
+      S.info[c.slug] = saved; $('cChecked').textContent = 'Details checked ' + fmt(saved.checked); $('cChecked').className = 'pill';
+      say('cMsg', 'Saved. The planner and ' + c.name + '’s page now show these details.'); renderAdded();
+      try { sb.from('council_link_checks').update({ reviewed_at: new Date().toISOString() }).eq('slug', c.slug).is('reviewed_at', null).then(function () { S.links = S.links.filter(function (x) { return x.slug !== c.slug; }); renderLinks(); }, function () {}); } catch (x) {}
+    }).catch(function (err) { say('cMsg', nice(err), true); });
+  });
+  $('cClear').addEventListener('click', function () {
+    var c = S.current; if (!c || !S.info[c.slug]) { say('cMsg', 'Nothing added for this council yet.'); return; }
+    if (!window.confirm('Remove all the details you added for ' + c.name + '? Your private contacts stay.')) return;
+    sb.from('council_info').delete().eq('slug', c.slug).then(q).then(function () { delete S.info[c.slug]; pickCouncil(c); renderAdded(); say('cMsg', 'Removed.'); }).catch(function (err) { say('cMsg', nice(err), true); });
+  });
+  function renderAdded() {
+    var rows = Object.keys(S.info).map(function (k) { return S.info[k]; }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+    var mine = rows.filter(function (r) { return !r.filled_by || r.filled_by === 'russell'; }).length;
+    var head = '<p class="hint" style="margin-top:0">' + rows.length + ' councils have details; ' + mine + ' checked by you. Councils marked <span class="pill due">check</span> were filled in automatically or looked up by Claude: open one, check it, and save to mark it checked.</p>';
+    $('cAdded').innerHTML = rows.length ? head + '<table><thead><tr><th>Council</th><th>Email</th><th>Links</th><th>Checked</th></tr></thead><tbody>' + rows.map(function (r) {
+      var n = ['events_url', 'sag_url', 'ten_url', 'premises_url', 'road_url', 'parks_url', 'street_trading_url'].filter(function (k) { return r[k]; }).length;
+      var chk = r.filled_by && r.filled_by !== 'russell';
+      return '<tr><td><a href="#" data-pick="' + esc(r.slug) + '">' + esc(r.name) + '</a></td><td>' + (r.licensing_email || r.events_email ? 'Yes' : '—') + '</td><td>' + n + '</td><td>' + (chk ? '<span class="pill due">check</span>' : esc(fmt(r.checked))) + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<p class="hint">None yet.</p>';
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-pick]'); if (!a) return; e.preventDefault();
+    var c = S.bySlug[a.dataset.pick] || { slug: a.dataset.pick, name: (S.info[a.dataset.pick] || {}).name || a.dataset.pick };
+    $('cSearch').value = c.name; pickCouncil(c); $('cForm').scrollIntoView({ behavior: 'smooth' });
+  });
+  function renderCouncilContacts() {
+    var c = S.current; if (!c) return;
+    var list = S.contacts.filter(function (k) { return k.council_slug === c.slug; });
+    $('cContacts').innerHTML = list.length ? list.map(contactHtml).join('') : '<p class="hint">No contacts saved for this council yet.</p>';
+  }
+  $('cAddContact').addEventListener('click', function () { openContact(null, { kind: 'council', council_slug: S.current && S.current.slug, organisation: S.current && S.current.name }); });
+
+  // ---- contacts
+  function fillSelect(sel, list, blank) { sel.innerHTML = (blank ? '<option value="">All</option>' : '') + list.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v.charAt(0).toUpperCase() + v.slice(1)) + '</option>'; }).join(''); }
+  fillSelect($('kKind'), KINDS, true); fillSelect($('kStatus'), STATUSES, true);
+  fillSelect($('kForm').elements.kind, KINDS); fillSelect($('kForm').elements.status, STATUSES);
+  function contactHtml(k) {
+    var due = k.next_date && k.next_date <= today() && k.status !== 'signed up' && k.status !== 'not now';
+    var council = k.council_slug && (S.bySlug[k.council_slug] || {}).name;
+    return '<div class="item"><h3>' + esc(k.person || k.organisation || '(no name)') + (k.person && k.organisation ? ' · <span style="font-weight:600">' + esc(k.organisation) + '</span>' : '') + '</h3>' +
+      '<div class="meta"><span class="pill">' + esc(k.kind) + '</span> <span class="pill">' + esc(k.status) + '</span>' + (k.next_date ? ' <span class="pill' + (due ? ' due' : '') + '">Follow up ' + esc(fmt(k.next_date)) + '</span>' : '') + '</div>' +
+      '<div class="meta">' + [k.role, council, k.area].filter(Boolean).map(esc).join(' · ') + '</div>' +
+      (k.services ? '<div class="meta">' + esc(k.services) + '</div>' : '') +
+      '<div class="meta">' + (k.email ? '<a href="mailto:' + esc(k.email) + '">' + esc(k.email) + '</a> ' : '') + (k.phone ? '<a href="tel:' + esc(k.phone.replace(/[^\d+]/g, '')) + '">' + esc(k.phone) + '</a>' : '') + '</div>' +
+      (k.notes ? '<div class="meta" style="white-space:pre-wrap;margin-top:4px">' + esc(k.notes) + '</div>' : '') +
+      '<div class="row" style="margin-top:8px"><button class="btn small" type="button" data-edit="' + esc(k.id) + '">Edit</button></div></div>';
+  }
+  function filtered() {
+    var qv = $('kQ').value.trim().toLowerCase(), kind = $('kKind').value, st = $('kStatus').value;
+    return S.contacts.filter(function (k) {
+      if (kind && k.kind !== kind) return false; if (st && k.status !== st) return false;
+      if (!qv) return true;
+      return [k.person, k.organisation, k.role, k.area, k.services, k.email, k.notes, (S.bySlug[k.council_slug] || {}).name].join(' ').toLowerCase().indexOf(qv) >= 0;
+    });
+  }
+  function renderContacts() {
+    var list = filtered();
+    $('kList').innerHTML = list.length ? list.map(contactHtml).join('') : '<p class="hint">' + (S.contacts.length ? 'No contacts match.' : 'No contacts yet. Add the people you’re talking to, and set a follow-up date to be reminded here.') + '</p>';
+    var due = S.contacts.filter(function (k) { return k.next_date && k.next_date <= today() && k.status !== 'signed up' && k.status !== 'not now'; }).length;
+    $('dueCount').textContent = due ? '(' + due + ' due)' : '';
+    renderCouncilContacts();
+  }
+  ['kQ', 'kKind', 'kStatus'].forEach(function (id) { $(id).addEventListener('input', renderContacts); });
+  function openContact(k, preset) {
+    var f = $('kForm'), v = k || preset || {}; S.editing = k ? k.id : null;
+    document.querySelector('.tabs [data-tab="contacts"]').click();
+    f.hidden = false; $('kTitle').textContent = k ? 'Edit contact' : 'Add a contact'; $('kDelete').hidden = !k; say('kFormMsg', '');
+    ['kind', 'status', 'organisation', 'person', 'role', 'email', 'phone', 'area', 'next_date', 'services', 'notes'].forEach(function (n) { f.elements[n].value = v[n] == null ? (n === 'kind' ? 'council' : n === 'status' ? 'to contact' : '') : v[n]; });
+    f.elements.council_name.value = v.council_slug ? ((S.bySlug[v.council_slug] || {}).name || '') : '';
+    f.scrollIntoView({ behavior: 'smooth' }); f.elements.person.focus();
+  }
+  $('kNew').addEventListener('click', function () { openContact(null); });
+  $('kCancel').addEventListener('click', function () { $('kForm').hidden = true; });
+  document.addEventListener('click', function (e) { var b = e.target.closest('[data-edit]'); if (!b) return; var k = S.contacts.filter(function (x) { return x.id === b.dataset.edit; })[0]; if (k) openContact(k); });
+  $('kForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var f = this, row = {};
+    ['kind', 'status', 'organisation', 'person', 'role', 'email', 'phone', 'area', 'next_date', 'services', 'notes'].forEach(function (n) { var v = String(f.elements[n].value || '').trim(); row[n] = v === '' ? null : v; });
+    row.kind = row.kind || 'council'; row.status = row.status || 'to contact';
+    var cn = f.elements.council_name.value.trim();
+    if (cn) { var c = S.byName[cn.toLowerCase()]; if (!c) { say('kFormMsg', 'Pick the council from the list, or leave it empty.', true); return; } row.council_slug = c.slug; } else row.council_slug = null;
+    if (!row.person && !row.organisation) { say('kFormMsg', 'Add a person or an organisation.', true); return; }
+    say('kFormMsg', 'Saving…');
+    var op = S.editing ? sb.from('outreach_contacts').update(row).eq('id', S.editing).select('*').single() : sb.from('outreach_contacts').insert(row).select('*').single();
+    op.then(q).then(function (saved) {
+      if (S.editing) S.contacts = S.contacts.map(function (x) { return x.id === saved.id ? saved : x; }); else S.contacts.unshift(saved);
+      $('kForm').hidden = true; renderContacts(); say('kMsg', 'Saved.');
+    }).catch(function (err) { say('kFormMsg', nice(err), true); });
+  });
+  $('kDelete').addEventListener('click', function () {
+    if (!S.editing || !window.confirm('Delete this contact for good?')) return;
+    sb.from('outreach_contacts').delete().eq('id', S.editing).then(q).then(function () { S.contacts = S.contacts.filter(function (x) { return x.id !== S.editing; }); $('kForm').hidden = true; renderContacts(); say('kMsg', 'Deleted.'); }).catch(function (err) { say('kFormMsg', nice(err), true); });
+  });
+  $('kCsv').addEventListener('click', function () {
+    var cols = ['kind', 'status', 'organisation', 'person', 'role', 'council', 'email', 'phone', 'area', 'services', 'next_date', 'notes'];
+    var lines = [cols.join(',')].concat(filtered().map(function (k) { return cols.map(function (c) { var v = c === 'council' ? ((S.bySlug[k.council_slug] || {}).name || '') : (k[c] || ''); v = String(v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; }).join(','); }));
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv' })); a.download = 'ShowReady contacts ' + today() + '.csv'; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 500);
+  });
+
+  // ---- numbers
+
+  // ---- weekly link checks: broken, unreachable or changed links waiting for a look
+  S.links = []; S.linksLast = null;
+  var LK_FIELD = { events_url: 'Events page', ten_url: 'TEN page', premises_url: 'Premises licence page', road_url: 'Road closures page', parks_url: 'Parks page', street_trading_url: 'Street trading page', sag_url: 'Safety Advisory Group page' };
+  var LK_RESULT = { broken: ['Broken', 'due'], unreachable: ['Couldn’t reach', ''], changed: ['Page changed', ''] };
+  function loadLinks() {
+    try { return loadLinksNow(); } catch (err) { S.links = []; S.linksError = ''; return Promise.resolve(); }
+  }
+  function loadLinksNow() {
+    return sb.from('council_link_checks').select('id, run_at, slug, field, url, status_code, result').is('reviewed_at', null).neq('result', 'pending').neq('result', 'ok').order('run_at', { ascending: false }).limit(500).then(function (r) {
+      S.linksError = r.error ? nice(r.error) : ''; S.links = r.data || [];
+      return sb.rpc('council_last_link_check').then(function (x) { var d = (x.data || []).map(function (y) { return y.last_checked; }).sort().pop(); S.linksLast = d || null; }, function () {});
+    }, function () { S.links = []; });
+  }
+  function renderLinks() {
+    var box = $('lkList'); if (!box) return;
+    $('linkDue').innerHTML = S.links.length ? '<span class="pill due">' + S.links.length + '</span>' : '';
+    $('lkLast').textContent = S.linksLast ? 'Last run: ' + fmt(String(S.linksLast).slice(0, 10)) + '.' : 'No checks have run yet. They start on the first Monday after the council checks SQL file is run.';
+    if (S.linksError) { box.innerHTML = '<p class="hint">' + esc(S.linksError) + ' (Has the council checks SQL file been run?)</p>'; return; }
+    if (!S.links.length) { box.innerHTML = '<p class="hint">Nothing to look at. Every checked link opened and hadn’t changed.</p>'; return; }
+    var by = {}; S.links.forEach(function (l) { (by[l.slug] = by[l.slug] || []).push(l); });
+    box.innerHTML = Object.keys(by).sort(function (a, b) { return ((S.bySlug[a] || {}).name || a).localeCompare((S.bySlug[b] || {}).name || b); }).map(function (slug) {
+      var c = S.bySlug[slug] || { name: slug };
+      return '<div class="item"><div class="row" style="justify-content:space-between"><strong>' + esc(c.name) + '</strong><button type="button" class="btn small" data-lk-council="' + esc(slug) + '">Open council</button></div>' +
+        by[slug].map(function (l) { var r = LK_RESULT[l.result] || [l.result, '']; return '<div class="row lkrow" style="margin-top:6px;gap:8px;flex-wrap:wrap"><span class="pill ' + r[1] + '">' + esc(r[0]) + (l.status_code ? ' ' + l.status_code : '') + '</span><span>' + esc(LK_FIELD[l.field] || l.field) + '</span><a href="' + esc(l.url) + '" target="_blank" rel="noopener">Open link</a><span class="hint">' + esc(fmt(String(l.run_at).slice(0, 10))) + '</span><button type="button" class="btn small" data-lk-ok="' + l.id + '">Looks fine</button></div>'; }).join('') + '</div>';
+    }).join('');
+  }
+  document.addEventListener('click', function (e) {
+    var ok = e.target.closest && e.target.closest('[data-lk-ok]');
+    if (ok) { var id = Number(ok.dataset.lkOk); ok.disabled = true; sb.from('council_link_checks').update({ reviewed_at: new Date().toISOString() }).eq('id', id).then(q).then(function () { S.links = S.links.filter(function (x) { return x.id !== id; }); renderLinks(); }).catch(function (err) { ok.disabled = false; alertMsg(nice(err)); }); return; }
+    var oc = e.target.closest && e.target.closest('[data-lk-council]');
+    if (oc) { var c = S.bySlug[oc.dataset.lkCouncil]; if (c) { document.querySelector('.tabs [data-tab="councils"]').click(); pickCouncil(c); } }
+  });
+  function alertMsg(t) { $('lkLast').textContent = t; }
+
+  // ---- insurance partners: check the FCA register, then approve, pause or decline
+  S.partners = []; S.partnerClicks = {};
+  function loadPartners() {
+    return sb.from('insurance_partners').select('*').order('created_at', { ascending: false }).then(function (r) {
+      if (r.error) { S.partnersError = nice(r.error); S.partners = []; return; }
+      S.partnersError = ''; S.partners = r.data || [];
+      return sb.from('partner_clicks').select('partner_id, kind').then(function (c) { S.partnerClicks = {}; (c.data || []).forEach(function (x) { var t = S.partnerClicks[x.partner_id] = S.partnerClicks[x.partner_id] || { visit: 0, call: 0, email: 0 }; t[x.kind] = (t[x.kind] || 0) + 1; }); });
+    });
+  }
+  var PT_STATUS = { pending: 'Waiting for a check', approved: 'Live', paused: 'Paused', declined: 'Not approved' };
+  function renderPartners() {
+    var show = $('ptShow').value, list = S.partners.filter(function (p) { return show === 'all' || p.status === show; });
+    var due = S.partners.filter(function (p) { return p.status === 'pending'; }).length;
+    $('partnerDue').innerHTML = due ? '<span class="pill due">' + due + '</span>' : '';
+    if (S.partnersError) { $('ptList').innerHTML = '<p class="hint">' + esc(S.partnersError) + '</p>'; return; }
+    if (!list.length) { $('ptList').innerHTML = '<p class="hint">No partners here yet.</p>'; return; }
+    $('ptList').innerHTML = list.map(function (p) {
+      var c = S.partnerClicks[p.id] || { visit: 0, call: 0, email: 0 };
+      var reg = 'https://register.fca.org.uk/s/search?q=' + encodeURIComponent(p.frn) + '&type=Companies';
+      return '<div class="item" data-pt="' + esc(p.id) + '"><h3>' + esc(p.trading_name || p.legal_name) + ' <span class="pill' + (p.status === 'pending' ? ' due' : '') + '">' + esc(PT_STATUS[p.status] || p.status) + '</span>' + (p.founding ? ' <span class="pill">Founding</span>' : '') + '</h3>' +
+        '<div class="meta">' + esc(p.legal_name) + ' · FRN ' + esc(p.frn) + ' · ' + esc(p.firm_type.replace('_', ' ')) + (p.principal_frn ? ' of ' + esc(p.principal_name || '') + ' (FRN ' + esc(p.principal_frn) + ')' : '') + ' · ' + esc(p.plan) + ' plan</div>' +
+        '<div class="meta">' + [p.contact_name, p.phone, p.email, p.website].filter(Boolean).map(esc).join(' · ') + '</div>' +
+        (p.description ? '<p style="margin:6px 0">' + esc(p.description) + '</p>' : '') +
+        '<div class="meta">Activities: ' + esc((p.activities || []).join(', ') || 'none') + ' · Areas: ' + esc((p.areas || []).join(', ') || 'none') + ' · Clicks: ' + c.visit + ' website, ' + c.call + ' call, ' + c.email + ' email</div>' +
+        '<label style="margin-top:8px">Note (admin only)<input data-ptnote value="' + esc(p.admin_note || '') + '" maxlength="500"></label>' +
+        '<div class="row"><a class="btn small" href="' + reg + '" target="_blank" rel="noopener">Check on the FCA register</a>' +
+        (p.status !== 'approved' ? '<button class="btn small primary" type="button" data-ptset="approved">Approve</button>' : '<button class="btn small" type="button" data-ptset="paused">Pause</button>') +
+        (p.status === 'pending' ? '<button class="btn small danger" type="button" data-ptset="declined">Decline</button>' : '') +
+        '<button class="btn small" type="button" data-ptfound>' + (p.founding ? 'Remove founding' : 'Mark founding') + '</button><span class="msg" data-ptmsg></span></div></div>';
+    }).join('');
+  }
+  $('ptShow').addEventListener('change', renderPartners);
+  $('ptList').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-ptset],[data-ptfound]'); if (!b) return;
+    var item = b.closest('[data-pt]'), id = item.getAttribute('data-pt'), p = S.partners.filter(function (x) { return x.id === id; })[0]; if (!p) return;
+    var patch = { admin_note: item.querySelector('[data-ptnote]').value.trim() || null };
+    if (b.hasAttribute('data-ptset')) { patch.status = b.getAttribute('data-ptset'); if (patch.status === 'approved') patch.checked_at = new Date().toISOString(); }
+    else patch.founding = !p.founding;
+    var m = item.querySelector('[data-ptmsg]'); m.textContent = 'Saving…'; m.className = 'msg';
+    sb.from('insurance_partners').update(patch).eq('id', id).select().single().then(function (r) {
+      if (r.error) { m.textContent = nice(r.error); m.className = 'msg bad'; return; }
+      S.partners = S.partners.map(function (x) { return x.id === id ? r.data : x; }); renderPartners(); say('ptMsg', 'Saved.');
+    });
+  });
+  // ---- accounts (build 51)
+  var ROLE_NAMES = { organiser: 'Organiser', supplier: 'Supplier', film: 'Film & TV', both: 'Organiser and supplier' };
+  function loadAccounts() {
+    return sb.rpc('admin_accounts').then(function (r) {
+      if (r.error) { $('aBody').innerHTML = '<p class="hint">' + (/admin_accounts/.test(r.error.message || '') ? 'Run RUN-ME-roles-film-and-plans.sql in Supabase to switch this on.' : esc(nice(r.error))) + '</p>'; return; }
+      S.accounts = r.data || []; renderAccounts();
+      loadOffers();
+    }, function () {});
+  }
+  // ---- founding and early-adopter places (build 58)
+  function loadOffers() {
+    Promise.all([sb.rpc('offer_counts'), sb.rpc('admin_offer_places')]).then(function (rs) {
+      if (rs[0].error || rs[1].error) { $('oBody').innerHTML = '<p class="hint">' + esc(nice(rs[0].error || rs[1].error)) + '</p>'; return; }
+      var c = rs[0].data, rows = rs[1].data || [], N = { organisers: 'Organisers', suppliers: 'Suppliers', film: 'Film & TV' };
+      $('oBody').innerHTML = '<table><thead><tr><th>Category</th><th>Founding</th><th>Early adopter</th></tr></thead><tbody>' +
+        ['organisers', 'suppliers', 'film'].map(function (k) { var x = c.categories[k]; return '<tr><td>' + N[k] + '</td><td>' + x.founding_taken + ' of ' + c.founding_cap + '</td><td>' + x.early_taken + ' of ' + c.early_cap + (c.early_open ? '' : ' (closed)') + '</td></tr>'; }).join('') +
+        '</tbody></table><p class="hint">Early-adopter deadline: ' + esc(c.early_deadline || 'none') + ', ' + c.early_discount_pct + '% off for life.</p>' +
+        '<div style="overflow-x:auto"><table><thead><tr><th>Email</th><th>Category</th><th>Place</th><th>Claimed</th><th>By saving</th></tr></thead><tbody>' +
+        rows.map(function (o) { return '<tr><td>' + esc(o.email) + '</td><td>' + esc(N[o.category] || o.category) + '</td><td>' + (o.tier === 'internal' ? 'Internal' : esc(o.tier === 'founding' ? 'Founding' : 'Early adopter') + ' #' + o.place_no) + '</td><td>' + esc(String(o.claimed_at).slice(0, 10)) + '</td><td>' + esc({ plans: 'a plan', supplier_listings: 'a profile', film_projects: 'a Film project' }[o.claimed_by] || o.claimed_by || '') + '</td></tr>'; }).join('') +
+        '</tbody></table></div>';
+    }, function () {});
+  }
+  function renderAccounts() {
+    var rows = S.accounts || [], by = {}, flagged = rows.filter(function (a) { return a.needs; }).length;
+    rows.forEach(function (a) { by[a.role] = (by[a.role] || 0) + 1; });
+    $('acctFlag').textContent = flagged ? '(' + flagged + ')' : '';
+    if (!rows.length) { $('aBody').innerHTML = '<p class="hint">No accounts yet.</p>'; return; }
+    $('aBody').innerHTML = '<p>' + rows.length + ' account' + (rows.length === 1 ? '' : 's') + ': ' + Object.keys(ROLE_NAMES).filter(function (k) { return by[k]; }).map(function (k) { return by[k] + ' ' + ROLE_NAMES[k].toLowerCase(); }).join(', ') + '.</p>' +
+      '<div style="overflow-x:auto"><table><thead><tr><th>Email</th><th>Kind</th><th>Plan</th><th>Paid to</th><th>Founding</th><th>Student</th><th>HAE</th><th>Needs</th><th>Joined</th></tr></thead><tbody>' +
+      rows.map(function (a) {
+        return '<tr><td>' + esc(a.email) + '</td><td>' + esc(ROLE_NAMES[a.role] || a.role) + '</td><td>' + esc(a.plan) + (a.extra_seats ? ' +' + a.extra_seats + ' people' : '') + '</td><td>' + esc(a.plan_expires || '') + '</td><td>' + (a.founding ? 'Yes' : '') + '</td><td>' + (a.student ? 'Yes' : '') + '</td><td>' + (a.hae_member ? 'Yes' : '') + '</td><td>' + esc(a.needs || '') + '</td><td>' + esc(String(a.created_at || '').slice(0, 10)) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<p class="hint">To mark an HAE member or change a plan by hand: Supabase, Table Editor, profiles.</p>';
+  }
+  function renderNumbers() {
+    var by = function (key) { var o = {}; S.contacts.forEach(function (k) { o[k[key]] = (o[k[key]] || 0) + 1; }); return o; };
+    var st = by('status'), kd = by('kind');
+    $('nBody').innerHTML = '<table><tbody>' +
+      '<tr><th>Councils with details added</th><td>' + Object.keys(S.info).length + ' of ' + S.councils.length + '</td></tr>' +
+      '<tr><th>Contacts</th><td>' + S.contacts.length + ' (' + KINDS.filter(function (k) { return kd[k]; }).map(function (k) { return kd[k] + ' ' + k; }).join(', ') + ')</td></tr>' +
+      STATUSES.map(function (s) { return '<tr><th>' + esc(s.charAt(0).toUpperCase() + s.slice(1)) + '</th><td>' + (st[s] || 0) + '</td></tr>'; }).join('') + '</tbody></table>' +
+      '<p class="hint">Visits from council links are in Supabase: Table Editor, licensing, referral_summary.</p>';
+  }
+
+  if (!sb) { say('lMsg', 'Couldn’t load the sign-in tool. Check your connection and reload.', true); return; }
+  sb.auth.getSession().then(function (r) { start(r && r.data && r.data.session && r.data.session.user); });
+})();
+</script>
+
+<script>
+/* Build 57: show/hide password button on every password box */
+(function () {
+  if (window.SRPwToggle) return; window.SRPwToggle = true;
+  var st = document.createElement('style');
+  st.textContent = '.sr-pw{position:relative;display:block}.sr-pw input{width:100%;box-sizing:border-box;padding-right:52px}.sr-pwt{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:10px;background:transparent;color:inherit;opacity:.75;cursor:pointer;display:flex;align-items:center;justify-content:center}.sr-pwt:hover{opacity:1}.sr-pwt:focus-visible{outline:3px solid #E0892E;outline-offset:1px;opacity:1}';
+  document.head.appendChild(st);
+  var EYE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var OFF = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.7 0 3.3-.5 4.6-1.2"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-pwt]'); if (!b) return;
+    e.preventDefault();
+    var i = b.parentNode.querySelector('input'); if (!i) return;
+    var show = i.type === 'password'; i.type = show ? 'text' : 'password';
+    b.setAttribute('aria-pressed', String(show)); b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.innerHTML = show ? OFF : EYE;
+    try { i.focus({ preventScroll: true }); var n = i.value.length; i.setSelectionRange(n, n); } catch (x) {}
+  });
+})();
+</script>
+</body>
+</html>

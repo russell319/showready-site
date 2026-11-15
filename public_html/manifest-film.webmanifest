@@ -1,0 +1,59 @@
+{
+  "id": "/film/",
+  "name": "ShowReady Film & TV",
+  "short_name": "SR Film",
+  "description": "Every location, permit and deadline for your shoot.",
+  "start_url": "/film/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F3F5F0",
+  "theme_color": "#1E5A43",
+  "lang": "en-GB",
+  "icons": [
+    {
+      "src": "/app-icons/app-film-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icons/app-film-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Plan an event",
+      "url": "/app/",
+      "icons": [
+        {
+          "src": "/app-icons/app-organiser-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Supplier desk",
+      "url": "/suppliers/",
+      "icons": [
+        {
+          "src": "/app-icons/app-supplier-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Film & TV",
+      "url": "/film/",
+      "icons": [
+        {
+          "src": "/app-icons/app-film-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-adsense-account" content="ca-pub-8382733964734609">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="theme-color" content="#1E5A43">
+<link rel="apple-touch-icon" href="/app-icons/app-organiser-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ShowReady">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Insurers and brokers | ShowReady</title>
+<meta name="description" content="Insurers and brokers: be listed where UK event organisers plan their insurance. Organisers see your details and contact you directly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F5F0; --surface: #FFFFFF; --surface-2: #E8ECE5; --ink: #15231C; --muted: #4B5A52; --line: #D9DFD5;
+  --brand: #1E5A43; --brand-ink: #FFFFFF; --brand-soft: #E0ECE5; --brand-text: #15402F;
+  --amber-soft: #F8EADB; --amber-text: #763C06; --red-soft: #F7E0DC; --red-text: #8A1F18;
+  --font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+    --brand: #2E7A5B; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3;
+    --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+  --brand: #2E7A5B; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3;
+  --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+header.top { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+header.top .wrap { display: flex; align-items: center; gap: 12px; min-height: 60px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 800; font-size: 20px; }
+.brand .word span { color: var(--brand); }
+.who { margin-left: auto; font-size: 14px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-size: 28px; margin: 20px 0 4px; }
+h2 { font-size: 20px; margin: 0 0 8px; }
+p.lead { color: var(--muted); margin: 0 0 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin: 0 0 16px; }
+.tabs { display: flex; gap: 6px; margin: 8px 0 16px; flex-wrap: wrap; }
+.tabs button { font: inherit; font-weight: 700; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; min-height: 44px; }
+.tabs button[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn { font: inherit; font-weight: 700; font-size: 15px; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; min-height: 42px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn.small { font-size: 14px; padding: 6px 12px; min-height: 36px; }
+.btn.danger { color: var(--red-text); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid .wide { grid-column: 1 / -1; }
+@media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 700; }
+label small { font-weight: 500; color: var(--muted); }
+input, select, textarea { font: inherit; font-size: 16px; font-weight: 400; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); width: 100%; }
+textarea { min-height: 90px; resize: vertical; }
+fieldset { border: 0; padding: 0; margin: 14px 0 0; }
+legend { font-weight: 800; font-size: 15px; padding: 0; margin-bottom: 8px; color: var(--brand-text); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.msg { font-weight: 600; font-size: 14px; }
+.msg.ok { color: var(--brand-text); } .msg.bad { color: var(--red-text); }
+.hint { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); }
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); white-space: nowrap; }
+.pill.due { background: var(--amber-soft); color: var(--amber-text); }
+.list .item { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; background: var(--surface); }
+.list .item h3 { margin: 0 0 2px; font-size: 16px; }
+.list .item .meta { font-size: 14px; color: var(--muted); }
+.filters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
+@media (max-width: 620px) { .filters { grid-template-columns: 1fr 1fr; } .filters .q { grid-column: 1 / -1; } }
+[hidden] { display: none !important; }
+.gate { max-width: 420px; margin: 40px auto; }
+.hero { padding: 26px 0 8px; }
+.hero h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.1; margin: 0 0 10px; }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+.plan h3 { margin: 0 0 4px; font-size: 18px; }
+.plan .price { font-family: var(--font-display); font-size: 28px; font-weight: 800; }
+.plan .per { color: var(--muted); font-size: 14px; }
+.plan ul, .card ul { margin: 8px 0 0; padding-left: 20px; }
+.picks { display: flex; flex-wrap: wrap; gap: 8px; }
+.picks label { flex-direction: row; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; min-height: 40px; background: var(--surface); cursor: pointer; }
+.picks label:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-text); }
+.picks input { width: 16px; height: 16px; min-height: 0; accent-color: var(--brand); }
+.status { display: inline-block; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: var(--amber-soft); color: var(--amber-text); }
+.status.ok { background: var(--brand-soft); color: var(--brand-text); }
+footer { border-top: 1px solid var(--line); margin-top: 32px; padding: 20px 0; font-size: 14px; color: var(--muted); }
+footer a { color: inherit; }
+
+</style>
+<link rel="canonical" href="https://beshowready.co.uk/partners/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ShowReady">
+<meta property="og:title" content="Insurers and brokers | ShowReady">
+<meta property="og:description" content="Insurers and brokers: be listed where UK event organisers plan their insurance. Organisers see your details and contact you directly.">
+<meta property="og:url" content="https://beshowready.co.uk/partners/">
+<meta property="og:image" content="https://beshowready.co.uk/share-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="/" aria-label="ShowReady home"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#1E5A43"/><g transform="translate(9 10) scale(0.82)"><path d="M29.5 21 L39 15.5 L30.5 13 Z" fill="#F0A04B"/><path d="M71.5 15 L81 9.5 L72.5 7 Z" fill="#F0A04B"/><path d="M6 72 Q18 50 30 20 Q42 34 52 32 Q62 28 72 14 Q84 40 94 68 Q74 60 64 80 Q50 64 36 80 Q26 60 6 72 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/><circle cx="51" cy="54" r="21" fill="#FFFFFF"/><circle cx="51" cy="54" r="15" fill="none" stroke="#C9DAD1" stroke-width="6.5"/><circle cx="51" cy="54" r="15" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="75.4 94.2" transform="rotate(-90 51 54)"/><circle cx="36.7" cy="49.4" r="4.2" fill="#F0A04B"/><path d="M44 54.5 L49 59.5 L58.5 48.5" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg><span class="word">Show<span>Ready</span></span></a>
+  <span style="font-weight:700;color:var(--muted)">Insurers and brokers</span>
+  <div class="who" id="who"></div>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Be there when organisers sort their insurance</h1>
+    <p class="lead">ShowReady is a free planner for UK events. When an organiser plans a fete, a bonfire night or a festival, it shows them the cover they need and what to tell their insurer. Listed insurers and brokers whose cover fits that event appear right there, and organisers contact you directly.</p>
+  </section>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <ul>
+      <li><strong>Matched to the event.</strong> Organisers see you only when you cover their activities (bonfires, fireworks, inflatables, rides, animals and more), their event size and their area.</li>
+      <li><strong>You do the selling.</strong> Organisers see your name, FCA statement, description and your website, phone and email buttons. ShowReady doesn’t recommend, rank or compare firms, and never passes on organisers’ details.</li>
+      <li><strong>Suppliers too.</strong> If you insure trades such as caterers, inflatable hirers or marquee firms, the specialist plan also lists you on their supplier desk.</li>
+      <li><strong>Checked first.</strong> We check your firm on the FCA register before your listing goes live.</li>
+      <li><strong>Your numbers.</strong> Once you’re live, this page shows how many times organisers clicked your buttons.</li>
+    </ul>
+  </div>
+
+  <h2 style="margin-top:24px">Plans</h2>
+  <p class="lead" id="pilotLine"><strong>Free during the pilot.</strong> Founding partners then get 30% off for life. Prices below are before VAT.</p>
+  <div class="cols" id="plans">
+    <div class="card plan"><h3>Regional</h3><div class="price">£49</div><div class="per">a month, or £490 a year</div><ul><li>Organisers in the regions you choose</li><li>For example the North West or Wales</li></ul></div>
+    <div class="card plan"><h3>National</h3><div class="price">£129</div><div class="per">a month, or £1,290 a year</div><ul><li>Organisers across England and Wales</li></ul></div>
+    <div class="card plan"><h3>Specialist</h3><div class="price">£179</div><div class="per">a month, or £1,790 a year</div><ul><li>Everything in National</li><li>Also listed to suppliers in the trades you insure</li></ul></div>
+  </div>
+
+  <section class="gate card" id="gate" style="max-width:none;margin:16px 0">
+    <h2 id="gateTitle">Log in or create an account</h2>
+    <p class="hint" style="margin-top:0">Use your work email. One listing per account.</p>
+    <form id="loginForm">
+      <div class="grid">
+        <label>Email<input id="lEmail" type="email" autocomplete="email" required></label>
+        <label>Password<span class="sr-pw"><input id="lPass" type="password" autocomplete="current-password" minlength="8" required><button type="button" class="sr-pwt" data-pwt aria-label="Show password" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
+      </div>
+      <div class="row"><button class="btn primary" type="submit" id="lGo">Log in</button><button class="btn" type="button" id="lNew">Create an account instead</button><span class="msg" id="lMsg" role="status"></span></div>
+    </form>
+  </section>
+
+  <section id="app" hidden>
+    <div class="card" id="statusCard">
+      <h2>Your listing <span class="status" id="pStatus">Not saved yet</span></h2>
+      <p class="hint" id="pStatusHint" style="margin-top:4px">Fill in your details and save. We’ll check your FCA number and switch your listing on.</p>
+      <div id="pStats"></div>
+    </div>
+    <form id="pForm" class="card" novalidate>
+      <fieldset><legend>About your firm</legend>
+        <div class="grid">
+          <label>Legal name<input id="f-legal_name" required maxlength="160"></label>
+          <label>Trading name <small>if different</small><input id="f-trading_name" maxlength="160"></label>
+          <label>FCA firm reference number<input id="f-frn" inputmode="numeric" pattern="[0-9]{6,7}" maxlength="7" required><small>6 or 7 digits, as on the FCA register</small></label>
+          <label>Type of firm<select id="f-firm_type"><option value="broker">Broker</option><option value="insurer">Insurer</option><option value="mga">Managing general agent</option><option value="appointed_rep">Appointed representative</option><option value="other">Other</option></select></label>
+          <label id="prinName" hidden>Principal firm<input id="f-principal_name" maxlength="160"></label>
+          <label id="prinFrn" hidden>Principal firm’s FRN<input id="f-principal_frn" inputmode="numeric" maxlength="7"></label>
+          <label>Website<input id="f-website" type="url" placeholder="https://"></label>
+          <label>Quote page <small>optional</small><input id="f-quote_url" type="url" placeholder="https://"></label>
+          <label>Contact name<input id="f-contact_name" maxlength="120"></label>
+          <label>Phone for organisers<input id="f-phone" type="tel" maxlength="30"></label>
+          <label>Email for organisers<input id="f-email" type="email"></label>
+          <label class="wide">Description <small>up to 300 characters, shown to organisers</small><textarea id="f-description" maxlength="300" rows="3" placeholder="e.g. One-off and annual cover for community events, bonfires and fireworks, from £5 million public liability."></textarea></label>
+          <label class="wide">FCA statement <small>shown with your listing</small><input id="f-fca_statement" maxlength="300" placeholder="[Firm] is authorised and regulated by the Financial Conduct Authority, FRN 123456."></label>
+        </div>
+      </fieldset>
+      <fieldset><legend>Who you insure</legend>
+        <div class="picks"><label><input type="checkbox" id="f-insures_organisers" checked> Event organisers</label><label><input type="checkbox" id="f-insures_suppliers"> Event suppliers</label></div>
+        <p class="hint">Organiser types</p><div class="picks" data-arr="organiser_types"></div>
+        <p class="hint">Supplier trades</p><div class="picks" data-arr="trades"></div>
+      </fieldset>
+      <fieldset><legend>What you cover</legend>
+        <div class="picks" data-arr="covers"></div>
+        <p class="hint">Activities you’ll insure. Organisers who tick these see you.</p><div class="picks" data-arr="activities"></div>
+        <p class="hint">Public liability limits you offer</p><div class="picks" data-arr="limits"></div>
+        <p class="hint">Policies</p><div class="picks" data-arr="policy_types"></div>
+        <div class="picks" style="margin-top:8px"><label><input type="checkbox" id="f-online_quote"> Organisers can get a quote online</label></div>
+      </fieldset>
+      <fieldset><legend>Where and how big</legend>
+        <div class="picks" data-arr="areas"></div>
+        <div class="grid" style="margin-top:10px">
+          <label>Smallest event you insure <small>people, optional</small><input id="f-min_size" type="number" min="0"></label>
+          <label>Largest event you insure <small>people, optional</small><input id="f-max_size" type="number" min="0"></label>
+        </div>
+      </fieldset>
+      <fieldset><legend>Plan</legend>
+        <label style="max-width:320px"><select id="f-plan"><option value="regional">Regional</option><option value="national">National</option><option value="specialist">Specialist</option></select></label>
+        <p class="hint">Free during the pilot. We’ll be in touch before any charges start.</p>
+      </fieldset>
+      <p class="hint">By saving you agree to the <a href="/terms.html#partners">partner terms</a>. Your listing is information for organisers, not a recommendation, and you’re responsible for its accuracy and your own regulatory duties.</p>
+      <div class="row"><button class="btn primary" type="submit">Save listing</button><button class="btn danger" type="button" id="pDelete" hidden>Delete listing</button><span class="msg" id="pMsg" role="status"></span></div>
+    </form>
+  </section>
+</main>
+
+<footer><div class="wrap">ShowReady is run by Russell Bowers, trading as RSB Entertainment · Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · <a href="/privacy.html">Privacy notice</a> · <a href="/terms.html">Terms of use</a></div></footer>
+
+<script src="/vendor/supabase-js@2.45.4/supabase.js" crossorigin="anonymous"></script>
+<script>
+(function () {
+  var URL_ = 'https://osqlwddeobiklrpdnons.supabase.co';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  var OPTS = window.SR_PARTNER_OPTS = {
+    organiser_types: [['community', 'Community and charity events'], ['school', 'Schools and PTAs'], ['church', 'Churches and faith groups'], ['sport', 'Sports clubs and races'], ['private', 'Weddings and private parties'], ['corporate', 'Corporate events and exhibitions'], ['festival', 'Festivals and concerts'], ['market', 'Markets and fairs']],
+    trades: [['catering', 'Caterers and mobile bars'], ['venues', 'Venues'], ['production', 'Stage, sound, lighting and power'], ['hire', 'Toilets and equipment hire'], ['structures', 'Marquees and structures'], ['security', 'Security, stewarding and first aid'], ['entertainers', 'Entertainers and performers'], ['inflatables', 'Inflatables and play'], ['rides', 'Fairground rides'], ['animals', 'Animal providers'], ['drones', 'Drone operators']],
+    covers: [['public_liability', 'Public liability'], ['employers_liability', 'Employers’ liability'], ['product_liability', 'Product liability'], ['cancellation', 'Cancellation and abandonment'], ['equipment', 'Hired-in equipment'], ['money', 'Money'], ['personal_accident', 'Personal accident'], ['professional_indemnity', 'Professional indemnity'], ['trustee', 'Trustee and committee liability'], ['terrorism', 'Terrorism'], ['legal_expenses', 'Legal expenses'], ['vehicles', 'Vehicles'], ['cyber', 'Cyber']],
+    activities: [['bonfire', 'Bonfires'], ['fireworks', 'Fireworks'], ['rides', 'Fairground rides'], ['inflatables', 'Inflatables'], ['animals', 'Animals'], ['water', 'Water activities'], ['motorsport', 'Motorsport'], ['combat', 'Boxing and wrestling'], ['lanterns', 'Sky lanterns and lasers'], ['cycle', 'Cycle races'], ['camping', 'Camping'], ['road', 'Road closures and parades'], ['drone', 'Drone filming'], ['alcohol', 'Alcohol sales']],
+    limits: [['1m', '£1 million'], ['2m', '£2 million'], ['5m', '£5 million'], ['10m', '£10 million'], ['more', 'More than £10 million']],
+    policy_types: [['one_off', 'One-off events'], ['multi', 'Several events'], ['annual', 'Annual']],
+    areas: [['england_wales', 'All of England and Wales'], ['england', 'All of England'], ['wales', 'All of Wales'], ['north east', 'North East'], ['north west', 'North West'], ['yorkshire and the humber', 'Yorkshire and the Humber'], ['east midlands', 'East Midlands'], ['west midlands', 'West Midlands'], ['east of england', 'East of England'], ['london', 'London'], ['south east', 'South East'], ['south west', 'South West']]
+  };
+  var TEXT = ['legal_name', 'trading_name', 'frn', 'firm_type', 'principal_name', 'principal_frn', 'website', 'quote_url', 'contact_name', 'phone', 'email', 'description', 'fca_statement', 'plan'];
+  var BOOL = ['insures_organisers', 'insures_suppliers', 'online_quote'];
+  var NUMS = ['min_size', 'max_size'];
+  var S = window.SRPartner = { row: null, user: null, mode: 'in' };
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function say(id, t, bad) { var m = $(id); m.textContent = t || ''; m.className = 'msg' + (t ? (bad ? ' bad' : ' ok') : ''); }
+  function nice(err) {
+    var m = (err && err.message) || String(err || '');
+    if (/frn_check/.test(m)) return 'The FCA number should be 6 or 7 digits.';
+    if (/website_check|quote_url_check/.test(m)) return 'Links must start with https://';
+    if (/email_check/.test(m)) return 'That email address doesn’t look right.';
+    if (/legal_name_check/.test(m)) return 'Add your firm’s legal name.';
+    if (/check constraint/i.test(m)) return 'Something in the form isn’t valid. Check the numbers and links.';
+    if (/duplicate key/i.test(m)) return 'This account already has a listing.';
+    if (/relation .* does not exist|schema cache|function .* does not exist/i.test(m)) return 'Partner listings aren’t switched on yet. Please try again soon.';
+    return m || 'Something went wrong. Try again.';
+  }
+  Object.keys(OPTS).forEach(function (k) {
+    var box = document.querySelector('[data-arr="' + k + '"]'); if (!box) return;
+    box.innerHTML = OPTS[k].map(function (o) { return '<label><input type="checkbox" data-v="' + esc(o[0]) + '"> ' + esc(o[1]) + '</label>'; }).join('');
+  });
+  var sb = S.sb = window.supabase && window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  function q(r) { if (r.error) throw r.error; return r.data; }
+  function setMode(m) { S.mode = m; $('lGo').textContent = m === 'up' ? 'Create account' : 'Log in'; $('lNew').textContent = m === 'up' ? 'I already have an account' : 'Create an account instead'; $('lPass').autocomplete = m === 'up' ? 'new-password' : 'current-password'; say('lMsg', ''); }
+  $('lNew').addEventListener('click', function () { setMode(S.mode === 'up' ? 'in' : 'up'); });
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('lEmail').value.trim(), pass = $('lPass').value;
+    if (!sb) { say('lMsg', 'Couldn’t connect. Check your connection and try again.', true); return; }
+    if (S.mode === 'up') {
+      say('lMsg', 'Creating your account…');
+      sb.auth.signUp({ email: email, password: pass, options: { emailRedirectTo: location.origin + '/partners/' } }).then(function (r) {
+        if (r.error) { say('lMsg', nice(r.error), true); return; }
+        if (r.data.session) start(r.data.user); else say('lMsg', 'Check your email and click the link to confirm, then log in here.');
+      });
+      return;
+    }
+    say('lMsg', 'Logging in…');
+    sb.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+      if (r.error) { say('lMsg', /invalid/i.test(r.error.message) ? 'Email or password not right.' : nice(r.error), true); return; }
+      say('lMsg', ''); start(r.data.user);
+    });
+  });
+  document.addEventListener('click', function (e) { if (e.target.closest('[data-out]')) sb.auth.signOut().then(function () { location.reload(); }); });
+  function start(user) {
+    S.user = user || null;
+    if (!user) { $('gate').hidden = false; $('app').hidden = true; $('who').textContent = ''; return; }
+    $('gate').hidden = true; $('app').hidden = false;
+    $('who').innerHTML = esc(user.email) + ' <button class="btn small" type="button" data-out>Log out</button>';
+    return sb.from('insurance_partners').select('*').eq('owner', user.id).maybeSingle().then(function (r) {
+      if (r.error) { say('pMsg', nice(r.error), true); return; }
+      S.row = r.data || null; fill(); status();
+      if (S.row && S.row.status === 'approved') stats();
+    });
+  }
+  function fill() {
+    var r = S.row || {};
+    TEXT.forEach(function (k) { var el = $('f-' + k); if (el) el.value = r[k] == null ? (k === 'firm_type' ? 'broker' : k === 'plan' ? 'regional' : '') : r[k]; });
+    if (!S.row && S.user) $('f-email').value = S.user.email || '';
+    BOOL.forEach(function (k) { $('f-' + k).checked = r[k] == null ? k === 'insures_organisers' : !!r[k]; });
+    NUMS.forEach(function (k) { $('f-' + k).value = r[k] == null ? '' : r[k]; });
+    Object.keys(OPTS).forEach(function (k) { var v = r[k] || (k === 'covers' && !S.row ? ['public_liability'] : []); document.querySelectorAll('[data-arr="' + k + '"] input').forEach(function (i) { i.checked = v.indexOf(i.getAttribute('data-v')) >= 0; }); });
+    $('pDelete').hidden = !S.row; prin();
+  }
+  function prin() { var ar = $('f-firm_type').value === 'appointed_rep'; $('prinName').hidden = !ar; $('prinFrn').hidden = !ar; }
+  $('f-firm_type').addEventListener('change', prin);
+  function status() {
+    var st = S.row ? S.row.status : null, el = $('pStatus');
+    var map = { pending: ['Waiting for a check', 'We’ll check your firm on the FCA register and switch your listing on. You can keep editing meanwhile.'], approved: ['Live', 'Organisers whose events you cover can see your listing.'], paused: ['Paused', 'Your listing is switched off for now. Contact us to switch it back on.'], declined: ['Not approved', 'We couldn’t approve this listing. Contact us if you think that’s wrong.'] };
+    var m = map[st] || ['Not saved yet', 'Fill in your details and save. We’ll check your FCA number and switch your listing on.'];
+    el.textContent = m[0]; el.className = 'status' + (st === 'approved' ? ' ok' : ''); $('pStatusHint').textContent = m[1];
+  }
+  function stats() {
+    sb.rpc('my_partner_clicks').then(q).then(function (rows) {
+      var t = { visit: [0, 0], call: [0, 0], email: [0, 0] };
+      (rows || []).forEach(function (r) { t[r.kind] = [Number(r.last_30_days) || 0, Number(r.all_time) || 0]; });
+      $('pStats').innerHTML = '<p class="hint">Clicks by organisers in the last 30 days (all time): website ' + t.visit[0] + ' (' + t.visit[1] + '), call ' + t.call[0] + ' (' + t.call[1] + '), email ' + t.email[0] + ' (' + t.email[1] + ').</p>';
+    }).catch(function () {});
+  }
+  function read() {
+    var o = {};
+    TEXT.forEach(function (k) { var v = $('f-' + k).value.trim(); o[k] = v === '' ? null : v; });
+    if (o.firm_type !== 'appointed_rep') { o.principal_name = null; o.principal_frn = null; }
+    BOOL.forEach(function (k) { o[k] = $('f-' + k).checked; });
+    NUMS.forEach(function (k) { var v = $('f-' + k).value; o[k] = v === '' ? null : Math.max(0, parseInt(v, 10) || 0); });
+    Object.keys(OPTS).forEach(function (k) { o[k] = Array.prototype.map.call(document.querySelectorAll('[data-arr="' + k + '"] input:checked'), function (i) { return i.getAttribute('data-v'); }); });
+    if (!o.plan) o.plan = 'regional';
+    return o;
+  }
+  function problem(o) {
+    if (!o.legal_name || o.legal_name.length < 2) return 'Add your firm’s legal name.';
+    if (!/^[0-9]{6,7}$/.test(o.frn || '')) return 'The FCA number should be 6 or 7 digits.';
+    if (o.firm_type === 'appointed_rep' && !/^[0-9]{6,7}$/.test(o.principal_frn || '')) return 'Add your principal firm’s FCA number.';
+    if (!o.website && !o.phone && !o.email) return 'Add at least a website, phone number or email, so organisers can contact you.';
+    if ((o.website && !/^https:\/\/\S+$/.test(o.website)) || (o.quote_url && !/^https:\/\/\S+$/.test(o.quote_url))) return 'Links must start with https://';
+    if (o.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.email)) return 'That email address doesn’t look right.';
+    if (!o.insures_organisers && !o.insures_suppliers) return 'Tick organisers, suppliers or both.';
+    if (!o.covers.length) return 'Tick at least one type of cover.';
+    if (!o.areas.length) return 'Choose where you insure events.';
+    if (o.min_size != null && o.max_size != null && o.min_size > o.max_size) return 'The smallest event is bigger than the largest.';
+    return '';
+  }
+  $('pForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var o = read(), bad = problem(o);
+    if (bad) { say('pMsg', bad, true); return; }
+    say('pMsg', 'Saving…');
+    var was = S.row && S.row.status;
+    var call = S.row ? sb.from('insurance_partners').update(o).eq('id', S.row.id).select().single() : sb.from('insurance_partners').insert(o).select().single();
+    call.then(function (r) {
+      if (r.error) { say('pMsg', nice(r.error), true); return; }
+      S.row = r.data; status();
+      say('pMsg', was === 'approved' && r.data.status === 'pending' ? 'Saved. As your firm’s name or FCA details changed, we’ll check them again before your listing goes back on.' : 'Saved.');
+      $('pDelete').hidden = false;
+    });
+  });
+  $('pDelete').addEventListener('click', function () {
+    if (!S.row) return;
+    if ($('pDelete').getAttribute('data-sure') !== '1') { $('pDelete').setAttribute('data-sure', '1'); $('pDelete').textContent = 'Press again to delete'; return; }
+    sb.from('insurance_partners').delete().eq('id', S.row.id).then(function (r) {
+      if (r.error) { say('pMsg', nice(r.error), true); return; }
+      S.row = null; fill(); status(); say('pMsg', 'Listing deleted.'); $('pDelete').removeAttribute('data-sure'); $('pDelete').textContent = 'Delete listing';
+    });
+  });
+  if (sb) {
+    sb.auth.getSession().then(function (r) { start(r.data && r.data.session ? r.data.session.user : null); });
+    sb.auth.onAuthStateChange(function (ev, session) { if (ev === 'SIGNED_IN' && session && (!S.user || S.user.id !== session.user.id)) start(session.user); });
+  }
+})();
+</script>
+
+<script>
+/* Build 57: show/hide password button on every password box */
+(function () {
+  if (window.SRPwToggle) return; window.SRPwToggle = true;
+  var st = document.createElement('style');
+  st.textContent = '.sr-pw{position:relative;display:block}.sr-pw input{width:100%;box-sizing:border-box;padding-right:52px}.sr-pwt{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:10px;background:transparent;color:inherit;opacity:.75;cursor:pointer;display:flex;align-items:center;justify-content:center}.sr-pwt:hover{opacity:1}.sr-pwt:focus-visible{outline:3px solid #E0892E;outline-offset:1px;opacity:1}';
+  document.head.appendChild(st);
+  var EYE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var OFF = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.7 0 3.3-.5 4.6-1.2"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-pwt]'); if (!b) return;
+    e.preventDefault();
+    var i = b.parentNode.querySelector('input'); if (!i) return;
+    var show = i.type === 'password'; i.type = show ? 'text' : 'password';
+    b.setAttribute('aria-pressed', String(show)); b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.innerHTML = show ? OFF : EYE;
+    try { i.focus({ preventScroll: true }); var n = i.value.length; i.setSelectionRange(n, n); } catch (x) {}
+  });
+})();
+</script>
+</body>
+</html>

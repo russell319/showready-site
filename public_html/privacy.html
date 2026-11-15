@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-adsense-account" content="ca-pub-8382733964734609">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="theme-color" content="#1E5A43">
+<link rel="apple-touch-icon" href="/app-icons/app-organiser-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ShowReady">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Privacy notice | ShowReady</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Manrope:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: brand bar, then one readable column of legal text. */
+:root {
+  --bg: #F3F5F0;
+  --surface: #FFFFFF;
+  --surface-2: #E8ECE5;
+  --ink: #15231C;
+  --muted: #4B5A52;
+  --line: #D9DFD5;
+  --brand: #1E5A43;
+  --brand-deep: #123A2B;
+  --brand-ink: #FFFFFF;
+  --brand-soft: #E0ECE5;
+  --brand-text: #15402F;
+  --pennant: #E0892E;
+  --amber-soft: #F8EADB;
+  --amber-text: #763C06;
+  --red-soft: #F7E0DC;
+  --red-text: #8A1F18;
+  --on-deep: #DCEBE3;
+  --font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+    --brand: #2E7A5B; --brand-deep: #0B2219; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3; --pennant: #F0A04B;
+    --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; --on-deep: #C4D8CD; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+  --brand: #2E7A5B; --brand-deep: #0B2219; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3; --pennant: #F0A04B;
+  --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; --on-deep: #C4D8CD; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.65; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.inner { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--surface); border-bottom: 1px solid var(--line); z-index: 5; }
+.top .inner { max-width: 1120px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.logo .word { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.03em; }
+.logo .word span { color: var(--brand); }
+:root[data-theme="dark"] .logo .word span { color: var(--brand-text); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo .word span { color: var(--brand-text); } }
+main { padding-block: 40px 72px; }
+h1, h2 { font-family: var(--font-display); letter-spacing: -0.02em; text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(34px, 6vw, 48px); font-weight: 800; margin: 0 0 8px; }
+h2 { font-size: 22px; font-weight: 800; margin: 36px 0 8px; }
+p, li { max-width: 68ch; }
+a { color: var(--brand-text); font-weight: 700; }
+.meta { color: var(--muted); font-size: 14px; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-top: 20px; }
+.todo { background: var(--amber-soft); color: var(--amber-text); border-radius: 12px; padding: 10px 14px; font-size: 14px; font-weight: 600; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.tablewrap { overflow-x: auto; margin-top: 12px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-top: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border-top: 0; }
+footer { border-top: 1px solid var(--line); background: var(--surface); }
+footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; padding-block: 20px; font-size: 14px; color: var(--muted); }
+:focus-visible { outline: 3px solid var(--pennant); outline-offset: 3px; border-radius: 6px; }
+</style>
+<link rel="canonical" href="https://beshowready.co.uk/privacy.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ShowReady">
+<meta property="og:title" content="Privacy notice | ShowReady">
+<meta property="og:description" content="ShowReady is a free UK event planning tool. Organisers describe their event and get the licences, permissions and deadlines it needs for their council in England or Wales, plus a supplier marketplace, risk assessment and event folder.">
+<meta property="og:url" content="https://beshowready.co.uk/privacy.html">
+<meta property="og:image" content="https://beshowready.co.uk/share-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+<header class="top"><div class="inner"><a class="logo" href="/" data-home-link aria-label="ShowReady home">
+      <svg width="38" height="38" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#1E5A43"/><g transform="translate(9 10) scale(0.82)"><path d="M29.5 21 L39 15.5 L30.5 13 Z" fill="#F0A04B"/><path d="M71.5 15 L81 9.5 L72.5 7 Z" fill="#F0A04B"/><path d="M6 72 Q18 50 30 20 Q42 34 52 32 Q62 28 72 14 Q84 40 94 68 Q74 60 64 80 Q50 64 36 80 Q26 60 6 72 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/><circle cx="51" cy="54" r="21" fill="#FFFFFF"/><circle cx="51" cy="54" r="15" fill="none" stroke="#C9DAD1" stroke-width="6.5"/><circle cx="51" cy="54" r="15" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="75.4 94.2" transform="rotate(-90 51 54)"/><circle cx="36.7" cy="49.4" r="4.2" fill="#F0A04B"/><path d="M44 54.5 L49 59.5 L58.5 48.5" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <span class="word">Show<span>Ready</span></span>
+    </a><a href="/" data-home-link>Back to ShowReady</a></div></header>
+<main class="inner">
+<h1>Privacy notice</h1>
+<p class="meta">Last updated 5 November 2026 · Pilot version</p>
+<p>This notice explains what personal information ShowReady collects, why, and what your rights are. ShowReady is run by Russell Bowers, a sole trader trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. We are the controller of your information under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018. We are registering with the Information Commissioner’s Office (ICO), and our registration number will be shown here.</p>
+<p>Contact us about privacy at <strong>hello@beshowready.co.uk</strong>, by phone on <a href="tel:+447368988038">07368 988038</a>, or by post to RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW.</p>
+
+<h2>The short version</h2>
+<div class="box">
+<ul>
+<li>Without an account, your event plans, quotes, tracker and enquiries are saved <strong>only in your own browser</strong>. We don't receive them.</li>
+<li>If you create an account, we store your email, a scrambled (hashed) version of your password and the plans or supplier desk you save, so you can use them on any device. You can delete your account and everything in it yourself, at any time.</li>
+<li>If you join as a founding member, we keep the details you give us so we can contact you about the pilot.</li>
+<li>We don't sell your information. If you use ShowReady free, you may see a Google advert along the bottom of the page; Google asks your permission before using cookies for adverts. Paid plans and founding members see no adverts.</li>
+</ul>
+</div>
+
+<h2>What we collect and why</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Information</th><th>Why we use it</th><th>Legal basis</th><th>How long we keep it</th></tr></thead>
+<tbody>
+<tr><td>Founding member sign-up: your role, name, email, business or event, area and what you run or supply</td><td>To contact you about the pilot and launch, and to understand who ShowReady should serve first</td><td>Your consent, which you can withdraw at any time</td><td>Until you ask us to delete it, or 2 years after our last contact with you</td></tr>
+<tr><td>Feedback you send from the menu: the type (problem, idea, question or praise), your message, your email if you give one, the page you were on and your browser and device type</td><td>To fix problems and improve ShowReady, and to reply if you asked us to. It's stored in our database and emailed to our inbox</td><td>Our legitimate interest in running and improving the service</td><td>Up to 2 years, or sooner if you ask us to delete it</td></tr>
+<tr><td>Emails you send us</td><td>To reply and keep a record of what was agreed</td><td>Our legitimate interest in running the service</td><td>Up to 2 years after the conversation ends</td></tr>
+<tr><td>Your account: email address, a hashed password (we can't read it), whether you mainly organise or supply, the name or business you give, and when you signed up and last signed in</td><td>To let you sign in, keep your work safe and send account emails (confirming your email, sign-in links and password resets)</td><td>Contract: it's needed to provide the account you asked for</td><td>Until you delete your account. Deleting it removes your account and everything saved in it straight away; backups held by our database provider are overwritten within about 7 days</td></tr>
+<tr><td>Event details, quotes, vendor figures, tracker progress, supplier enquiries and review links you type into the planner or Supplier desk</td><td>To show your plan back to you, and, if you're signed in, to keep it in your account so it's on every device</td><td>Without an account: not collected by us, stored only in your browser. With an account: contract, to provide the saving you asked for</td><td>In your browser until you clear it. In your account until you delete that plan or your account</td></tr>
+</tbody></table></div>
+
+<h2>Supplier profiles, enquiries and messages</h2>
+<p>If you're a supplier and choose to show your profile, anyone using ShowReady can see your business name, town, services, the events you work, your description, review links and whether your insurance is in date. Your address, phone numbers and contact email are never shown on your profile. You can hide your profile at any time.</p>
+<p>When an organiser sends you an enquiry, they share their name and any phone or email they choose. When you reply, that organiser can see your business phone numbers and contact email. Enquiries and messages are kept in your account so both of you have a record, and are only visible to the two of you. They're deleted if either of you deletes your account (the other person's copy of their own messages goes too). We may look at a conversation only if one of you reports a problem.</p>
+
+<p>When you get a new enquiry, message or quote, we email you to say so (never the message itself). You can turn these emails off in Account.</p>
+<p>If you draw a site plan, it's saved with your event plan. If you send it with an enquiry, that supplier can see it.</p>
+
+<h2>Documents in your Event folder</h2>
+<p>If you're signed in, you can upload documents to your Event folder, such as an insurance certificate, a signed risk assessment, suppliers' paperwork or letters from the council. We store them privately with Supabase, on servers in London, so you can open them on any device. Only you can see them: we don't share them with councils, suppliers or partners, and we don't look at them unless you ask us to help with a problem. ShowReady never submits anything to a council for you; you download your documents and send them yourself.</p>
+<p>The legal basis is contract (providing the service you asked for). We keep each document until you delete it, delete the event plan it belongs to, or delete your account, which removes the files as well. Uploads may contain other people's names and contact details (for example a supplier's certificate): only upload what you're entitled to share, and only what the council or landowner needs.</p>
+
+<h2>Information stored in your browser</h2>
+<p>The planner and Supplier desk save your work in your browser's local storage so it's there when you come back. If you sign in, local storage also keeps you signed in on that device. If you use or install ShowReady as an app, your browser also keeps a copy of the pages you've opened so they load when you're offline; it holds page files only, never your account details. This is needed for the service you asked for, so no consent banner is required. Unless you're signed in, nothing is sent to us. Only people with your password can see what's saved in your account: it's locked to you in our database. Anyone else using the same browser on the same device could see it, so on a shared computer use “Sign out and clear this device”, or clear your browser data.</p>
+
+<h2>Insurance partners</h2>
+<p>If you list your firm as an insurance partner, we keep the details you enter and your account email to run your listing and contact you about it. We show your firm's name, FCA details, description and contact details to organisers and suppliers whose events or trades you cover. When someone clicks a partner's website, phone or email button, we count it anonymously (just the partner, the button, where it was and when) so partners can see how their listing is used. No details of the person clicking are kept or passed on. This is in our legitimate interest in running the listings, and the counts are kept for up to 2 years.</p>
+<h2>Counting visits from council links</h2>
+<p>When you arrive from a council's website, a council email or a link on its event application system (pages like beshowready.co.uk/plan/bristol), we count anonymously how many visits came from each council and how many went on to start a plan, download an export pack or open the council's application form. Each count holds only the council, where the link was placed, the step and a random number that lasts for that browser tab. It includes no names, emails, IP addresses or cookies, and it can't be linked to you or your plan. We use it to see whether the links help, in our legitimate interest in running the service, and keep it for up to 2 years. Arriving through these links also hides adverts and supplier promotion for that visit.</p>
+<p>To stop people copying our council information in bulk, each time a council page is looked up we keep a scrambled code made from your IP address. It can't be turned back into the address, the scrambling changes every day, and the codes are deleted after 2 days. It's used only to limit how many councils one visitor can look up, in our legitimate interest in protecting the service.</p>
+
+<h2>Other services the pages use</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Service</th><th>What it receives</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>postcodes.io</td><td>The postcode you enter, and your IP address</td><td>To find the council for your event site</td></tr>
+<tr><td>Your browser’s speech service (for example Google for Chrome, Apple for Safari)</td><td>Your voice, only while you use Talk instead</td><td>To turn what you say into text. This is provided by your browser, not by us: ShowReady never receives the recording, only the text, which stays in your browser</td></tr>
+<tr><td>Google Fonts</td><td>Your IP address and browser details</td><td>To show the page's fonts</td></tr>
+<tr><td>jsDelivr</td><td>Your IP address and browser details, only when you download a spreadsheet or a PDF, or sign in</td><td>To load the spreadsheet, PDF and sign-in tools</td></tr>
+<tr><td>Supabase (Supabase Inc.; your data is stored on servers in London)</td><td>Your account details and the plans or supplier desk you save while signed in, plus your IP address when you sign in</td><td>Our database and sign-in provider. It sends the account emails and keeps your saved work. It doesn't use your data for its own purposes</td></tr>
+<tr><td>Google AdSense (Google Ireland Ltd), only for visitors not on a paid plan, and only once adverts are switched on</td><td>Your IP address, browser and device details, the page you're on and, if you agree, cookies or similar identifiers</td><td>To show adverts that pay for the free service. Google shows a message asking whether you agree to personalised adverts and cookies; you can say no and still use ShowReady, and change your choice later from the link Google provides. See <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">how Google uses information from sites that use its services</a></td></tr>
+<tr><td>OpenStreetMap and MapTiler</td><td>Your IP address and the area of map you're looking at, only when you open a site plan</td><td>To show the map and aerial photos for site plans</td></tr>
+<tr><td>Fasthosts</td><td>Standard server logs, such as IP address and pages visited</td><td>Our website host, to deliver and secure the site</td></tr>
+<tr><td>MailerLite (UAB MailerLite, Lithuania)</td><td>If you joined as a founding member: your name, email, role, business, area and what you run or supply, and whether you open our emails</td><td>To send you emails about the pilot and launch. Your sign-up is first stored in our own database (Supabase, servers in London) with the wording you agreed to; we copy it to MailerLite only to email you. You can unsubscribe from any email</td></tr>
+<tr><td>Fasthosts (our email provider)</td><td>Emails you send us, our replies, and the alert emails we send you</td><td>To run our mailbox at hello@beshowready.co.uk and send account and message alerts</td></tr>
+<tr><td>Stripe (Stripe Payments Europe Ltd), only if you buy a paid plan</td><td>Your name, email, card or payment details and payment history. We never see your full card number</td><td>To take payments and manage subscriptions securely. We keep records of payments for 6 years, as tax law requires</td></tr>
+</tbody></table></div>
+<p>Some of these providers may process data outside the UK. Where they do, they use safeguards recognised under UK law, such as standard contractual clauses.</p>
+
+<h2>Your rights</h2>
+<p>You can ask us to:</p>
+<ul>
+<li>see the information we hold about you</li>
+<li>correct it</li>
+<li>delete it</li>
+<li>stop using it, or limit how we use it</li>
+<li>give it to you in a format you can take elsewhere</li>
+<li>stop contacting you, at any time</li>
+</ul>
+<p>Email <strong>hello@beshowready.co.uk</strong>, call <a href="tel:+447368988038">07368 988038</a>, or write to RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. We'll reply within one month. If you're unhappy with how we've handled your information, you can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener">ico.org.uk</a>.</p>
+
+<h2>Children</h2>
+<p>ShowReady is meant for adults organising or supplying events. We don't knowingly collect information from anyone under 18.</p>
+
+<h2>Changes</h2>
+<p>When ShowReady adds accounts, payments or supplier matching, this notice will change to cover them. We'll update the date at the top, and tell founding members by email before any big change.</p>
+
+</main>
+<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a></span></div></footer>
+<script>
+/*SHARED-START*/
+window.SR_NAV_PAGE = 'privacy';
+/*NAV-START*/
+// ShowReady menu (top left) and, on pages without the account panel, Log in / Sign up buttons (top right).
+(function () {
+  var HOME = '/', APP = '/app/', DESK = '/suppliers/',
+    TOOLS = '/toolkit.html', PRIV = '/privacy.html', TERMS = '/terms.html';
+  var here = document.documentElement.getAttribute('data-page') || (window.SR_NAV_PAGE || '');
+  var ITEMS = [
+    { id: 'home', href: HOME, t: 'Home', d: 'What ShowReady does' },
+    { id: 'planner', href: APP, t: 'Plan an event', d: 'Licences, suppliers, deadlines' },
+    { id: 'desk', href: DESK, t: 'Supplier desk', d: 'Enquiries and your profile' },
+    { id: 'film', href: '/film/', t: 'Film & TV', d: 'Locations, permits and shoot days' },
+    { id: 'tools', href: TOOLS, t: 'Tools and pricing', d: 'Every tool and plan' },
+    { id: 'join', href: HOME + '#join', t: 'Join the pilot', d: 'Founding member sign-up' },
+    { id: 'install', href: '#install', t: 'Install the apps', d: 'Organiser, Supplier and Film & TV on your phone or computer', install: true },
+    { id: 'feedback', href: '#feedback', t: 'Send feedback', d: 'A problem, an idea or a question', feedback: true },
+    { sep: true },
+    { id: 'privacy', href: PRIV, t: 'Privacy notice', small: true },
+    { id: 'terms', href: TERMS, t: 'Terms of use', small: true },
+    { id: 'contact', href: 'mailto:hello@beshowready.co.uk', t: 'Contact us', small: true, contact: true }
+  ];
+  var bar = document.querySelector('.topbar .wrap, .top .inner, header.top[data-srn-bar]'); if (!bar) return;
+  var css = '.srn{position:relative;display:flex;align-items:center;flex:0 0 auto}' +
+    '.srn-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;min-width:40px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer}' +
+    '.srn-btn svg{width:20px;height:20px}.srn-btn .lbl{display:inline}@media (max-width:520px){.srn-btn .lbl{display:none}}' +
+    '.srn-menu{position:absolute;left:0;top:calc(100% + 8px);z-index:40;width:min(300px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:6px;margin:0;list-style:none}' +
+    '.srn-menu[hidden]{display:none}.srn-menu a{display:block;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--ink);font-weight:700;font-size:15px;line-height:1.25}' +
+    '.srn-menu a span{display:block;font-weight:500;font-size:13px;color:var(--muted)}.srn-menu a.small{font-size:14px;font-weight:600;padding:8px 12px}' +
+    '.srn-menu a:hover,.srn-menu a:focus-visible{background:var(--brand-soft)}.srn-menu a[aria-current="page"]{background:var(--brand-soft);color:var(--brand-text)}' +
+    '.srn-menu .sep{height:1px;background:var(--line);margin:6px 8px}' +
+    '.srn-left{display:flex;align-items:center;gap:10px;min-width:0}' +
+    '.srn-acct{display:flex;align-items:center;gap:8px;flex:0 0 auto}' +
+    '.srn-acct a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid var(--line);color:var(--ink);background:var(--surface)}' +
+    '.srn-acct a.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink,#fff)}' +
+    '.top .nav .srn-acct a{display:inline-flex!important}.top .nav .btn[data-planner-link]{display:none}.top .inner>a[data-home-link]:not(.logo){display:none}' +
+    '@media (max-width:440px){.srn-left{gap:8px}.srn-btn{min-height:38px;min-width:38px;padding:0 8px}.srn-acct a,.sr-acct-btn{padding:0 10px!important;font-size:13px!important;min-height:36px}.srn-acct,.sr-acct-btns,.sr-acct-right{gap:5px!important}.top .logo,.topbar .brand{gap:6px}.top .logo svg,.topbar .brand svg{width:30px;height:30px}.top .logo .word,.topbar .brand .word{font-size:18px}.top .inner,.topbar .wrap{gap:8px}}' +
+    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}';
+  var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  var box = document.createElement('div'); box.className = 'srn';
+  var html = '<button class="srn-btn" type="button" id="srnBtn" aria-expanded="false" aria-controls="srnMenu" aria-label="Menu">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl">Menu</span></button>' +
+    '<ul class="srn-menu" id="srnMenu" hidden>';
+  ITEMS.forEach(function (it) {
+    if (it.sep) { html += '<li class="sep" role="separator"></li>'; return; }
+    html += '<li><a href="' + it.href + '"' + (it.small ? ' class="small"' : '') + (it.id === here ? ' aria-current="page"' : '') + (it.contact ? ' data-contact' : '') + (it.install ? ' data-install' : '') + (it.feedback ? ' data-feedback' : '') + '>' + it.t + (it.d ? '<span>' + it.d + '</span>' : '') + '</a></li>';
+  });
+  box.innerHTML = html + '</ul>';
+  // Put the menu and the logo together on the left.
+  var logo = bar.querySelector('.brand, .logo');
+  var left = document.createElement('div'); left.className = 'srn-left';
+  bar.insertBefore(left, bar.firstChild); left.appendChild(box); if (logo) left.appendChild(logo);
+
+  var btn = box.querySelector('#srnBtn'), menu = box.querySelector('#srnMenu');
+  function setOpen(o) { menu.hidden = !o; btn.setAttribute('aria-expanded', String(o)); }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(menu.hidden); if (!menu.hidden) { var a = menu.querySelector('a'); if (a) try { a.focus(); } catch (x) {} } });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !box.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { setOpen(false); try { btn.focus(); } catch (x) {} } });
+  menu.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a')) setOpen(false); });
+  window.SRNav = { open: function () { setOpen(true); }, close: function () { setOpen(false); } };
+
+  // ---- Install ShowReady as an app (home screen / desktop icon)
+  var deferred = null;
+  function standalone() { try { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true; } catch (e) { return false; } }
+  function device() {
+    var ua = navigator.userAgent || '', touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+    if (/iPhone|iPad|iPod/.test(ua) || touchMac) return /CriOS|FxiOS|EdgiOS/.test(ua) ? 'ios-other' : 'ios';
+    if (/Android/.test(ua)) return /SamsungBrowser/.test(ua) ? 'samsung' : /Firefox/.test(ua) ? 'android-firefox' : 'android';
+    if (/Firefox/.test(ua)) return 'desktop-firefox';
+    if (/Safari/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua)) return 'mac-safari';
+    return 'desktop';
+  }
+  var STEPS = {
+    ios: ['Tap the <b>Share</b> button (the square with an arrow, at the bottom or top of Safari).', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Tap <b>Add</b>. The ShowReady icon appears on your home screen.'],
+    'ios-other': ['Open this page in <b>Safari</b> (Apple only allows home-screen apps from Safari on older iPhones).', 'Tap <b>Share</b>, then <b>Add to Home Screen</b>, then <b>Add</b>.'],
+    android: ['Tap the <b>⋮</b> menu at the top right of Chrome.', 'Tap <b>Install app</b> (or <b>Add to Home screen</b>).', 'Tap <b>Install</b>. The ShowReady icon appears with your other apps.'],
+    samsung: ['Tap the <b>☰</b> menu at the bottom of Samsung Internet.', 'Tap <b>Add page to</b>, then <b>Home screen</b>.'],
+    'android-firefox': ['Tap the <b>⋮</b> menu.', 'Tap <b>Install</b> (or <b>Add to Home screen</b>).'],
+    desktop: ['In Chrome or Edge, click the <b>install icon</b> at the right-hand end of the address bar (a small screen with an arrow).', 'Or open the <b>⋮</b> (Chrome) or <b>…</b> (Edge) menu and choose <b>Cast, save and share → Install page as app</b>, or <b>Apps → Install this site as an app</b>.', 'Click <b>Install</b>. ShowReady opens in its own window and gets an icon in your Start menu, taskbar or Dock.'],
+    'mac-safari': ['In Safari, open the <b>File</b> menu (or the Share button).', 'Choose <b>Add to Dock</b>, then <b>Add</b>.'],
+    'desktop-firefox': ['Firefox on a computer can’t install web apps. Open beshowready.co.uk in <b>Chrome</b> or <b>Edge</b> and use its install icon in the address bar.']
+  };
+  var ip = document.createElement('div'); ip.className = 'srn-inst-back'; ip.hidden = true; ip.id = 'srnInstall';
+  ip.innerHTML = '<div class="srn-inst" role="dialog" aria-modal="true" aria-labelledby="srnInstTitle"><button type="button" class="srn-x" data-inst-close aria-label="Close">×</button><div id="srnInstBody"></div></div>';
+  document.body.appendChild(ip);
+  var cssI = '.srn-inst-back{position:fixed;inset:0;z-index:60;background:rgba(10,20,15,.35);display:flex;align-items:flex-start;justify-content:center;padding:72px 12px 16px;overflow-y:auto}.srn-inst-back[hidden]{display:none}' +
+    '.srn-inst{position:relative;background:var(--surface);color:var(--ink);width:100%;max-width:420px;border-radius:16px;border:1px solid var(--line);border-top:6px solid var(--brand);box-shadow:0 18px 50px rgba(0,0,0,.35);padding:18px 20px 20px;font-size:15px;line-height:1.5}' +
+    '.srn-inst h2{margin:0 0 6px;font-size:20px}.srn-inst ol{margin:10px 0;padding-left:22px}.srn-inst li{margin:6px 0}.srn-inst p{margin:8px 0}.srn-inst .muted{color:var(--muted);font-size:13px}' +
+    '.srn-inst .go{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:12px;border:0;background:var(--brand);color:var(--brand-ink,#fff);font:inherit;font-weight:700;cursor:pointer;margin-top:6px}' +
+    '.srn-apps{list-style:none;margin:6px 0 10px;padding:0;display:grid;gap:8px}.srn-apps li{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px}.srn-apps li.on{border-color:var(--brand);background:var(--brand-soft)}.srn-apps img{border-radius:9px;flex:0 0 auto}.srn-apps li>span{flex:1 1 auto;min-width:0;line-height:1.3}.srn-apps a,.srn-apps em{flex:0 0 auto;font-size:13px;font-weight:700;font-style:normal;white-space:nowrap}' +
+    '.srn-x{position:absolute;top:8px;right:10px;background:none;border:0;font-size:26px;line-height:1;cursor:pointer;color:var(--muted);padding:4px}';
+  var stI = document.createElement('style'); stI.textContent = cssI; document.head.appendChild(stI);
+  // Four apps (build 51). Each page installs as its own app, with its own icon.
+  var APPS = [
+    { k: 'organiser', t: 'Organiser', d: 'Plan events: licences, suppliers, deadlines', href: '/app/' },
+    { k: 'supplier', t: 'Supplier desk', d: 'Enquiries, quotes and your listing', href: '/suppliers/' },
+    { k: 'film', t: 'Film & TV', d: 'Locations, permits and shoot days', href: '/film/' },
+    { k: 'admin', t: 'Admin', d: 'Only for ShowReady admins', href: '/admin/', admin: true }
+  ];
+  function appHere() { var p = location.pathname; return /^\/suppliers\//.test(p) ? 'supplier' : /^\/film\//.test(p) ? 'film' : /^\/admin\//.test(p) ? 'admin' : 'organiser'; }
+  function isAdmin() { var a = window.SRAccount; return !!(a && a.profile && a.profile.is_admin); }
+  function renderInstall() {
+    var b = document.getElementById('srnInstBody'), here = appHere(), cur = APPS.filter(function (x) { return x.k === here; })[0] || APPS[0];
+    var h = '<h2 id="srnInstTitle">Install the ShowReady apps</h2>';
+    if (standalone()) h += '<p>You’re using the <b>' + cur.t + '</b> app. To add another, open it below and choose Install the apps again.</p>';
+    else {
+      h += '<p>ShowReady has a separate app for each job, each with its own icon. They open in their own window, without the browser around them. <b>This page installs the ' + cur.t + ' app.</b></p>';
+      if (deferred) h += '<button type="button" class="go" id="srnInstallNow">Install the ' + cur.t + ' app now</button><p class="muted">Or do it yourself:</p>';
+      h += '<ol>' + (STEPS[device()] || STEPS.desktop).map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>';
+    }
+    h += '<p style="font-weight:700;margin-top:14px">The apps</p><ul class="srn-apps">' + APPS.filter(function (x) { return !x.admin || isAdmin() || here === 'admin'; }).map(function (x) {
+      return '<li' + (x.k === here ? ' class="on"' : '') + '><img src="/app-icons/app-' + x.k + '-192.png" alt="" width="40" height="40"><span><b>' + x.t + '</b><br><span class="muted">' + x.d + '</span></span>' +
+        (x.k === here ? '<em>This page</em>' : '<a href="' + x.href + '#install">Open to install</a>') + '</li>';
+    }).join('') + '</ul>';
+    h += '<p class="muted">Each app is the same ShowReady account, and updates appear by themselves. On iPhone and iPad each app keeps its own log-in: log in once inside it.</p>';
+    b.innerHTML = h;
+    var go = document.getElementById('srnInstallNow');
+    if (go) go.addEventListener('click', function () {
+      var d = deferred; deferred = null; d.prompt();
+      Promise.resolve(d.userChoice).then(function (c) { if (c && c.outcome === 'accepted') { closeInstall(); } else renderInstall(); }, function () { renderInstall(); });
+    });
+  }
+  function openInstall() { setOpen(false); renderInstall(); ip.hidden = false; }
+  function closeInstall() { ip.hidden = true; }
+  ip.addEventListener('click', function (e) { if (e.target === ip || (e.target.closest && e.target.closest('[data-inst-close]'))) closeInstall(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ip.hidden) closeInstall(); });
+  menu.querySelector('[data-install]').addEventListener('click', function (e) { e.preventDefault(); openInstall(); });
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; if (!ip.hidden) renderInstall(); });
+  window.addEventListener('appinstalled', function () { deferred = null; if (!ip.hidden) renderInstall(); });
+  if (standalone()) { var li = menu.querySelector('[data-install]'); if (li) li.parentNode.hidden = true; }
+  if (/^#install$/.test(location.hash)) setTimeout(openInstall, 0);
+  window.SRNav.install = openInstall;
+
+  // ---- Send feedback: goes to the ShowReady inbox (stored in Supabase, emailed to hello@).
+  var FB_URL = 'https://osqlwddeobiklrpdnons.supabase.co/rest/v1/feedback';
+  var FB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  var KINDS = [['problem', 'Something isn’t working'], ['idea', 'An idea'], ['question', 'A question'], ['praise', 'Something I like']];
+  var fp = document.createElement('div'); fp.className = 'srn-inst-back'; fp.hidden = true; fp.id = 'srnFeedback';
+  fp.innerHTML = '<div class="srn-inst" role="dialog" aria-modal="true" aria-labelledby="srnFbTitle"><button type="button" class="srn-x" data-fb-close aria-label="Close">×</button><div id="srnFbBody"></div></div>';
+  document.body.appendChild(fp);
+  var cssF = '.srn-fb-kinds{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px;padding:0;border:0}.srn-fb-kinds legend{font-weight:700;margin-bottom:6px;padding:0}' +
+    '.srn-fb-kinds label{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px;cursor:pointer}' +
+    '.srn-fb-kinds input{position:absolute;opacity:0;width:1px;height:1px}.srn-fb-kinds input:checked+span{color:var(--brand-text,var(--brand))}.srn-fb-kinds label:has(input:checked){background:var(--brand-soft);border-color:var(--brand)}.srn-fb-kinds label:has(input:focus-visible){outline:2px solid var(--brand);outline-offset:2px}' +
+    '.srn-inst label.f{display:block;font-weight:700;margin:10px 0 4px}.srn-inst textarea,.srn-inst input[type=email],.srn-inst input[type=text],.srn-inst input[type=tel]{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}' +
+    '.srn-inst form{border:0;padding:0;margin:0;background:none;box-shadow:none;max-width:none}' +
+    '.srn-inst textarea{min-height:120px;resize:vertical}.srn-fb-hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}.srn-fb-err{color:#B3261E;font-weight:600}';
+  var stF = document.createElement('style'); stF.textContent = cssF; document.head.appendChild(stF);
+  function fbEsc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function renderFeedback(kind) {
+    var em = (window.SRAccount && window.SRAccount.user && window.SRAccount.user.email) || '';
+    var b = document.getElementById('srnFbBody');
+    b.innerHTML = '<h2 id="srnFbTitle">Send feedback</h2><p>Tell us what’s working, what isn’t, or what you’d like ShowReady to do. It comes straight to us.</p>' +
+      '<form id="srnFbForm" novalidate><fieldset class="srn-fb-kinds"><legend>What’s it about?</legend>' +
+      KINDS.map(function (k) { return '<label><input type="radio" name="kind" value="' + k[0] + '"' + (k[0] === (kind || 'idea') ? ' checked' : '') + '><span>' + k[1] + '</span></label>'; }).join('') + '</fieldset>' +
+      '<label class="f" for="srnFbMsg">Your feedback</label><textarea id="srnFbMsg" name="message" maxlength="4000" placeholder="What happened, or what would help?"></textarea>' +
+      '<label class="f" for="srnFbEmail">Your email <span class="muted" style="font-weight:500">(optional, if you’d like a reply)</span></label><input type="email" id="srnFbEmail" name="email" autocomplete="email" maxlength="254" value="' + fbEsc(em) + '">' +
+      '<div class="srn-fb-hp" aria-hidden="true"><label>Leave this empty <input type="text" name="website" id="srnFbHp" tabindex="-1" autocomplete="off"></label></div>' +
+      '<p class="srn-fb-err" id="srnFbErr" role="alert" hidden></p>' +
+      '<button type="submit" class="go" id="srnFbSend">Send feedback</button>' +
+      '<p class="muted">We also note which page you were on and your browser type, to help us fix problems. See our <a href="' + PRIV + '">privacy notice</a>.</p></form>';
+    var f = document.getElementById('srnFbForm');
+    f.addEventListener('submit', function (e) { e.preventDefault(); sendFeedback(f); });
+  }
+  function fbError(t) { var p = document.getElementById('srnFbErr'); p.textContent = t; p.hidden = !t; }
+  function sendFeedback(f) {
+    var kind = (f.querySelector('input[name=kind]:checked') || {}).value || 'idea';
+    var msg = (document.getElementById('srnFbMsg').value || '').trim();
+    var em = (document.getElementById('srnFbEmail').value || '').trim();
+    if (document.getElementById('srnFbHp').value) { thanks(); return; }   // a bot filled the hidden box: pretend it worked
+    if (msg.length < 2) { fbError('Please write a few words first.'); document.getElementById('srnFbMsg').focus(); return; }
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { fbError('That email doesn’t look right. Check it, or leave it empty.'); document.getElementById('srnFbEmail').focus(); return; }
+    fbError(''); var go = document.getElementById('srnFbSend'); go.disabled = true; go.textContent = 'Sending…';
+    var body = { kind: kind, message: msg.slice(0, 4000), email: em || null, page: (location.pathname + ' · ' + (document.title || '')).slice(0, 200), device: (navigator.userAgent || '').slice(0, 300) };
+    fetch(FB_URL, { method: 'POST', headers: { apikey: FB_KEY, Authorization: 'Bearer ' + FB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(body) })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); thanks(); })
+      .catch(function () { go.disabled = false; go.textContent = 'Try again'; fbError('Sorry, that didn’t send. Check you’re online and try again, or email hello@beshowready.co.uk.'); });
+  }
+  function thanks() {
+    document.getElementById('srnFbBody').innerHTML = '<h2 id="srnFbTitle">Thank you</h2><p>Your feedback has reached us. If you left your email and asked something, we’ll reply as soon as we can.</p><button type="button" class="go" data-fb-close>Close</button>';
+  }
+  function openFeedback(kind) { setOpen(false); if (!ip.hidden) closeInstall(); renderFeedback(kind); fp.hidden = false; setTimeout(function () { var m = document.getElementById('srnFbMsg'); if (m) try { m.focus(); } catch (x) {} }, 0); }
+  function closeFeedback() { fp.hidden = true; if (/^#feedback$/.test(location.hash)) try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {} }
+  fp.addEventListener('click', function (e) { if (e.target === fp || (e.target.closest && e.target.closest('[data-fb-close]'))) closeFeedback(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !fp.hidden) closeFeedback(); });
+  menu.querySelector('[data-feedback]').addEventListener('click', function (e) { e.preventDefault(); openFeedback(); });
+  if (/^#feedback$/.test(location.hash)) setTimeout(function () { openFeedback(); }, 0);
+  window.addEventListener('hashchange', function () { if (/^#feedback$/.test(location.hash) && fp.hidden) openFeedback(); });
+  window.SRNav.feedback = openFeedback;
+
+  // ---- Enterprise: ask for a quote (build 51). Comes to hello@ and into admin Contacts automatically.
+  var ep = document.createElement('div'); ep.className = 'srn-inst-back'; ep.hidden = true; ep.id = 'srnEnterprise';
+  ep.innerHTML = '<div class="srn-inst" role="dialog" aria-modal="true" aria-labelledby="srnEnTitle"><button type="button" class="srn-x" data-en-close aria-label="Close">×</button><div id="srnEnBody"></div></div>';
+  document.body.appendChild(ep);
+  var EN = [['enName', 'Your name', 'text', 'name', true], ['enBiz', 'Business name', 'text', 'organization', true], ['enEmail', 'Email', 'email', 'email', true], ['enPhone', 'Phone (optional)', 'tel', 'tel', false],
+    ['enDepots', 'How many depots or bases?', 'text', 'off', false], ['enAreas', 'Where do you cover?', 'text', 'off', false], ['enLogins', 'How many people need a log-in?', 'text', 'off', false]];
+  function renderEnterprise() {
+    var a = window.SRAccount, em = (a && a.user && a.user.email) || '';
+    document.getElementById('srnEnBody').innerHTML = '<h2 id="srnEnTitle">Enterprise: ask for a quote</h2>' +
+      '<p>For national suppliers and firms with several depots. Enterprise starts from £99 a month; we’ll price it for your business. No commission, ever.</p>' +
+      '<form id="srnEnForm" novalidate>' + EN.map(function (f) {
+        return '<label class="f" for="' + f[0] + '">' + f[1] + '</label><input id="' + f[0] + '" type="' + f[2] + '" autocomplete="' + f[3] + '" maxlength="200"' + (f[0] === 'enEmail' ? ' value="' + fbEsc(em) + '"' : '') + (f[4] ? ' required' : '') + '>';
+      }).join('') +
+      '<label class="f" for="enMsg">Anything else? (optional)</label><textarea id="enMsg" maxlength="1500" placeholder="What you supply, typical number of events, anything we should know"></textarea>' +
+      '<div class="srn-fb-hp" aria-hidden="true"><label>Leave this empty <input type="text" id="enHp" tabindex="-1" autocomplete="off"></label></div>' +
+      '<p class="srn-fb-err" id="srnEnErr" role="alert" hidden></p>' +
+      '<button type="submit" class="go" id="srnEnSend">Send my request</button>' +
+      '<p class="muted">We’ll use these details to reply about Enterprise. See our <a href="' + PRIV + '">privacy notice</a>.</p></form>';
+    document.getElementById('srnEnForm').addEventListener('submit', function (e) { e.preventDefault(); sendEnterprise(); });
+  }
+  function enErr(t) { var p = document.getElementById('srnEnErr'); p.textContent = t; p.hidden = !t; }
+  function enVal(id) { return (document.getElementById(id).value || '').trim(); }
+  function sendEnterprise() {
+    if (enVal('enHp')) { enThanks(); return; }
+    var miss = EN.filter(function (f) { return f[4] && !enVal(f[0]); })[0];
+    if (miss) { enErr('Please fill in ' + miss[1].toLowerCase() + '.'); document.getElementById(miss[0]).focus(); return; }
+    var em = enVal('enEmail');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { enErr('That email doesn’t look right.'); document.getElementById('enEmail').focus(); return; }
+    enErr(''); var go = document.getElementById('srnEnSend'); go.disabled = true; go.textContent = 'Sending…';
+    var msg = 'Business: ' + enVal('enBiz') + '\nName: ' + enVal('enName') + '\nPhone: ' + (enVal('enPhone') || '-') + '\nDepots: ' + (enVal('enDepots') || '-') +
+      '\nCovers: ' + (enVal('enAreas') || '-') + '\nLog-ins: ' + (enVal('enLogins') || '-') + '\n\n' + enVal('enMsg');
+    var body = { kind: 'enterprise', message: msg.slice(0, 4000), email: em, page: (location.pathname + ' · Enterprise quote').slice(0, 200), device: (navigator.userAgent || '').slice(0, 300) };
+    fetch(FB_URL, { method: 'POST', headers: { apikey: FB_KEY, Authorization: 'Bearer ' + FB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(body) })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); enThanks(); })
+      .catch(function () { go.disabled = false; go.textContent = 'Try again'; enErr('Sorry, that didn’t send. Try again, or email hello@beshowready.co.uk.'); });
+  }
+  function enThanks() { document.getElementById('srnEnBody').innerHTML = '<h2 id="srnEnTitle">Thank you</h2><p>Your request has reached us. We’ll be in touch within two working days with a quote.</p><button type="button" class="go" data-en-close>Close</button>'; }
+  function openEnterprise() { setOpen(false); renderEnterprise(); ep.hidden = false; setTimeout(function () { var n = document.getElementById('enName'); if (n) try { n.focus(); } catch (x) {} }, 0); }
+  function closeEnterprise() { ep.hidden = true; if (/^#enterprise$/.test(location.hash)) try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {} }
+  ep.addEventListener('click', function (e) { if (e.target === ep || (e.target.closest && e.target.closest('[data-en-close]'))) closeEnterprise(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ep.hidden) closeEnterprise(); });
+  document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('[data-enterprise]'); if (t) { e.preventDefault(); openEnterprise(); } });
+  if (/^#enterprise$/.test(location.hash)) setTimeout(openEnterprise, 0);
+  window.addEventListener('hashchange', function () { if (/^#enterprise$/.test(location.hash) && ep.hidden) openEnterprise(); });
+  window.SRNav.enterprise = openEnterprise;
+  // The service worker makes the site installable and keeps a copy of pages for when you're offline.
+  try {
+    if ('serviceWorker' in navigator && /(^|\.)beshowready\.co\.uk$|(^|\.)showready\.uk$|^localhost$|^127\.0\.0\.1$/.test(location.hostname))
+      window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {}); });
+  } catch (e) {}
+
+  // Contact email follows settings.json.
+  if (typeof srLoadSettings === 'function') srLoadSettings(function (s) {
+    var em = s && s.contact && s.contact.email; var a = menu.querySelector('[data-contact]');
+    if (em && a && /^[^@\s]+@[^@\s]+$/.test(em)) a.href = 'mailto:' + em;
+  });
+
+  // Website pages: Log in / Sign up go to the planner, which holds the account panel.
+  if (!window.SR_ACCOUNT_PAGE) {
+    var signedIn = false;
+    try { for (var i = 0; i < localStorage.length; i++) if (/^sb-.*-auth-token$/.test(localStorage.key(i))) signedIn = true; } catch (e) {}
+    var acct = document.createElement('div'); acct.className = 'srn-acct';
+    acct.innerHTML = signedIn ? '<a class="primary" href="' + APP + '?account=open">My account</a>'
+      : '<a href="' + APP + '?account=login">Log in</a><a class="primary" href="' + APP + '?account=signup' + (here === 'film' ? '&role=film' : '') + '">Sign up</a>';
+    var nav = bar.querySelector('.nav');
+    if (nav) nav.appendChild(acct); else bar.appendChild(acct);
+  }
+})();
+/*NAV-END*/
+/*SHARED-END*/
+</script>
+
+</body>
+</html>

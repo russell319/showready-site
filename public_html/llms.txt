@@ -1,0 +1,23 @@
+# ShowReady
+
+> ShowReady is a free UK event planning tool. Organisers describe their event and get the licences, permissions and deadlines it needs for their council in England or Wales, plus a supplier marketplace, risk assessment and event folder.
+
+ShowReady (beshowready.co.uk) is run by Russell Bowers, trading as RSB Entertainment, Mossley, England. It covers every council in England and Wales (339 licensing authorities). Planning is free; suppliers pay from £6 a month to be listed, and organisers can add paid extras. ShowReady takes no commission on bookings. It gives guidance, not legal advice: councils make every licensing decision.
+
+## Guides
+
+- [Do I need a Temporary Event Notice (TEN)?](https://beshowready.co.uk/guides/do-i-need-a-temporary-event-notice/): When an event in England or Wales needs a Temporary Event Notice, the 499-person limit, 10 working days’ notice, the £21 fee and how many TENs you can give.
+- [What licences does a village fete or summer fair need?](https://beshowready.co.uk/guides/what-licences-does-a-village-fete-need/): A checklist of the licences and permissions a village fete, school fair or community event usually needs in England and Wales, and how much notice each takes.
+- [What is a Safety Advisory Group (SAG) and does my event need one?](https://beshowready.co.uk/guides/safety-advisory-group-events/): What a council Safety Advisory Group does, which events usually go to one, what to send and how much notice to give.
+- [How do I get a road closed for an event or street party?](https://beshowready.co.uk/guides/road-closure-for-an-event/): How temporary road closures for events work in England and Wales, the law councils use, typical notice periods and what you’ll be asked for.
+- [Bonfire and fireworks rules for community events](https://beshowready.co.uk/guides/bonfire-and-fireworks-rules/): The firework curfew, what you need for a bonfire or fireworks display at a public event, safety distances and who to tell.
+- [Do I need public liability insurance for an event?](https://beshowready.co.uk/guides/event-insurance-public-liability/): Whether event organisers need public liability insurance, how much cover councils and venues ask for, employers’ liability, and what to tell your insurer.
+- [Do I need a licence for a raffle or tombola at an event?](https://beshowready.co.uk/guides/raffles-and-tombolas-at-events/): When a raffle or tombola at a fete, fair or community event needs no licence, the £500 prize and £100 expenses limits, and when you must register a small society lottery.
+- [Do I need a licence for music at a community event?](https://beshowready.co.uk/guides/music-at-community-events/): When live or recorded music at a fete, fair or community event needs a TEN or premises licence, the exemptions, and the separate music copyright licence.
+
+## Tools
+
+- [Event planner](https://beshowready.co.uk/app/): describe an event and get its licences, deadlines, costs and contacts
+- [Council pages](https://beshowready.co.uk/plan/): each council's event licences, notice periods and forms, e.g. https://beshowready.co.uk/plan/tameside
+- [For suppliers](https://beshowready.co.uk/suppliers/): a free supplier desk and listing for organisers
+- [Tools and pricing](https://beshowready.co.uk/toolkit.html)

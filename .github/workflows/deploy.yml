@@ -1,0 +1,36 @@
+# ShowReady: upload public_html to Fasthosts when a change is pushed to main.
+# Russell approves each upload (environment "production"), then the live check runs.
+name: Deploy to beshowready.co.uk
+on:
+  push:
+    branches: [main]
+    paths: ['public_html/**']
+  workflow_dispatch:
+concurrency: { group: deploy, cancel-in-progress: false }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload changed files by FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./public_html/
+          server-dir: ${{ vars.FTP_DIR || './public_html/' }}
+          # Never touch server-only files such as .htaccess
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .htaccess
+  check:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the live site matches this build
+        run: bash scripts/check-live.sh

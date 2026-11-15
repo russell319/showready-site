@@ -1,0 +1,460 @@
+{
+  "_how_to_edit": [
+    "Change the text or numbers between the quotes and save. Keep every comma, quote and bracket where it is.",
+    "Prices are written as you want them shown, for example \"£8\".",
+    "In the summary sentences, {event-pass}, {pro} and {vendor-pro} are replaced by that plan's price automatically.",
+    "To show a banner at the top of every page, set \"show\" to true and write the text. Links must start with https:// or /.",
+    "If the file has a mistake, the site quietly uses its built-in settings, so nothing breaks. Check the change on the live site after saving.",
+    "Founding offer dates are in the \"founding\" section. Both are pending (empty) until you are ready to launch.",
+    "Enterprise is priced by quote: it has no buy button, only an \"Ask for a quote\" form that comes to hello@beshowready.co.uk and into admin Contacts."
+  ],
+  "banner": {
+    "show": false,
+    "text": "",
+    "link": "",
+    "linkText": ""
+  },
+  "contact": {
+    "email": "hello@beshowready.co.uk",
+    "phone": "07368 988038"
+  },
+  "offers": {
+    "pilotText": "Everything is free during the pilot, which runs until 1 May 2027.",
+    "foundingText": "Founding members get 6 months free, then 30% off for life (excludes Enterprise). Founding suppliers stay free until 31 October 2027.",
+    "charityText": "Charities, PTAs and parish councils get 50% off.",
+    "priceNote": "Planned prices from summer 2027, shown before VAT. They may change before launch; founding members keep their discount.",
+    "studentText": "Students get 50% off Film plans when they sign up with a university or college email (ending .ac.uk).",
+    "hae": {
+      "_note": "HAE member offers. Leave enabled false until HAE agrees. To switch on, set this to true AND run in Supabase: update public.app_settings set value = 'on' where key = 'hae_offer';",
+      "enabled": false,
+      "vendorText": "HAE members: Vendor Pro free for the first 12 months, then the normal subscription.",
+      "enterpriseText": "HAE members on Enterprise: 3 months free, then 20% off the first paid year."
+    },
+    "earlyText": "After that, the next 200 in each category who join by 31 August 2027 get 20% off for life (excludes Enterprise). Offers never add together: you get the single best one."
+  },
+  "pricingSummary": {
+    "organisers": "Free for one event at a time. Optional extras from {event-pass} for a single event, or {pro} a month if you run events through the year.",
+    "suppliers": "Free supplier desk for work you find yourself. Vendor Pro is {vendor-pro} a month, or £60 a year, to be listed for organisers and receive their enquiries. Everything is free during the pilot, and founding suppliers stay free until 31 October 2027.",
+    "faq": "Everything is free during the pilot, which runs until 1 May 2027. After that, planning stays free forever. Suppliers pay from {vendor-pro} a month to be listed and receive enquiries, and organisers can add paid extras. Annual plans save about two months. See Pricing above for the details."
+  },
+  "plans": {
+    "organisers": [
+      {
+        "id": "free",
+        "name": "Free",
+        "price": "£0",
+        "per": "Free forever",
+        "for": "For anyone planning an event",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "One event at a time",
+          "Plan, licences, deadlines, costs and contacts",
+          "Event folder: readiness checks, ShowReady’s PDFs and 5 document uploads",
+          "Activities: bonfires, rides, animals, raffles and more",
+          "Insurance guidance for your event",
+          "Basic risk assessment and tracker",
+          "Supplier quotes, up to 10",
+          "Basic spreadsheet"
+        ]
+      },
+      {
+        "id": "event-pass",
+        "name": "Event pass",
+        "price": "£29",
+        "per": "per event, 12 months’ access",
+        "for": "For a once-a-year event, like a fete or wedding",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Everything in Free",
+          "3D site plan to scale: figures, routes and a council PDF, sent with your enquiries",
+          "Event folder with 25 document uploads",
+          "Full spreadsheet with colour timeline",
+          "Event management plan export",
+          "Vendor money and budget",
+          "Two people on the team",
+          "Cheaper than Pro if you plan for 4 months or more"
+        ]
+      },
+      {
+        "id": "pro",
+        "name": "Pro",
+        "price": "£8",
+        "per": "a month, or £79 a year (save £17)",
+        "for": "For organisers who run events through the year",
+        "featured": true,
+        "flag": "Best for regular organisers",
+        "features": [
+          "Everything in Event pass",
+          "Up to 5 events at once",
+          "Event folder with 100 document uploads",
+          "Copy last year’s plan",
+          "Three people on the team"
+        ]
+      },
+      {
+        "id": "pro-plus",
+        "name": "Pro Plus",
+        "price": "£24",
+        "per": "a month, or £240 a year (save £48)",
+        "for": "For shows, festivals and professionals",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Everything in Pro",
+          "Unlimited events",
+          "Event folder with 500 document uploads",
+          "Trader applications and pitch allocation",
+          "Automatic trader checks",
+          "Volunteer rotas and branded exports",
+          "Collect pitch fees in the app",
+          "Ten people on the team"
+        ]
+      }
+    ],
+    "suppliers": [
+      {
+        "id": "supplier-free",
+        "name": "Free",
+        "price": "£0",
+        "per": "Free forever",
+        "for": "A free desk for work you find yourself",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Supplier desk: every enquiry, quote and follow-up",
+          "What each job really earns after fees and costs",
+          "Your profile and review links, kept ready",
+          "Listed for organisers free during the pilot. From 1 May 2027 the desk stays free, but you need Vendor Pro to be listed and get enquiries"
+        ]
+      },
+      {
+        "id": "vendor-pro",
+        "name": "Vendor Pro",
+        "price": "£6",
+        "per": "a month, or £60 a year (save £12)",
+        "for": "For food traders and sole traders",
+        "featured": true,
+        "flag": "Needed to be found and get enquiries",
+        "features": [
+          "Everything in Free",
+          "One login and one base, listed for organisers up to 50 miles away",
+          "Receive enquiries and messages, unlimited",
+          "Your Google and Trustpilot reviews on every quote",
+          "Document vault with expiry reminders (coming 2027)"
+        ]
+      },
+      {
+        "id": "vendor-business",
+        "name": "Vendor Business",
+        "price": "£20",
+        "per": "a month, or £199 a year (save £41)",
+        "for": "For hire firms and traders with more than one van, trailer or person",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Everything in Vendor Pro",
+          "Up to 3 logins: your team works on one shared desk",
+          "Up to 5 bases: each van, trailer or depot with its own base and travel area",
+          "Travel up to 100 miles from each base",
+          "Organisers are matched to your nearest base, and told which one",
+          "First notice of new briefs (coming 2027)",
+          "Overflow network: post and take jobs (coming 2027)",
+          "Featured in your area (coming 2027)"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "price": "£99",
+        "per": "a month for up to 10 depots, then £8 a month for each extra depot",
+        "for": "For national suppliers and firms with several depots",
+        "featured": false,
+        "flag": "",
+        "quote": true,
+        "features": [
+          "Everything in Vendor Business",
+          "10 logins included",
+          "Up to 10 depots included, then £8 a month for each extra depot",
+          "Any distance: national coverage from every depot",
+          "Enquiries matched to your nearest depot",
+          "Invoice billing and enquiry exports",
+          "Not part of the founding offer"
+        ]
+      }
+    ],
+    "combined": [
+      {
+        "id": "combined",
+        "name": "Combined",
+        "price": "£12",
+        "per": "a month, or £115 a year (save £29)",
+        "for": "For businesses that organise events and supply them",
+        "featured": false,
+        "flag": "Organiser and supplier",
+        "features": [
+          "Everything in organiser Pro",
+          "Everything in Vendor Pro: listed and receiving enquiries",
+          "One account: switch between planner and Supplier desk",
+          "Needed if you’re both an organiser and a supplier"
+        ]
+      }
+    ],
+    "film": [
+      {
+        "id": "film-free",
+        "name": "Free",
+        "price": "£0",
+        "per": "Free forever",
+        "for": "For trying ShowReady Film",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "1 shoot with up to 2 locations",
+          "Permits, deadlines and costs for each location",
+          "Risk assessments and unit base plans on screen",
+          "Contact unit caterers",
+          "Printing, PDFs and the spreadsheet are on paid plans"
+        ]
+      },
+      {
+        "id": "film-pass",
+        "name": "Production Pass",
+        "price": "£39",
+        "per": "per shoot, 6 months’ access",
+        "for": "For a single production",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Everything in Free",
+          "1 shoot, unlimited locations",
+          "Print or save PDFs: location plan, risk assessments, call sheets",
+          "Download the spreadsheet"
+        ]
+      },
+      {
+        "id": "film-pro",
+        "name": "Film Pro",
+        "price": "£12",
+        "per": "a month, or £120 a year (save £24)",
+        "for": "For location managers and freelancers",
+        "featured": true,
+        "flag": "Best for regular shoots",
+        "features": [
+          "Everything in Production Pass",
+          "Unlimited shoots and locations",
+          "PDFs and spreadsheet for every shoot"
+        ]
+      },
+      {
+        "id": "film-studio",
+        "name": "Film Studio",
+        "price": "£39",
+        "per": "a month, or £390 a year (save £78)",
+        "for": "For production companies",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Everything in Film Pro",
+          "Five people on the team (coming 2027)",
+          "Extra people £6 a month each",
+          "Your company name on exports (coming 2027)"
+        ]
+      }
+    ]
+  },
+  "mailerlite": {
+    "account": "2753714",
+    "organiserForm": "202687711498208740",
+    "supplierForm": "202687712187123319"
+  },
+  "supplierServices": [
+    "Hot food",
+    "Bar and drinks",
+    "Coffee and cakes",
+    "Ice cream and desserts",
+    "Portable toilets",
+    "Power and generators",
+    "Marquees and tents",
+    "Stage, sound and lighting",
+    "Fencing and barriers",
+    "Security and stewarding",
+    "First aid and medical",
+    "Waste and recycling",
+    "Venue hire",
+    "Accommodation, glamping and motorhomes",
+    "Entertainment and activities",
+    "Photography and video",
+    "Furniture and decor",
+    "Signs and printing",
+    "Something else"
+  ],
+  "eventTypes": [
+    "Weddings",
+    "Private parties",
+    "Fetes and community",
+    "Shows and fairs",
+    "Festivals",
+    "Markets",
+    "Corporate",
+    "Equestrian",
+    "Motorsport",
+    "Sport",
+    "Film and TV"
+  ],
+  "estimates": {
+    "peoplePerToilet": 100,
+    "alcoholToiletFactor": 1.25,
+    "campingToiletFactor": 1.5,
+    "peoplePerSteward": 250,
+    "peoplePerBin": 75
+  },
+  "founding": {
+    "_help": [
+      "goLiveDate: the public launch day, YYYY-MM-DD. Set to 2027-05-01.",
+      "Founding places are limited by number, not by date: the first 100 suppliers and 100 Film & TV accounts to save a profile or project, and the first 100 organisers to upgrade to a paid plan (basic planning is always free). The live counts come from the database (app_settings founding_cap, early_cap, early_deadline, early_discount_pct).",
+      "When a category's 100 founding places are taken, the next 200 in that category get the early-adopter offer if they claim by the early_deadline (31 August 2027).",
+      "closesOn and autoCloseMonths are no longer used.",
+      "A real limit must be honoured: never reset counts or extend the deadline more than once, as that can count as fake urgency under consumer law."
+    ],
+    "goLiveDate": "2027-05-01",
+    "closesOn": "",
+    "autoCloseMonths": 6,
+    "openText": "Limited to the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade to a paid plan. Basic planning stays free for organisers.",
+    "closedText": "Founding places are full. Early adopters who join by 31 August 2027 get 20% off for life (excludes Enterprise).",
+    "joinEyebrowOpen": "Founding members",
+    "joinEyebrowClosed": "Join the pilot",
+    "joinButtonOpen": "Keep me posted",
+    "joinButtonClosed": "Keep me posted",
+    "showBannerWhileOpen": true,
+    "bannerText": "Founding places: the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade get 6 months free, then 30% off for life (excludes Enterprise)."
+  },
+  "councils": {
+    "_help": [
+      "Direct links to council forms, by council. The key is the council's short name in lower case (as postcodes.io names it, e.g. tameside).",
+      "For each council you can give: ten, licensing, events, parks, roadClosure, streetTrading. Each has url and label; events and roadClosure can also have weeks (notice needed) and note (one sentence shown on the plan).",
+      "Update checked (YYYY-MM-DD) whenever you confirm the links still work. Councils not listed fall back to GOV.UK links."
+    ],
+    "tameside": {
+      "name": "Tameside Council",
+      "checked": "2026-10-30",
+      "events": {
+        "url": "https://tameside.gov.uk/licensing/eventnotification",
+        "label": "Tameside: event notification form",
+        "weeks": 8,
+        "note": "Tameside asks for its event notification form at least 8 weeks before the event, emailed to licensing@tameside.gov.uk."
+      },
+      "roadClosure": {
+        "url": "https://tameside.gov.uk/licensing/eventnotification",
+        "label": "Tameside: event road closure application",
+        "weeks": 6,
+        "note": "Road closure application at least 6 weeks before, sent with the event notification. £32 admin fee."
+      },
+      "email": "licensing@tameside.gov.uk"
+    },
+    "oldham": {
+      "name": "Oldham Council",
+      "checked": "2026-10-30",
+      "events": {
+        "url": "https://www.oldham.gov.uk/eventnotification",
+        "label": "Oldham: online event notification form",
+        "weeks": 3,
+        "note": "Oldham asks for its online event notification at least 3 weeks before; bigger events need more notice."
+      },
+      "roadClosure": {
+        "url": "https://www.oldham.gov.uk/eventnotification",
+        "label": "Oldham: road closure requests",
+        "weeks": 5,
+        "note": "Road closures need at least 5 weeks' notice."
+      },
+      "ten": {
+        "url": "https://www.oldham.gov.uk/download/downloads/id/7082/guidance_on_temporary_event_notices.docx",
+        "label": "Oldham: TEN guidance"
+      },
+      "email": "events@oldham.gov.uk"
+    },
+    "calderdale": {
+      "name": "Calderdale Council",
+      "checked": "2026-10-30",
+      "ten": {
+        "url": "https://www.gov.uk/apply-for-a-licence/temporary-event-notice/calderdale/apply-1",
+        "label": "Calderdale: apply for a TEN online (GOV.UK)"
+      },
+      "events": {
+        "url": "https://www.visitcalderdale.com/wp-content/uploads/2026/01/Event-Application-Guide-V0.2.pdf",
+        "label": "Calderdale: event application guide",
+        "weeks": 12,
+        "note": "Calderdale publishes an event application guide; check its notice periods for your event size."
+      },
+      "email": "licensing@calderdale.gov.uk"
+    },
+    "manchester": {
+      "name": "Manchester City Council",
+      "checked": "2026-10-30",
+      "ten": {
+        "url": "https://www.manchester.gov.uk/directory_record/451830/temporary_event_notice_ten",
+        "label": "Manchester: Temporary Event Notice"
+      },
+      "roadClosure": {
+        "url": "https://www.manchester.gov.uk/online-directories/licences-and-permissions-directories/licensing/highways-and-pavements/request-a-streetroad-closure-for-your-event",
+        "label": "Manchester: request a street or road closure"
+      },
+      "parks": {
+        "url": "https://www.manchester.gov.uk/parks-leisure-and-the-arts/parks-playgrounds-allotments-and-open-spaces/host-your-event-in-one-of-our-parks",
+        "label": "Manchester: host your event in a park"
+      }
+    }
+  },
+  "accounts": {
+    "_note": "Sign-up and log-in (Supabase). Set enabled to false to hide the Sign in button everywhere. Only the public anon key belongs here, never the service_role key.",
+    "enabled": true
+  },
+  "ads": {
+    "_note": "Google AdSense anchor ad along the bottom, for visitors not on a paid plan. Leave enabled false until AdSense approves beshowready.co.uk, then paste your publisher ID (ca-pub- followed by numbers) into client and set enabled to true. Also upload ads.txt (see README).",
+    "enabled": false,
+    "client": "ca-pub-8382733964734609"
+  },
+  "maps": {
+    "_note": "Site plan maps. maptilerKey: MapTiler public key (aerial photos and street map). esriKey: paste an Esri (ArcGIS Location Platform) API key restricted to beshowready.co.uk to use Esri's sharper aerial photos; leave empty to use MapTiler.",
+    "maptilerKey": "eAD4HiQJVKUllkxiy363",
+    "esriKey": ""
+  },
+  "billing": {
+    "_note": "Turn on when Stripe is connected: set enabled to true. Until then pricing shows no buy buttons and everything stays free.",
+    "enabled": false
+  },
+  "social": {
+    "_note": "Paste each full profile address (https://...) here once the profile is live, then rebuild. Empty ones are skipped.",
+    "facebook": "https://www.facebook.com/beshowready",
+    "instagram": "",
+    "linkedin": "",
+    "youtube": "",
+    "tiktok": ""
+  },
+  "ticketing": {
+    "_note": "Ticketing step on the planner's Suppliers tab, for ticketed (paid entry) events only. Never shown to visitors who came from a council link. Change the links here; set enabled to false to hide it.",
+    "enabled": true,
+    "intro": "Selling tickets? These sites handle ticket sales and payments for you.",
+    "community": [
+      {
+        "name": "Ticket Tailor",
+        "url": "https://get.tickettailor.com/rdauuamkwimv",
+        "note": "Low flat fee per ticket; good for fetes, fairs and community events. Signing up through this link gets you 50 free ticket credits."
+      },
+      {
+        "name": "TicketSource",
+        "url": "https://www.ticketsource.com/signup/162353",
+        "note": "Free for free events; simple for charities, schools and local shows."
+      }
+    ],
+    "music": [
+      {
+        "name": "Skiddle",
+        "url": "https://www.skiddle.com/?sktag=15972",
+        "note": "Gigs, club nights and festivals, with Skiddle’s own audience finding your event."
+      }
+    ],
+    "disclosure": "ShowReady may earn a small fee from these links. It costs you nothing extra."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "/admin/",
+  "name": "ShowReady Admin",
+  "short_name": "SR Admin",
+  "description": "ShowReady admin: councils, contacts and accounts.",
+  "start_url": "/admin/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F3F5F0",
+  "theme_color": "#1E5A43",
+  "lang": "en-GB",
+  "icons": [
+    {
+      "src": "/app-icons/app-admin-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icons/app-admin-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

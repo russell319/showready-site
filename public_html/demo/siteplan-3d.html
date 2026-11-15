@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Site Plan 3D Demo | ShowReady</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+/* Layout: full-screen map, a tool rail on the left (bottom sheet on phones), floating view controls on the map. */
+:root{
+  --bg:#F3F5F0; --panel:#FBFBF8; --ink:#15231C; --muted:#4B5A52; --line:#D9DFD5;
+  --brand:#1E5A43; --dark:#123A2B; --pen:#E0892E; --pen-ink:#763C06; --sel:#E0892E;
+  --display:'Bricolage Grotesque', 'Trebuchet MS', sans-serif; --body:'Manrope', 'Segoe UI', Arial, sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0F1A15; --panel:#16241D; --ink:#E8EFEA; --muted:#A9BAB0; --line:#2A3B33; --brand:#3F8F6C; --dark:#0B1712; --pen-ink:#F2B26B; color-scheme:dark } }
+:root[data-theme="dark"]{ --bg:#0F1A15; --panel:#16241D; --ink:#E8EFEA; --muted:#A9BAB0; --line:#2A3B33; --brand:#3F8F6C; --dark:#0B1712; --pen-ink:#F2B26B; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:12px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--dark);color:#FBFBF8;flex-wrap:wrap}
+header .logo{font:800 22px/1 var(--display);letter-spacing:-.01em}
+header .tag{background:var(--pen);color:#123A2B;font-weight:800;font-size:12px;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
+header form{margin-left:auto;display:flex;gap:6px}
+header input{width:120px;padding:7px 10px;border-radius:9px;border:1px solid #2E5545;background:#0E2A1F;color:#FBFBF8;font:600 14px var(--body);text-transform:uppercase}
+header button,.btn{font:700 14px var(--body);border:0;border-radius:9px;padding:8px 12px;cursor:pointer;background:var(--brand);color:#FBFBF8}
+header button.ghost{background:transparent;border:1px solid #3F6F5C}
+.btn.alt{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:transparent;color:#B3261E;border:1px solid #E7B9B4}
+:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+main{flex:1;display:flex;min-height:0}
+aside{width:300px;flex:none;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:16px}
+aside h2{font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.pal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding-top:8px}
+#find{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:600 14px var(--body)}
+#pal{display:flex;flex-direction:column;gap:8px}
+#pal details{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--panel)}
+#pal summary{cursor:pointer;font-weight:800;font-size:14px;display:flex;justify-content:space-between;gap:8px;list-style:none}
+#pal summary::-webkit-details-marker{display:none}
+#pal summary::after{content:'+';color:var(--muted);font-weight:800}
+#pal details[open] summary::after{content:'–'}
+#pal summary small{color:var(--muted);font-weight:600;margin-left:auto}
+.pal button{display:flex;align-items:center;gap:8px;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 8px;color:var(--ink);font:600 13px var(--body);cursor:pointer;min-width:0}
+.pal button img{width:34px;height:34px;object-fit:contain;flex:none;border-radius:6px;background:#3d5a34}
+.pal button span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.pal button small{display:block;color:var(--muted);font-weight:600;font-size:11px}
+.sel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.sel .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sel label{font-size:12px;font-weight:700;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.sel input{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:600 14px var(--body)}
+.sel input[type=range]{padding:0}
+.sel .acts{display:flex;gap:8px;flex-wrap:wrap}
+.sel .name{font:800 18px var(--display)}
+.stats{display:flex;flex-direction:column;gap:6px;font-variant-numeric:tabular-nums}
+.stats div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:5px}
+.stats b{font-weight:800}
+.note{font-size:12px;color:var(--muted)}
+#map{flex:1;position:relative;min-width:0}
+.viewbar{position:absolute;right:max(12px,env(safe-area-inset-right,0px));top:12px;z-index:5;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.seg button{border:0;background:transparent;color:var(--ink);font:800 15px var(--body);padding:10px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--pen);color:#123A2B}
+.viewbar .btn{box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.bgsel{display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:12px;font-weight:800;color:var(--muted)}
+.bgsel select{max-width:170px;font:700 14px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--dark);color:#FBFBF8;font-weight:700;padding:10px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90%;text-align:center}
+.maplibregl-ctrl-attrib{font-size:11px}
+@media (max-width:760px){
+  main{flex-direction:column-reverse}
+  aside{width:auto;max-height:42%;border-right:0;border-top:1px solid var(--line);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .pal{grid-template-columns:repeat(3,minmax(0,1fr))}
+  header input{width:96px}
+  header .tag{display:none}
+  .bgsel span{display:none}
+  .bgsel{padding:6px}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">ShowReady</span><span class="tag">Site plan · 3D demo</span>
+  <form id="pcForm" autocomplete="off">
+    <input id="pc" value="" placeholder="Postcode" aria-label="Postcode" maxlength="9">
+    <button type="submit">Go</button>
+    <button type="button" class="ghost" id="bring">Move layout here</button>
+  </form>
+</header>
+<main>
+  <aside>
+    <section class="sel" id="selBox" hidden>
+      <div class="name" id="selName">Marquee</div>
+      <div class="row">
+        <label>Width (m)<input id="selW" type="number" min="0.5" step="0.5"></label>
+        <label>Length (m)<input id="selL" type="number" min="0.5" step="0.5"></label>
+      </div>
+      <label>Rotate <span id="selRotV">0°</span><input id="selRot" type="range" min="0" max="359" step="1"></label>
+      <div class="acts"><button class="btn alt" id="dup">Duplicate</button><button class="btn warn" id="del">Remove</button></div>
+    </section>
+    <section>
+      <h2>Add to the site</h2>
+      <p class="note">Tap an item to drop it in the middle of the map, then drag it into place. Every item is drawn to its real size.</p>
+      <input id="find" type="search" placeholder="Search items, e.g. bouncy castle" aria-label="Search items">
+      <div id="pal"></div>
+    </section>
+    <section>
+      <h2>On this plan</h2>
+      <div class="stats" id="stats"></div>
+      <p class="note">Crowd figure uses 2 people per m² standing, the usual planning density. Check with your safety adviser.</p>
+    </section>
+    <p class="note">Demo only. Changes aren't saved. Aerial photos © Esri and partners, or © MapTiler © OpenStreetMap contributors.</p>
+  </aside>
+  <div id="map">
+    <div class="viewbar">
+      <div class="seg" role="group" aria-label="View"><button id="v2" aria-pressed="true">2D</button><button id="v3" aria-pressed="false">3D</button></div>
+      <button class="btn alt" id="spin" hidden>Rotate view</button>
+      <button class="btn alt" id="reset">Reset layout</button>
+      <label class="bgsel"><span>Background</span><select id="base"><option value="esri">Aerial photo (Esri)</option><option value="maptiler">Aerial photo (MapTiler)</option><option value="map">Street map</option><option value="plain">Plain grass</option></select></label>
+    </div>
+    <div class="toast" id="toast" hidden></div>
+  </div>
+</main>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+(function(){
+'use strict';
+var KEY = 'eAD4HiQJVKUllkxiy363';
+var O = { lng: -2.04434, lat: 53.51642 };          // layout origin: the pitch at Seel Park, Mossley
+var M_LAT = 111320;
+function mLng(lat){ return 111320 * Math.cos(lat * Math.PI / 180); }
+
+// ---------- item types: real sizes in metres, 3D heights, top-down drawings ----------
+var T = {
+  // Tents and structures
+  marquee:  { g:'tents', n:'Marquee', s:'12 × 6 m', w:6, l:12, h:[[1,2.4],[0.45,4.0]], c:'#F4F4F0', roof:'#FFFFFF' },
+  pagoda:   { g:'tents', n:'Pagoda tent', s:'5 × 5 m', w:5, l:5, h:[[1,2.4],[0.35,4.4]], c:'#F4F4F0', roof:'#FFFFFF' },
+  gazebo:   { g:'tents', n:'Gazebo', s:'3 × 3 m', w:3, l:3, h:[[1,2.2],[0.35,2.9]], c:'#F4F4F0', roof:'#FFFFFF' },
+  stall:    { g:'tents', n:'Market stall', s:'3 × 2.5 m', w:2.5, l:3, h:[[1,2.4]], c:'#E8E2D6' },
+  stage:    { g:'tents', n:'Stage', s:'8 × 6 m', w:6, l:8, h:[[1,1.2]], c:'#2B2B2E', back:5.5 },
+  // Food and drink
+  food:     { g:'food', n:'Food truck', s:'6 × 2.5 m', w:2.5, l:6, h:[[1,3.0]], c:'#EDEDE8' },
+  trailer:  { g:'food', n:'Catering trailer', s:'4 × 2.2 m', w:2.2, l:4, h:[[1,2.6]], c:'#EDEDE8', e:'🍔' },
+  icecream: { g:'food', n:'Ice cream van', s:'5 × 2.2 m', w:2.2, l:5, h:[[1,2.8]], c:'#F7D7E4', e:'🍦' },
+  bar:      { g:'food', n:'Bar tent', s:'6 × 3 m', w:3, l:6, h:[[1,2.4],[0.4,3.3]], c:'#1E5A43', roof:'#2F7A5C' },
+  picnic:   { g:'food', n:'Picnic table', s:'2 × 1.8 m', w:1.8, l:2, h:[[1,0.75]], c:'#9C6B3C' },
+  water:    { g:'food', n:'Drinking water', s:'1 × 1 m', w:1, l:1, h:[[1,1.0]], c:'#3FA7D6', e:'💧' },
+  // Rides and inflatables
+  bouncy:   { g:'rides', n:'Bouncy castle', s:'5 × 5 m', w:5, l:5, h:[[1,1.6],[0.7,3.5]], c:'#E94B3C', roof:'#F2C230' },
+  slide:    { g:'rides', n:'Inflatable slide', s:'10 × 5 m', w:5, l:10, h:[[1,2.0],[0.5,6.0]], c:'#3D7FD9', roof:'#F2C230', e:'🛝' },
+  assault:  { g:'rides', n:'Assault course', s:'12 × 3.5 m', w:3.5, l:12, h:[[1,3.0]], c:'#F2A93B', e:'🏃' },
+  kidsride: { g:'rides', n:'Children’s ride', s:'6 m across', w:6, l:6, h:[[1,3.5]], c:'#2CB1A5', round:true, e:'🎠' },
+  ride:     { g:'rides', n:'Fairground ride', s:'12 m across', w:12, l:12, h:[[1,6.0]], c:'#B03A8E', round:true, e:'🎡' },
+  helter:   { g:'rides', n:'Helter skelter', s:'8 m across', w:8, l:8, h:[[1,4],[0.55,9],[0.25,12]], c:'#E94B3C', roof:'#F2C230', round:true },
+  // Toilets and welfare
+  toilets:  { g:'welfare', n:'Toilet block', s:'4 units, 5 × 1.5 m', w:1.5, l:5, h:[[1,2.3]], c:'#2F6DB5', units:4 },
+  accessible:{ g:'welfare', n:'Accessible toilet', s:'2 × 2 m', w:2, l:2, h:[[1,2.4]], c:'#2F6DB5', e:'♿' },
+  handwash: { g:'welfare', n:'Hand-wash station', s:'1.2 × 0.6 m', w:0.6, l:1.2, h:[[1,1.2]], c:'#9CC9EA' },
+  // Power and production
+  gen:      { g:'power', n:'Generator', s:'3 × 1.5 m', w:1.5, l:3, h:[[1,1.7]], c:'#F2C230' },
+  light:    { g:'power', n:'Lighting tower', s:'2 × 1.5 m', w:1.5, l:2, h:[[1,1.5],[0.3,9]], c:'#F2C230', roof:'#C9D0D4', e:'💡' },
+  pa:       { g:'power', n:'Sound desk', s:'3 × 2 m', w:2, l:3, h:[[1,1.2]], c:'#2B2B2E', e:'🎚️' },
+  // Safety and information
+  firstaid: { g:'safety', n:'First aid', s:'3 × 3 m', w:3, l:3, h:[[1,2.4],[0.4,3.2]], c:'#FFFFFF', roof:'#FFFFFF' },
+  fire:     { g:'safety', n:'Fire point', s:'1 × 1 m', w:1, l:1, h:[[1,1.5]], c:'#D7261E', e:'🧯' },
+  info:     { g:'safety', n:'Information point', s:'3 × 3 m', w:3, l:3, h:[[1,2.4],[0.35,3.0]], c:'#1E5A43', roof:'#2F7A5C', e:'ℹ️' },
+  lost:     { g:'safety', n:'Lost children point', s:'3 × 3 m', w:3, l:3, h:[[1,2.4],[0.35,3.0]], c:'#E0892E', roof:'#F2B26B', e:'🧒' },
+  // Barriers and access
+  fence:    { g:'barriers', n:'Heras fencing', s:'20 m run', w:0.4, l:20, h:[[1,2.0]], c:'#9AA3A8' },
+  ped:      { g:'barriers', n:'Pedestrian barrier', s:'10 m run', w:0.5, l:10, h:[[1,1.1]], c:'#C9D0D4' },
+  gate:     { g:'barriers', n:'Entrance', s:'4 m gate', w:0.6, l:4, h:[[1,2.2]], c:'#2E9E57' },
+  emgate:   { g:'barriers', n:'Emergency vehicle gate', s:'4 m gate', w:0.6, l:4, h:[[1,2.2]], c:'#D7261E' },
+  // Zones and parking
+  zone:     { g:'zones', n:'Public arena', s:'Crowd area', w:30, l:40, h:[], c:'#E0892E', zone:'people' },
+  carpark:  { g:'zones', n:'Car park', s:'Parking area', w:30, l:40, h:[], c:'#3D7FD9', zone:'cars', per:25 },
+  blue:     { g:'zones', n:'Accessible parking', s:'Blue badge bays', w:10, l:12, h:[], c:'#2F6DB5', zone:'cars', per:35 },
+  crew:     { g:'zones', n:'Backstage / crew', s:'No public access', w:10, l:15, h:[], c:'#9AA3A8', zone:'area' },
+  // Waste
+  bins:     { g:'waste', n:'Bins', s:'1 × 1 m', w:1, l:1, h:[[1,1.1]], c:'#3B7A3B' },
+  skip:     { g:'waste', n:'Skip', s:'6 × 2.5 m', w:2.5, l:6, h:[[1,1.8]], c:'#E0892E' }
+};
+var GROUPS = [['tents','Tents and structures'],['food','Food and drink'],['rides','Rides and inflatables'],['welfare','Toilets and welfare'],['power','Power and production'],['safety','Safety and information'],['barriers','Barriers and access'],['zones','Zones and parking'],['waste','Waste']];
+var NOLABEL = ['bins','fence','gate','ped','emgate','picnic','handwash','fire','water'];
+
+function draw(type, w, l){
+  // top-down picture: x runs along length, y along width
+  var t = T[type], ppm = Math.max(8, Math.min(48, 900 / Math.max(w, l)));
+  var W = Math.max(8, Math.round(l * ppm)), H = Math.max(8, Math.round(w * ppm));
+  var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var g = cv.getContext('2d');
+  function rect(x,y,a,b,f){ g.fillStyle=f; g.fillRect(x,y,a,b); }
+  g.lineJoin='round';
+  if (type==='marquee' || type==='bar' || type==='firstaid' || type==='pagoda'){
+    var body = t.c; rect(0,0,W,H,body);
+    // pitched roof panels: shade the two halves, ridge down the middle
+    var grd = g.createLinearGradient(0,0,0,H); grd.addColorStop(0,'rgba(0,0,0,.10)'); grd.addColorStop(.5,'rgba(255,255,255,.18)'); grd.addColorStop(1,'rgba(0,0,0,.16)');
+    rect(0,0,W,H,grd);
+    g.strokeStyle='rgba(0,0,0,.25)'; g.lineWidth=Math.max(1,ppm*.08);
+    if (type==='pagoda'){ g.beginPath(); g.moveTo(0,0); g.lineTo(W,H); g.moveTo(W,0); g.lineTo(0,H); g.stroke(); }
+    else {
+      g.beginPath(); g.moveTo(0,H/2); g.lineTo(W,H/2); g.stroke();
+      var bays = Math.max(1, Math.round(l/3)); for (var i=1;i<bays;i++){ var x=i*W/bays; g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke(); }
+    }
+    g.strokeStyle='rgba(0,0,0,.45)'; g.lineWidth=Math.max(1.5,ppm*.12); g.strokeRect(1,1,W-2,H-2);
+    if (type==='firstaid'){ var s=Math.min(W,H)*.5; rect(W/2-s/2,H/2-s/7,s,s*2/7,'#D7261E'); rect(W/2-s/7,H/2-s/2,s*2/7,s,'#D7261E'); }
+    if (type==='bar'){ rect(0,H*.78,W,H*.22,'#8B5A2B'); }
+  } else if (type==='stage'){
+    rect(0,0,W,H,'#2B2B2E');
+    g.strokeStyle='rgba(255,255,255,.08)'; g.lineWidth=1; for (var y=0;y<H;y+=ppm*1.2){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
+    g.strokeStyle='#B9BEC4'; g.lineWidth=Math.max(2,ppm*.25); g.strokeRect(ppm*.3,ppm*.3,W-ppm*.6,H-ppm*.6);
+    rect(0,H-ppm*.5,W,ppm*.5,'#E0892E');
+  } else if (type==='food'){
+    rect(0,0,W,H,'#FAFAF7'); rect(0,0,W*.26,H,'#D9DDE0'); rect(W*.3,H-ppm*.45,W*.62,ppm*.45,'#E0892E');
+    g.strokeStyle='rgba(0,0,0,.35)'; g.lineWidth=Math.max(1,ppm*.08); g.strokeRect(1,1,W-2,H-2);
+    rect(W*.45,H*.25,W*.12,H*.3,'#9AA3A8');
+  } else if (type==='toilets'){
+    var u=t.units||4; for (var k=0;k<u;k++){ rect(k*W/u+1,1,W/u-2,H-2,'#2F6DB5'); rect(k*W/u+W/u*.3,H*.15,W/u*.4,H*.35,'#5C93D6'); }
+  } else if (type==='gen'){
+    rect(0,0,W,H,'#F2C230'); g.strokeStyle='#333'; g.lineWidth=Math.max(1,ppm*.08); g.strokeRect(1,1,W-2,H-2); rect(W*.75,H*.3,W*.12,H*.4,'#333');
+  } else if (type==='fence'){
+    rect(0,0,W,H,'rgba(154,163,168,.35)'); g.strokeStyle='#C9D0D4'; g.lineWidth=Math.max(1,H*.4);
+    g.beginPath(); g.moveTo(0,H/2); g.lineTo(W,H/2); g.stroke(); for (var x2=0;x2<=W;x2+=ppm*3.5){ rect(x2-1,0,3,H,'#5B6368'); }
+  } else if (type==='gate'){
+    rect(0,0,W,H,'#2E9E57');
+  } else if (type==='bins'){
+    rect(0,0,W,H,'#3B7A3B'); g.strokeStyle='#244d24'; g.lineWidth=Math.max(1,ppm*.08); g.strokeRect(1,1,W-2,H-2);
+  } else if (t.round){
+    var R=Math.min(W,H)/2, cx=W/2, cy=H/2, n=12;
+    for (var q=0;q<n;q++){ g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,R-1,q*2*Math.PI/n,(q+1)*2*Math.PI/n); g.closePath(); g.fillStyle = q%2 ? t.c : (t.roof||'#FFFFFF'); g.fill(); }
+    g.beginPath(); g.arc(cx,cy,R-1,0,2*Math.PI); g.strokeStyle='rgba(0,0,0,.4)'; g.lineWidth=Math.max(1.5,ppm*.12); g.stroke();
+    g.beginPath(); g.arc(cx,cy,R*.18,0,2*Math.PI); g.fillStyle='#FFFFFF'; g.fill();
+  } else if (type==='bouncy'){
+    rect(0,0,W,H,'#E94B3C'); rect(W*.16,H*.16,W*.68,H*.68,'#3D7FD9');
+    [[.1,.1],[.9,.1],[.1,.9],[.9,.9]].forEach(function(p){ g.beginPath(); g.arc(W*p[0],H*p[1],Math.min(W,H)*.12,0,2*Math.PI); g.fillStyle='#F2C230'; g.fill(); });
+  } else if (type==='stall'){
+    var st=Math.max(4,Math.round(W/6)); for (var z=0;z<6;z++) rect(z*W/6,0,W/6+1,H, z%2?'#D7261E':'#FBFBF8');
+    g.strokeStyle='rgba(0,0,0,.35)'; g.lineWidth=Math.max(1,ppm*.08); g.strokeRect(1,1,W-2,H-2);
+  } else if (type==='ped'){
+    rect(0,0,W,H,'rgba(201,208,212,.6)'); for (var x3=0;x3<=W;x3+=ppm*2.5){ rect(x3-1,0,3,H,'#6B7378'); }
+  } else if (type==='emgate'){
+    for (var z2=0;z2<8;z2++) rect(z2*W/8,0,W/8+1,H, z2%2?'#D7261E':'#FBFBF8');
+  } else if (type==='picnic'){
+    rect(0,H*.32,W,H*.36,'#9C6B3C'); rect(0,0,W,H*.18,'#7A5230'); rect(0,H*.82,W,H*.18,'#7A5230');
+  } else {
+    rect(0,0,W,H,t.c); g.strokeStyle='rgba(0,0,0,.35)'; g.lineWidth=Math.max(1,ppm*.08); g.strokeRect(1,1,W-2,H-2);
+    if (t.roof){ var grd2 = g.createLinearGradient(0,0,0,H); grd2.addColorStop(0,'rgba(0,0,0,.08)'); grd2.addColorStop(.5,'rgba(255,255,255,.2)'); grd2.addColorStop(1,'rgba(0,0,0,.12)'); rect(0,0,W,H,grd2); }
+  }
+  if (t.e && Math.min(W,H) >= 14){ var fs=Math.min(W,H)*.6; g.font=fs+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(t.e, W/2, H/2+fs*.05); }
+  return cv.toDataURL('image/png');
+}
+
+// ---------- the plan ----------
+var DEFAULT = [
+  ['zone',0,4,0,30,40], ['stage',0,-18,0], ['marquee',-27,4,90], ['bar',-27,18,90], ['pagoda',-26,-12,0],
+  ['food',26,-8,90], ['food',26,0,90], ['food',26,8,90], ['toilets',31,20,90], ['toilets',34,20,90],
+  ['gen',7,-25,0], ['firstaid',-14,-24,0], ['fence',0,30,0], ['fence',-20,30,0], ['fence',20,30,0], ['gate',-30,30,0],
+  ['bins',18,-14,0], ['bins',-17,14,0], ['bins',18,16,0],
+  ['bouncy',15,-24,0], ['fire',-20,-10,0], ['fire',22,12,0], ['emgate',30,30,0], ['carpark',0,46,0,16,50]
+];
+var items = [], seq = 1, sel = null, view = '2d', map;
+function make(row){ var t=T[row[0]]; return { id:'i'+(seq++), type:row[0], x:row[1], y:row[2], rot:row[3]||0, w:row[4]||t.w, l:row[5]||t.l }; }
+function reset(){ items = DEFAULT.map(make); sel = null; }
+reset();
+
+function corners(it, scale){
+  // footprint corners (lng,lat) for an item, optionally scaled about its centre (for roof tiers)
+  var s = scale || 1, a = it.rot * Math.PI/180, hl = it.l/2, hw = it.w/2 * s, hl2 = hl * (s < 1 ? Math.max(.6, s+ .45) : 1);
+  var pts = [[-hl2,hw],[hl2,hw],[hl2,-hw],[-hl2,-hw]];  // TL TR BR BL in local (x along length, y across)
+  return pts.map(function(p){
+    var x = it.x + p[0]*Math.cos(a) - p[1]*Math.sin(a), y = it.y + p[0]*Math.sin(a) + p[1]*Math.cos(a);
+    return [O.lng + x / mLng(O.lat), O.lat + y / M_LAT];
+  });
+}
+function area(it){ return T[it.type].round ? Math.PI*Math.pow(Math.min(it.w,it.l)/2,2) : it.w * it.l; }
+function ringFor(it, scale){
+  if (!T[it.type].round) return corners(it, scale);
+  var r = Math.min(it.w,it.l)/2 * (scale||1), out=[];
+  for (var i=0;i<24;i++){ var a=i*Math.PI/12; out.push([O.lng + (it.x + r*Math.cos(a))/mLng(O.lat), O.lat + (it.y + r*Math.sin(a))/M_LAT]); }
+  return out;
+}
+
+function fc(f){ return { type:'FeatureCollection', features:f }; }
+function geo(){
+  var foot=[], ext=[], lab=[], zones=[];
+  items.forEach(function(it){
+    var t=T[it.type], c=corners(it), rg=ringFor(it), ring=rg.concat([rg[0]]);
+    var props={ id:it.id, type:it.type, sel: it.id===sel ? 1:0, c:t.c };
+    (t.zone ? zones : foot).push({ type:'Feature', properties:props, geometry:{ type:'Polygon', coordinates:[ring] } });
+    t.h.forEach(function(h, i){
+      var cc = t.round ? ringFor(it, h[0]) : corners(it, h[0]); var base = i ? t.h[i-1][1] : 0;
+      ext.push({ type:'Feature', properties:{ id:it.id, h:h[1], b:base, c: i ? (t.roof || t.c) : t.c }, geometry:{ type:'Polygon', coordinates:[cc.concat([cc[0]])] } });
+    });
+    if (it.type==='stage'){ // back wall truss
+      var bw = { x: it.x - Math.sin(it.rot*Math.PI/180)*(-it.w/2+0.15), y: it.y + Math.cos(it.rot*Math.PI/180)*(-it.w/2+0.15), rot:it.rot, w:0.3, l:it.l };
+      var cb = corners(bw); ext.push({ type:'Feature', properties:{ id:it.id, h:t.back, b:0, c:'#3A3D42' }, geometry:{ type:'Polygon', coordinates:[cb.concat([cb[0]])] } });
+    }
+    var A = Math.round(area(it));
+    var label = t.zone==='people' ? t.n + ' · ' + A.toLocaleString('en-GB') + ' m² · about ' + Math.round(A*2).toLocaleString('en-GB') + ' people'
+      : t.zone==='cars' ? t.n + ' · ' + A.toLocaleString('en-GB') + ' m² · about ' + Math.floor(A/t.per) + ' cars'
+      : t.zone ? t.n + ' · ' + A.toLocaleString('en-GB') + ' m²'
+      : (NOLABEL.indexOf(it.type) > -1 ? '' : t.n);
+    if (label) lab.push({ type:'Feature', properties:{ t:label, z: t.zone?1:0 }, geometry:{ type:'Point', coordinates:[ (c[0][0]+c[2][0])/2, (c[0][1]+c[2][1])/2 ] } });
+  });
+  return { foot:fc(foot), ext:fc(ext), lab:fc(lab), zones:fc(zones) };
+}
+
+var imgCache = {};
+function syncImages(){
+  items.forEach(function(it){
+    if (T[it.type].zone) return;
+    var sid='img-'+it.id, key = it.type+'|'+it.w+'|'+it.l, c=corners(it);
+    var src = map.getSource(sid);
+    if (!src || src._key !== key){
+      if (src){ map.removeLayer('lyr-'+it.id); map.removeSource(sid); }
+      var url = imgCache[key] || (imgCache[key] = draw(it.type, it.w, it.l));
+      map.addSource(sid, { type:'image', url:url, coordinates:c });
+      map.getSource(sid)._key = key;
+      map.addLayer({ id:'lyr-'+it.id, type:'raster', source:sid, paint:{ 'raster-fade-duration':0, 'raster-opacity': view==='3d' ? 0.9 : 1 } }, 'sel-line');
+    } else src.setCoordinates(c);
+  });
+  // remove orphans
+  (map.getStyle().layers||[]).forEach(function(l){ if (l.id.indexOf('lyr-')===0 && !items.some(function(i){ return 'lyr-'+i.id===l.id; })){ map.removeLayer(l.id); map.removeSource('img-'+l.id.slice(4)); } });
+}
+function refresh(){
+  if (!map || !map.getSource('foot')) return;
+  var g = geo();
+  map.getSource('foot').setData(g.foot); map.getSource('ext').setData(g.ext); map.getSource('lab').setData(g.lab); map.getSource('zones').setData(g.zones);
+  syncImages(); stats(); panel();
+}
+
+// ---------- map ----------
+var styleSat = {
+  version:8,
+  glyphs:'https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key='+KEY,
+  sources:{
+    sat:{ type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, maxzoom:19, attribution:'Imagery © Esri, Maxar, Earthstar Geographics, GIS User Community' }
+  },
+  layers:[ { id:'bg', type:'background', paint:{ 'background-color':'#3d5a34' } }, { id:'sat', type:'raster', source:'sat' } ]
+};
+map = new maplibregl.Map({ container:'map', style:styleSat, center:[O.lng,O.lat], zoom: innerWidth < 760 ? 18 : 18.8, maxPitch:75, attributionControl:{ compact:true } });
+map.addControl(new maplibregl.NavigationControl({ visualizePitch:true }), 'bottom-right');
+map.addControl(new maplibregl.ScaleControl({ unit:'metric' }), 'bottom-left');
+var satFailed = false;
+map.on('error', function(e){
+  if (!satFailed && e && e.sourceId === 'sat'){
+    satFailed = true; // fall back to MapTiler aerial photos if Esri tiles fail
+    map.removeLayer('sat'); map.removeSource('sat');
+    map.addSource('sat', { type:'raster', tiles:['https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key='+KEY], tileSize:512, maxzoom:20, attribution:'© MapTiler © OpenStreetMap contributors' });
+    map.addLayer({ id:'sat', type:'raster', source:'sat' }, map.getStyle().layers[1] && map.getStyle().layers[1].id);
+  }
+});
+map.on('load', function(){
+  map.addSource('zones', { type:'geojson', data:fc([]) });
+  map.addSource('foot', { type:'geojson', data:fc([]) });
+  map.addSource('ext', { type:'geojson', data:fc([]) });
+  map.addSource('lab', { type:'geojson', data:fc([]) });
+  map.addLayer({ id:'zone-fill', type:'fill', source:'zones', paint:{ 'fill-color':['get','c'], 'fill-opacity':0.18 } });
+  map.addLayer({ id:'zone-line', type:'line', source:'zones', paint:{ 'line-color':['get','c'], 'line-width':3, 'line-dasharray':[2,1.5] } });
+  map.addLayer({ id:'sel-line', type:'line', source:'foot', filter:['==',['get','sel'],1], paint:{ 'line-color':'#E0892E', 'line-width':3 } });
+  map.addLayer({ id:'zone-sel', type:'line', source:'zones', filter:['==',['get','sel'],1], paint:{ 'line-color':'#FFFFFF', 'line-width':3 } });
+  map.addLayer({ id:'hit', type:'fill', source:'foot', paint:{ 'fill-color':'#000', 'fill-opacity':0.01 } });
+  map.addLayer({ id:'ext', type:'fill-extrusion', source:'ext', layout:{ visibility:'none' }, paint:{ 'fill-extrusion-color':['get','c'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['get','b'], 'fill-extrusion-opacity':0.96, 'fill-extrusion-vertical-gradient':true } });
+  map.addLayer({ id:'lab', type:'symbol', source:'lab', layout:{ 'text-field':['get','t'], 'text-font':['Noto Sans Bold'], 'text-size':['case',['==',['get','z'],1],14,12], 'text-allow-overlap':false, 'text-offset':[0,0] }, paint:{ 'text-color':'#FFFFFF', 'text-halo-color':'rgba(18,58,43,.9)', 'text-halo-width':1.6 } });
+  refresh();
+});
+
+// ---------- dragging and selecting ----------
+var drag = null;
+function startDrag(e, id){
+  sel = id; var it = find(id); if (!it) return;
+  drag = { id:id, sx:it.x, sy:it.y, s:e.lngLat };
+  map.dragPan.disable(); map.getCanvas().style.cursor='grabbing'; refresh();
+}
+function moveDrag(e){
+  if (!drag) return; var it = find(drag.id);
+  it.x = drag.sx + (e.lngLat.lng - drag.s.lng) * mLng(O.lat);
+  it.y = drag.sy + (e.lngLat.lat - drag.s.lat) * M_LAT;
+  refresh();
+}
+function endDrag(){ if (!drag) return; drag=null; map.dragPan.enable(); map.getCanvas().style.cursor=''; }
+function hitAt(pt){ var f = map.queryRenderedFeatures(pt, { layers:['hit','zone-fill'] }); return f.length ? f[0].properties.id : null; }
+map.on('mousedown', function(e){ var id=hitAt(e.point); if (id){ e.preventDefault(); startDrag(e, id); } });
+map.on('touchstart', function(e){ if (e.points && e.points.length>1) return; var id=hitAt(e.point); if (id){ e.preventDefault(); startDrag(e, id); } });
+map.on('mousemove', function(e){ if (drag) moveDrag(e); else map.getCanvas().style.cursor = hitAt(e.point) ? 'grab' : ''; });
+map.on('touchmove', function(e){ if (drag){ e.preventDefault(); moveDrag(e); } });
+map.on('mouseup', endDrag); map.on('touchend', endDrag);
+map.on('click', function(e){ if (!hitAt(e.point)){ sel=null; refresh(); } });
+
+function find(id){ for (var i=0;i<items.length;i++) if (items[i].id===id) return items[i]; return null; }
+
+// ---------- side panel ----------
+var $ = function(id){ return document.getElementById(id); };
+function panel(){
+  var it = sel && find(sel); $('selBox').hidden = !it; if (!it) return;
+  $('selName').textContent = T[it.type].n; if (document.activeElement!==$('selW')) $('selW').value = it.w; if (document.activeElement!==$('selL')) $('selL').value = it.l;
+  $('selRot').value = Math.round(it.rot); $('selRotV').textContent = Math.round(it.rot)+'°';
+}
+['selW','selL'].forEach(function(k){ $(k).addEventListener('input', function(){ var it=find(sel), v=parseFloat(this.value); if (it && v>0 && v<500){ it[k==='selW'?'w':'l']=v; refresh(); } }); });
+$('selRot').addEventListener('input', function(){ var it=find(sel); if (it){ it.rot=+this.value; refresh(); } });
+$('del').onclick = function(){ items = items.filter(function(i){ return i.id!==sel; }); sel=null; refresh(); };
+$('dup').onclick = function(){ var it=find(sel); if (!it) return; var n=Object.assign({}, it, { id:'i'+(seq++), x:it.x+2, y:it.y-2 }); items.push(n); sel=n.id; refresh(); };
+document.addEventListener('keydown', function(e){
+  if (!sel || /INPUT/.test(document.activeElement.tagName)) return; var it=find(sel);
+  if (e.key==='r'||e.key==='R'){ it.rot=(it.rot+15)%360; refresh(); }
+  if (e.key==='Delete'||e.key==='Backspace'){ $('del').onclick(); }
+});
+
+function palette(q){
+  q = (q||'').trim().toLowerCase(); $('pal').innerHTML='';
+  GROUPS.forEach(function(gp, gi){
+    var keys = Object.keys(T).filter(function(k){ return T[k].g===gp[0] && (!q || (T[k].n+' '+T[k].s+' '+gp[1]).toLowerCase().indexOf(q) > -1); });
+    if (!keys.length) return;
+    var d=document.createElement('details'); if (q || gi===0) d.open=true;
+    d.innerHTML='<summary>'+gp[1]+'<small>'+keys.length+'</small></summary>';
+    var box=document.createElement('div'); box.className='pal'; d.appendChild(box);
+    keys.forEach(function(k){ box.appendChild(palBtn(k)); });
+    $('pal').appendChild(d);
+  });
+  if (!$('pal').children.length) $('pal').innerHTML='<p class="note">No items match. Try “castle”, “toilet” or “barrier”.</p>';
+}
+var thumbs = {};
+function palBtn(k){
+  var t=T[k], b=document.createElement('button'); b.type='button';
+  var src = thumbs[k] || (thumbs[k] = t.zone ? 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34"><rect x="3" y="7" width="28" height="20" fill="'+t.c+'33" stroke="'+t.c+'" stroke-width="2" stroke-dasharray="4 3"/></svg>') : draw(k, t.w, t.l));
+  b.innerHTML = '<img alt="" src="'+src+'"><span>'+t.n+'<small>'+t.s+'</small></span>';
+  b.onclick = function(){ var c=map.getCenter(); var it=make([k,(c.lng-O.lng)*mLng(O.lat),(c.lat-O.lat)*M_LAT,0]); items.push(it); sel=it.id; refresh(); toast(t.n+' added. Drag it into place.'); };
+  return b;
+}
+palette('');
+$('find').addEventListener('input', function(){ palette(this.value); });
+
+function stats(){
+  var count = function(t){ return items.filter(function(i){ return i.type===t; }).length; };
+  var sumA = function(f){ return items.filter(f).reduce(function(s,i){ return s+area(i); },0); };
+  var zoneA = sumA(function(i){ return T[i.type].zone==='people'; });
+  var cars = items.filter(function(i){ return i.type==='carpark'; }).reduce(function(s,i){ return s+Math.floor(area(i)/25); },0);
+  var bays = items.filter(function(i){ return i.type==='blue'; }).reduce(function(s,i){ return s+Math.floor(area(i)/35); },0);
+  var pedM = items.filter(function(i){ return i.type==='ped'; }).reduce(function(s,i){ return s+i.l; },0);
+  var rides = items.filter(function(i){ return T[i.type].g==='rides'; }).length;
+  var fenceM = items.filter(function(i){ return i.type==='fence'; }).reduce(function(s,i){ return s+i.l; },0);
+  var covered = sumA(function(i){ return T[i.type].g==='tents' && i.type!=='stage' || ['bar','firstaid','info','lost'].indexOf(i.type)>-1; });
+  var rows = [
+    ['Public arena', Math.round(zoneA).toLocaleString('en-GB')+' m²'],
+    ['Standing crowd it holds', 'about '+Math.round(zoneA*2).toLocaleString('en-GB')],
+    ['Covered space (tents)', Math.round(covered)+' m²'],
+    ['Toilets', (count('toilets')*4 + count('accessible'))+' units ('+count('accessible')+' accessible)'],
+    ['Food and drink units', count('food')+count('trailer')+count('icecream')+count('bar')],
+    ['Rides and inflatables', rides],
+    ['Heras fencing', fenceM+' m ('+Math.ceil(fenceM/3.5)+' panels)'],
+    ['Pedestrian barrier', pedM+' m ('+Math.ceil(pedM/2.5)+' panels)'],
+    ['Parking', cars+' cars, '+bays+' blue badge bays'],
+    ['Fire points', count('fire')],
+    ['Bins and skips', count('bins')+count('skip')]
+  ].filter(function(r){ return !/^0( |$)/.test(String(r[1])) || ['Public arena','Toilets'].indexOf(r[0])>-1; });
+  $('stats').innerHTML = rows.map(function(r){ return '<div><span>'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('');
+}
+
+// ---------- 2D / 3D ----------
+function setView(v){
+  view=v; $('v2').setAttribute('aria-pressed', v==='2d'); $('v3').setAttribute('aria-pressed', v==='3d'); $('spin').hidden = v!=='3d';
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (v==='3d'){
+    map.setLayoutProperty('ext','visibility','visible');
+    map.easeTo({ pitch:60, bearing:-28, duration: reduce?0:1400 });
+  } else {
+    map.setLayoutProperty('ext','visibility','none');
+    map.easeTo({ pitch:0, bearing:0, duration: reduce?0:900 });
+  }
+}
+$('v2').onclick=function(){ setView('2d'); }; $('v3').onclick=function(){ setView('3d'); };
+$('spin').onclick=function(){ map.easeTo({ bearing: map.getBearing()+90, duration:1600 }); };
+$('reset').onclick=function(){ reset(); refresh(); };
+var BASES = {
+  esri: { tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, maxzoom:19, attribution:'Imagery © Esri, Maxar, Earthstar Geographics, GIS User Community' },
+  maptiler: { tiles:['https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key='+KEY], tileSize:512, maxzoom:20, attribution:'© MapTiler © OpenStreetMap contributors' },
+  map: { tiles:['https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key='+KEY], tileSize:512, maxzoom:22, attribution:'© MapTiler © OpenStreetMap contributors' }
+};
+$('base').addEventListener('change', function(){
+  var v=this.value, L=map.getStyle().layers, i=L.findIndex(function(l){ return l.id==='sat'; }), before = L[i+1] && L[i+1].id;
+  if (map.getLayer('sat')) map.removeLayer('sat'); if (map.getSource('sat')) map.removeSource('sat');
+  if (v==='plain') return;
+  map.addSource('sat', Object.assign({ type:'raster' }, BASES[v])); map.addLayer({ id:'sat', type:'raster', source:'sat' }, before);
+});
+
+// ---------- postcode ----------
+function lookup(pc, quiet){
+  pc = String(pc||'').trim(); if (!pc) return;
+  fetch('https://api.postcodes.io/postcodes/'+encodeURIComponent(pc)).then(function(r){ return r.json(); }).then(function(d){
+    if (!d || d.status!==200){ if (!quiet) toast('Couldn’t find that postcode. Check it and try again.'); return; }
+    map.jumpTo({ center:[d.result.longitude, d.result.latitude] });
+    if (quiet){ O = { lng:d.result.longitude, lat:d.result.latitude }; refresh(); }
+    else toast('Found '+d.result.postcode+'. Drag the map onto your field, then tap “Move layout here”.');
+  }).catch(function(){ if (!quiet) toast('Couldn’t look up the postcode just now.'); });
+}
+$('pcForm').addEventListener('submit', function(e){ e.preventDefault(); lookup($('pc').value); });
+$('bring').onclick=function(){ var c=map.getCenter(); O={ lng:c.lng, lat:c.lat }; refresh(); toast('Layout moved to the middle of the map.'); };
+
+var tt; function toast(m){ var t=$('toast'); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(function(){ t.hidden=true; }, 3200); }
+toast('Example layout on the pitch at Seel Park, Mossley. Drag items to move them, or press 3D.');
+})();
+</script>
+</body>
+</html>
