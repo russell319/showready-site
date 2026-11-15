@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
+<script>
+// Build 76: a saved plans copy that belongs to an account is hidden unless someone is signed in on this browser
+(function () { try { var S = 'showready-planner-v1', R = 'showready-planner-remote', l = JSON.parse(localStorage.getItem(R) || 'null'); if (!l || !l.user) return;
+  for (var i = 0; i < localStorage.length; i++) if (/^sb-.+-auth-token$/.test(localStorage.key(i))) return;
+  var d = localStorage.getItem(S); if (d !== null) localStorage.setItem('showready-held-' + S, JSON.stringify({ user: l.user, data: d, link: l }));
+  localStorage.removeItem(S); localStorage.removeItem(R); } catch (e) {} })();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="google-adsense-account" content="ca-pub-8382733964734609">
@@ -3440,6 +3447,8 @@ window.SR_ACCOUNT_PAGE = { kind: 'plans', store: 'showready-planner-v1', remoteK
   function onAuth(event, session) {
     var before = A.user && A.user.id;
     A.user = session && session.user ? session.user : null;
+    // Build 76: hide an account's saved copy when nobody is signed in; give it back after signing in
+    if (!A.user) holdLocal(); else restoreHeld();
     if (event === 'PASSWORD_RECOVERY') { A.view = 'recovery'; back.hidden = false; }
     if (A.user && location.hash && /access_token=/.test(location.hash)) try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
     if (A.user && A.reconciled !== A.user.id) {
@@ -3789,12 +3798,33 @@ window.SR_ACCOUNT_PAGE = { kind: 'plans', store: 'showready-planner-v1', remoteK
   }
   // Logging out saves the latest changes to the account, then clears this device,
   // so the next person to use it never sees someone else's plans or business details.
+  function heldKey() { return 'showready-held-' + P.store; }
+  function holdLocal() {
+    if (A.signingOut) return;
+    try { var l = JSON.parse(localStorage.getItem(P.remoteKey) || 'null'); if (!l || !l.user) return;
+      var d = localStorage.getItem(P.store); if (d !== null) localStorage.setItem(heldKey(), JSON.stringify({ user: l.user, data: d, link: l }));
+      localStorage.removeItem(P.store); localStorage.removeItem(P.remoteKey); if (A._reload) A._reload(); } catch (e) {}
+  }
+  function restoreHeld() {
+    try { var h = JSON.parse(localStorage.getItem(heldKey()) || 'null'); if (!h) return;
+      if (h.user !== A.user.id && !(P.kind === 'desk' && A.teams && A.teams.some(function (t) { return t.owner === h.user; }))) return;
+      if (localStorage.getItem(P.store) === null) { localStorage.setItem(P.store, h.data); localStorage.setItem(P.remoteKey, JSON.stringify(h.link)); }
+      localStorage.removeItem(heldKey()); var hb = document.getElementById('srHeld'); if (hb) hb.remove(); } catch (e) {}
+  }
+  function heldBanner() {
+    try { if (A.user || sessionStored() || !localStorage.getItem(heldKey()) || document.getElementById('srHeld')) return;
+      var b = document.createElement('div'); b.id = 'srHeld';
+      b.setAttribute('style', 'position:sticky;top:0;z-index:60;background:#FFF4E5;border-bottom:1px solid #E0892E;padding:10px 16px;font:15px/1.4 system-ui,sans-serif;text-align:center');
+      b.innerHTML = 'Your saved plans are hidden because nobody is logged in on this browser. <button type="button" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:0;background:#1E5A43;color:#fff;font:inherit;cursor:pointer">Log in to see them</button>';
+      b.querySelector('button').onclick = function () { A.open('signin'); };
+      document.body.insertBefore(b, document.body.firstChild); } catch (e) {}
+  }
   function signOut() {
-    return flush().then(function () { return A.client.auth.signOut(); }, function () {
+    return flush().then(function () { A.signingOut = true; return A.client.auth.signOut(); }, function () {
       throw new Error('Your latest changes couldn’t be saved to your account, so you’re still logged in. Check your connection and try again.');
     }).then(function () {
-      try { localStorage.removeItem(P.store); localStorage.removeItem(P.remoteKey); localStorage.removeItem('showready-adfree'); } catch (e) {}
-      A.user = null; A._reload();
+      try { localStorage.removeItem(P.store); localStorage.removeItem(P.remoteKey); localStorage.removeItem(heldKey()); localStorage.removeItem('showready-adfree'); } catch (e) {}
+      A.signingOut = false; A.user = null; A._reload();
     });
   }
   function deleteAccount() {
@@ -3825,7 +3855,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'plans', store: 'showready-planner-v1', remoteK
     }
     if (hostOk() && (sessionStored() || authInUrl())) ensureClient().catch(function () { A.status = 'error'; updateButton(); });
   }
-  updateButton();
+  updateButton(); heldBanner();
   if (typeof srLoadSettings === 'function') srLoadSettings(function (s) { start(s); }); else start(null);
 })();
 /*ACCOUNTS-END*/
