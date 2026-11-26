@@ -112,8 +112,9 @@ th { font-size: 13px; color: var(--muted); }
       <button type="button" role="tab" aria-selected="false" data-tab="contacts">Contacts <span id="dueCount"></span></button>
       <button type="button" role="tab" aria-selected="false" data-tab="partners">Partners <span id="partnerDue"></span></button>
       <button type="button" role="tab" aria-selected="false" data-tab="links">Link checks <span id="linkDue"></span></button>
-      <button type="button" role="tab" aria-selected="false" data-tab="accounts">Accounts <span id="acctFlag"></span></button>
+      <button type="button" role="tab" aria-selected="false" data-tab="accounts">Accounts <span id="acctFlag"></span><span id="entFlag"></span></button>
       <button type="button" role="tab" aria-selected="false" data-tab="numbers">Numbers</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="review">Review</button>
     </div>
 
     <div id="tab-councils">
@@ -210,7 +211,20 @@ th { font-size: 13px; color: var(--muted); }
 
     <div id="tab-accounts" hidden>
       <div class="card"><h2>Accounts and plans</h2><p class="hint">Everyone who has signed up, what they are and their plan. "Needs" flags organiser-and-supplier accounts that will need the Combined plan after the pilot. Enterprise quote requests arrive in Contacts.</p><div id="aBody"><p class="hint">Loading…</p></div></div>
+      <div class="card"><h2>Reported logos</h2><p class="hint">Logos people have reported from the supplier list. Remove takes the logo down everywhere and stops that account adding another until you press Allow again. Keep closes the reports and leaves it up. To delete the file itself as well: Supabase, Storage, logos, open the account's folder.</p><div id="lgBody"><p class="hint">Loading…</p></div></div>
       <div class="card"><h2>Founding and early-adopter places</h2><p class="hint">Places are claimed automatically when an account saves its first plan, profile or Film project. Accounts from before the offer (yours and the demo accounts) are marked internal and never count. To make another account internal, run in Supabase: update public.offer_places set tier = 'internal', place_no = null where owner = (select id from auth.users where email = 'their@email');</p><div id="oBody"><p class="hint">Loading…</p></div></div>
+    </div>
+
+    <div id="tab-review" hidden>
+      <div class="card"><h2>Review what people have entered</h2><p class="hint">Read only. Supplier profiles (listed or not), organiser events and trader applications, so you can spot anything that shouldn’t be on ShowReady. Contact details, private messages and uploaded documents aren’t shown, and every time you open this it’s logged. “Check wording” marks text with words worth a second look; it isn’t a verdict.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+          <button type="button" class="btn small" data-rv="suppliers" aria-pressed="true">Supplier profiles</button>
+          <button type="button" class="btn small" data-rv="events" aria-pressed="false">Organiser events</button>
+          <button type="button" class="btn small" data-rv="markets" aria-pressed="false">Trader applications</button>
+          <input id="rvSearch" type="search" placeholder="Search" aria-label="Search" style="flex:1 1 200px;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit">
+        </div>
+        <div id="rvBody"></div>
+      </div>
     </div>
 
     <div id="tab-numbers" hidden>
@@ -525,8 +539,31 @@ th { font-size: 13px; color: var(--muted); }
       if (r.error) { $('aBody').innerHTML = '<p class="hint">' + (/admin_accounts/.test(r.error.message || '') ? 'Run RUN-ME-roles-film-and-plans.sql in Supabase to switch this on.' : esc(nice(r.error))) + '</p>'; return; }
       S.accounts = r.data || []; renderAccounts();
       loadOffers();
+      loadLogos();
     }, function () {});
   }
+  // ---- reported logos (build 83)
+  var LOGO_BASE = 'https://osqlwddeobiklrpdnons.supabase.co/storage/v1/object/public/logos/';
+  function loadLogos() {
+    sb.rpc('admin_logo_reports').then(function (r) {
+      if (r.error) { $('lgBody').innerHTML = '<p class="hint">' + esc(nice(r.error)) + '</p>'; return; }
+      var rows = r.data || [];
+      $('lgBody').innerHTML = !rows.length ? '<p class="hint">No reports.</p>' : '<div class="list">' + rows.map(function (x) {
+        return '<div class="item" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
+          (x.logo_v ? '<img src="' + esc(LOGO_BASE + x.owner + '/logo?v=' + x.logo_v) + '" alt="Reported logo" style="width:64px;height:64px;object-fit:contain;border:1px solid #ddd;border-radius:8px;background:#fff">' : '<span class="hint">(logo already gone)</span>') +
+          '<div style="flex:1;min-width:180px"><b>' + esc(x.business) + '</b><div class="hint">' + x.reports + ' report' + (x.reports === 1 ? '' : 's') + ', last ' + esc(String(x.last_at).slice(0, 10)) + (x.blocked ? ' · blocked' : '') + '</div></div>' +
+          '<button class="btn" type="button" data-logo-do="remove" data-id="' + esc(x.owner) + '">Remove</button>' +
+          '<button class="btn" type="button" data-logo-do="keep" data-id="' + esc(x.owner) + '">Keep</button></div>';
+      }).join('') + '</div>';
+    }, function () {});
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-logo-do]') : null; if (!b) return;
+    b.disabled = true;
+    sb.rpc('admin_logo_action', { target: b.getAttribute('data-id'), act: b.getAttribute('data-logo-do') }).then(function (r) {
+      if (r.error) { b.disabled = false; b.textContent = nice(r.error); return; } loadLogos();
+    });
+  });
   // ---- founding and early-adopter places (build 58)
   function loadOffers() {
     Promise.all([sb.rpc('offer_counts'), sb.rpc('admin_offer_places')]).then(function (rs) {
@@ -534,7 +571,7 @@ th { font-size: 13px; color: var(--muted); }
       var c = rs[0].data, rows = rs[1].data || [], N = { organisers: 'Organisers', suppliers: 'Suppliers', film: 'Film & TV' };
       $('oBody').innerHTML = '<table><thead><tr><th>Category</th><th>Founding</th><th>Early adopter</th></tr></thead><tbody>' +
         ['organisers', 'suppliers', 'film'].map(function (k) { var x = c.categories[k]; return '<tr><td>' + N[k] + '</td><td>' + x.founding_taken + ' of ' + c.founding_cap + '</td><td>' + x.early_taken + ' of ' + c.early_cap + (c.early_open ? '' : ' (closed)') + '</td></tr>'; }).join('') +
-        '</tbody></table><p class="hint">Early-adopter deadline: ' + esc(c.early_deadline || 'none') + ', ' + c.early_discount_pct + '% off for life.</p>' +
+        '</tbody></table><p class="hint">Early-adopter deadline: ' + esc(c.early_deadline || 'none') + ', ' + c.early_discount_pct + '% off (for life if joined by 31 Dec 2026, otherwise the first 12 months).</p>' +
         '<div style="overflow-x:auto"><table><thead><tr><th>Email</th><th>Category</th><th>Place</th><th>Claimed</th><th>By saving</th></tr></thead><tbody>' +
         rows.map(function (o) { return '<tr><td>' + esc(o.email) + '</td><td>' + esc(N[o.category] || o.category) + '</td><td>' + (o.tier === 'internal' ? 'Internal' : esc(o.tier === 'founding' ? 'Founding' : 'Early adopter') + ' #' + o.place_no) + '</td><td>' + esc(String(o.claimed_at).slice(0, 10)) + '</td><td>' + esc({ plans: 'a plan', supplier_listings: 'a profile', film_projects: 'a Film project' }[o.claimed_by] || o.claimed_by || '') + '</td></tr>'; }).join('') +
         '</tbody></table></div>';
@@ -545,13 +582,110 @@ th { font-size: 13px; color: var(--muted); }
     rows.forEach(function (a) { by[a.role] = (by[a.role] || 0) + 1; });
     $('acctFlag').textContent = flagged ? '(' + flagged + ')' : '';
     if (!rows.length) { $('aBody').innerHTML = '<p class="hint">No accounts yet.</p>'; return; }
-    $('aBody').innerHTML = '<p>' + rows.length + ' account' + (rows.length === 1 ? '' : 's') + ': ' + Object.keys(ROLE_NAMES).filter(function (k) { return by[k]; }).map(function (k) { return by[k] + ' ' + ROLE_NAMES[k].toLowerCase(); }).join(', ') + '.</p>' +
+    $('aBody').innerHTML = '<h3 style="margin-top:0">Enterprise candidates</h3><p class="hint">Suppliers who look like national or multi-depot firms. Each one is also emailed to you. Nothing changes on their account: contact them yourself, then mark it reviewed.</p><div id="eList"><p class="hint">Loading…</p></div>' +
+      '<p>' + rows.length + ' account' + (rows.length === 1 ? '' : 's') + ': ' + Object.keys(ROLE_NAMES).filter(function (k) { return by[k]; }).map(function (k) { return by[k] + ' ' + ROLE_NAMES[k].toLowerCase(); }).join(', ') + '.</p>' +
       '<div style="overflow-x:auto"><table><thead><tr><th>Email</th><th>Kind</th><th>Plan</th><th>Paid to</th><th>Founding</th><th>Student</th><th>HAE</th><th>Needs</th><th>Joined</th></tr></thead><tbody>' +
       rows.map(function (a) {
         return '<tr><td>' + esc(a.email) + '</td><td>' + esc(ROLE_NAMES[a.role] || a.role) + '</td><td>' + esc(a.plan) + (a.extra_seats ? ' +' + a.extra_seats + ' people' : '') + '</td><td>' + esc(a.plan_expires || '') + '</td><td>' + (a.founding ? 'Yes' : '') + '</td><td>' + (a.student ? 'Yes' : '') + '</td><td>' + (a.hae_member ? 'Yes' : '') + '</td><td>' + esc(a.needs || '') + '</td><td>' + esc(String(a.created_at || '').slice(0, 10)) + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
-      '<p class="hint">To mark an HAE member or change a plan by hand: Supabase, Table Editor, profiles.</p>';
+      '<h3 style="margin-top:18px">Give someone a plan</h3>' +
+      '<p class="hint">For partners, testers or a goodwill extension. A plan given here is never changed by Stripe while it lasts. Leave the end date empty for no end date.</p>' +
+      '<div class="row" style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">' +
+      '<label>Account<br><select id="gUser">' + rows.map(function (a) { return '<option value="' + esc(a.id) + '">' + esc(a.email) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Plan<br><select id="gPlan">' + [['pro', 'Pro'], ['pro-plus', 'Pro Plus'], ['event-pass', 'Event pass'], ['market-25', 'Market pass, 25 traders'], ['market-75', 'Market pass, 75 traders'], ['market-200', 'Market pass, 200 traders'], ['vendor-pro', 'Vendor Pro'], ['vendor-business', 'Vendor Business'], ['agency', 'Agency'], ['enterprise', 'Enterprise'], ['combined', 'Combined'], ['film-pass', 'Film Production Pass'], ['film-pro', 'Film Pro'], ['film-studio', 'Film Studio']].map(function (p) { return '<option value="' + p[0] + '">' + p[1] + '</option>'; }).join('') + '</select></label>' +
+      '<label>Until (optional)<br><input type="date" id="gUntil"></label>' +
+      '<label style="flex:1;min-width:200px">Reason<br><input id="gReason" maxlength="300" placeholder="e.g. HAE partner, tester, apology for outage" style="width:100%"></label>' +
+      '<button class="btn primary small" type="button" id="gGo">Give plan</button><button class="btn small" type="button" id="gStop">Remove given plan</button></div><p class="msg" id="gMsg"></p>' +
+      '<div id="gList"><p class="hint">Loading given plans…</p></div>' +
+      '<h3 style="margin-top:18px">Give promo access (Build 104)</h3>' +
+      '<p class="hint">Promo Pack covers one saved event; Promo Campaign covers all their events. Everyone has full access during the pilot anyway. Prices from 1 February 2027: Pack £14.99 per event, Campaign £11 a month (VAT included).</p>' +
+      '<div class="row" style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">' +
+      '<label>Account<br><select id="pUser"><option value="">Choose…</option>' + rows.map(function (a) { return '<option value="' + esc(a.id) + '">' + esc(a.email) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Kind<br><select id="pKind"><option value="pack">Promo Pack (one event)</option><option value="campaign">Promo Campaign (all events)</option></select></label>' +
+      '<label>Event<br><select id="pPlan"><option value="">Choose an account first</option></select></label>' +
+      '<label>Until (optional)<br><input type="date" id="pUntil"></label>' +
+      '<label style="flex:1;min-width:200px">Reason<br><input id="pReason" maxlength="300" placeholder="e.g. tester, partner" style="width:100%"></label>' +
+      '<button class="btn primary small" type="button" id="pGo">Give promo access</button></div><p class="msg" id="pMsg"></p>' +
+      '<div id="pList"><p class="hint">Loading promo access…</p></div>';
+    loadGrants(); loadPromo(); loadEflags();
   }
+  // Build 109: Enterprise candidate flags (depots answer, plan limits reached, enquiries across 3+ regions, nationwide wording)
+  var E_WHY = { depots: 'Depots: 6 or more', limit_hits: 'Keeps reaching plan limits', regions: 'Enquiries across 3+ regions', nationwide_wording: 'Says nationwide (on-site services)' };
+  function loadEflags() {
+    sb.rpc('admin_enterprise_flags').then(function (r) {
+      var box = $('eList'); if (!box) return;
+      if (r.error) { box.innerHTML = '<p class="hint">' + esc(nice(r.error)) + '</p>'; return; }
+      var g = r.data || [], open = g.filter(function (x) { return !x.reviewed_at; }).length;
+      $('entFlag').textContent = open ? ' · ' + open + ' Enterprise' : '';
+      box.innerHTML = !g.length ? '<p class="hint">No candidates yet.</p>' : '<div style="overflow-x:auto"><table><thead><tr><th>Business</th><th>Email</th><th>Plan</th><th>Why</th><th>Detail</th><th>Flagged</th><th>Emailed</th><th></th></tr></thead><tbody>' +
+        g.map(function (x) { return '<tr' + (x.reviewed_at ? ' style="opacity:.6"' : '') + '><td>' + esc(x.business || '(no listing)') + '</td><td>' + esc(x.email || '') + '</td><td>' + esc(x.plan || 'free') + '</td><td>' + esc(E_WHY[x.reason] || x.reason) + '</td><td>' + esc(x.detail || '') + '</td><td>' + esc(String(x.created_at).slice(0, 10)) + '</td><td>' + (x.emailed_at ? 'Yes' : 'Not yet') + '</td><td>' +
+          (x.reviewed_at ? 'Reviewed ' + esc(String(x.reviewed_at).slice(0, 10)) + (x.review_note ? ': ' + esc(x.review_note) : '') : '<button class="btn small" type="button" data-eflag="' + x.id + '">Mark reviewed</button>') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    }, function () {});
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-eflag]'); if (!b) return;
+    var note = prompt('Note (optional), e.g. "Emailed 24 Nov, sent Enterprise quote"', '');
+    if (note === null) return;
+    b.disabled = true;
+    sb.rpc('admin_review_enterprise_flag', { p_id: +b.getAttribute('data-eflag'), p_note: note }).then(function (r) { if (r.error) { alert(nice(r.error)); b.disabled = false; return; } loadEflags(); });
+  });
+  function loadPromo() {
+    sb.rpc('admin_promo_grants').then(function (r) {
+      var box = $('pList'); if (!box) return;
+      if (r.error) { box.innerHTML = '<p class="hint">' + esc(nice(r.error)) + '</p>'; return; }
+      var g = r.data || [];
+      box.innerHTML = !g.length ? '<p class="hint">No promo access given yet.</p>' : '<div style="overflow-x:auto"><table><thead><tr><th>Account</th><th>Kind</th><th>Event</th><th>Until</th><th>Reason</th><th>Given</th><th></th></tr></thead><tbody>' +
+        g.map(function (x) { return '<tr><td>' + esc(x.email || x.user_id) + '</td><td>' + (x.kind === 'pack' ? 'Pack' : 'Campaign') + '</td><td>' + esc(x.event_name || (x.kind === 'pack' ? '(event deleted)' : 'All events')) + '</td><td>' + esc(x.until || 'No end date') + '</td><td>' + esc(x.reason) + '</td><td>' + esc(String(x.created_at).slice(0, 10)) + '</td><td>' + (x.revoked_at ? 'Removed ' + esc(String(x.revoked_at).slice(0, 10)) : '<button class="btn small" type="button" data-prevoke="' + x.id + '">Remove</button>') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    }, function () {});
+  }
+  document.addEventListener('change', function (e) {
+    if (!e.target || e.target.id !== 'pUser') return;
+    var sel = $('pPlan'); sel.innerHTML = '<option value="">Loading…</option>';
+    if (!e.target.value) { sel.innerHTML = '<option value="">Choose an account first</option>'; return; }
+    sb.rpc('admin_user_plans', { p_user: e.target.value }).then(function (r) {
+      var d = (r && r.data) || [];
+      sel.innerHTML = d.length ? d.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>'; }).join('') : '<option value="">No saved events</option>';
+    });
+  });
+  document.addEventListener('click', function (e) {
+    var rv = e.target.closest && e.target.closest('[data-prevoke]');
+    var go = e.target.closest && e.target.closest('#pGo'); if (!go && !rv) return;
+    var m = $('pMsg'), reason = $('pReason').value.trim();
+    if (!reason) { m.textContent = 'Add a reason first.'; m.className = 'msg bad'; return; }
+    var call;
+    if (rv) { if (!confirm('Remove this promo access?')) return; call = sb.rpc('admin_revoke_promo', { p_id: +rv.getAttribute('data-prevoke'), p_reason: reason }); }
+    else {
+      var u = $('pUser').value, kind = $('pKind').value, plan = $('pPlan').value;
+      if (!u) { m.textContent = 'Choose an account.'; m.className = 'msg bad'; return; }
+      if (kind === 'pack' && !plan) { m.textContent = 'A Pack needs one of their saved events.'; m.className = 'msg bad'; return; }
+      if (!confirm('Give ' + $('pUser').options[$('pUser').selectedIndex].text + ' the ' + (kind === 'pack' ? 'Promo Pack for ' + $('pPlan').options[$('pPlan').selectedIndex].text : 'Promo Campaign') + '?')) return;
+      call = sb.rpc('admin_grant_promo', { p_user: u, p_kind: kind, p_plan: kind === 'pack' ? plan : null, p_until: $('pUntil').value || null, p_reason: reason });
+    }
+    m.textContent = 'Saving…'; m.className = 'msg';
+    call.then(function (r) { if (r.error) { m.textContent = nice(r.error); m.className = 'msg bad'; return; } m.textContent = 'Done.'; m.className = 'msg'; loadPromo(); });
+  });
+  function loadGrants() {
+    sb.from('plan_grants').select('user_id, plan, until, reason, created_at, revoked_at').order('created_at', { ascending: false }).limit(50).then(function (r) {
+      var box = $('gList'); if (!box) return;
+      if (r.error) { box.innerHTML = '<p class="hint">' + esc(nice(r.error)) + '</p>'; return; }
+      var em = {}; (S.accounts || []).forEach(function (a) { em[a.id] = a.email; });
+      var g = r.data || [];
+      box.innerHTML = !g.length ? '<p class="hint">No plans given yet.</p>' : '<div style="overflow-x:auto"><table><thead><tr><th>Account</th><th>Plan</th><th>Until</th><th>Reason</th><th>Given</th><th>Removed</th></tr></thead><tbody>' +
+        g.map(function (x) { return '<tr><td>' + esc(em[x.user_id] || x.user_id) + '</td><td>' + esc(x.plan) + '</td><td>' + esc(x.until || 'No end date') + '</td><td>' + esc(x.reason) + '</td><td>' + esc(String(x.created_at).slice(0, 10)) + '</td><td>' + esc(x.revoked_at ? String(x.revoked_at).slice(0, 10) : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    }, function () {});
+  }
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest && e.target.closest('#gGo, #gStop'); if (!go) return;
+    var m = $('gMsg'), u = $('gUser').value, reason = $('gReason').value.trim();
+    if (!reason) { m.textContent = 'Add a reason first.'; m.className = 'msg bad'; return; }
+    var em = $('gUser').options[$('gUser').selectedIndex].text;
+    var call = go.id === 'gGo'
+      ? (confirm('Give ' + em + ' the ' + $('gPlan').options[$('gPlan').selectedIndex].text + ' plan ' + ($('gUntil').value ? 'until ' + $('gUntil').value : 'with no end date') + '?') ? sb.rpc('admin_grant_plan', { p_user: u, p_plan: $('gPlan').value, p_until: $('gUntil').value || null, p_reason: reason }) : null)
+      : (confirm('Remove the plan given to ' + em + '? They go back to Free.') ? sb.rpc('admin_revoke_plan', { p_user: u, p_reason: reason }) : null);
+    if (!call) return;
+    m.textContent = 'Saving…'; m.className = 'msg';
+    call.then(function (r) { if (r.error) { m.textContent = nice(r.error); m.className = 'msg bad'; return; } m.textContent = 'Done.'; m.className = 'msg'; loadAccounts(); });
+  });
   function renderNumbers() {
     var by = function (key) { var o = {}; S.contacts.forEach(function (k) { o[k[key]] = (o[k[key]] || 0) + 1; }); return o; };
     var st = by('status'), kd = by('kind');
@@ -586,5 +720,7 @@ th { font-size: 13px; color: var(--muted); }
   });
 })();
 </script>
+<script src="/admin-tools.js?v=80" defer></script>
+<script src="/admin/review.js?v=103" defer></script>
 </body>
 </html>

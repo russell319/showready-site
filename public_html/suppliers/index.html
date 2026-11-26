@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
+<script>/* Build 98: offer terms. Anyone who joined by 31 Dec 2026 keeps the original offer; from 1 Jan 2027 the new one applies. */
+window.SR_TERMS_CUT = Date.parse('2027-01-01T00:00:00Z');
+function srV1(u) { u = u || window.SR_USER; var t = u && u.created_at ? Date.parse(u.created_at) : Date.now(); return t < SR_TERMS_CUT; }
+function srFoundLine(v1, cat) { if (v1) return '6 months free, then 30% off for life' + (cat === 'suppliers' ? '. As a supplier you stay free until 31 July 2027' : ''); return '3 months free ' + (cat === 'suppliers' ? 'from when you joined (from 1 February 2027 if you joined during the pilot)' : 'from your first paid plan') + ', then 20% off for life'; }
+function srEarlyLine(v1, pct) { return (pct || 20) + '% off ' + (v1 ? 'for life' : 'for your first 12 months'); }
+function srFoundNow(cat) { return Date.now() < SR_TERMS_CUT ? 'join by 31 December 2026 for 6 months free, then 30% off for life' + (cat === 'suppliers' ? ' (suppliers free until 31 July 2027)' : '') + '; from 1 January 2027 it is 3 months free, then 20% off for life (excludes Enterprise)' : srFoundLine(false, cat) + ' (excludes Enterprise)'; }
+</script>
 <script>
 // Build 76: a saved desk copy that belongs to an account is hidden unless someone is signed in on this browser
 (function () { try { var S = 'showready-supplier-desk-v1', R = 'showready-supplier-remote', l = JSON.parse(localStorage.getItem(R) || 'null'); if (!l || !l.user) return;
@@ -25,6 +32,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
+  /* Build 97: maps keep their own layers inside them, so menus and panels always sit above the map */
+  .leaflet-container, .maplibregl-map { isolation: isolate; z-index: 0; }
 /* Layout: brand bar, a row of pipeline figures, stage filters, then enquiry cards; an edit panel opens above the list. */
 :root {
   --bg: #F3F5F0; --surface: #FFFFFF; --surface-2: #E9EDE6; --ink: #15231C; --muted: #4B5A52; --line: #D9DFD5;
@@ -183,6 +192,9 @@ details.step[open] { padding-bottom: 14px; }
 [hidden] { display: none !important; }
 .sr-banner { background: var(--pennant, #E0892E); color: #1A1A1A; font-weight: 700; font-size: 14px; text-align: center; padding: 10px 16px; }
 .sr-banner a { color: inherit; text-decoration: underline; }
+.sr-banner .b-short{display:none}
+@media (max-width:600px){.sr-banner.has-short .b-long{display:none}.sr-banner.has-short .b-short{display:inline}.sr-banner{font-size:14px;padding:8px 14px}.sr-banner a{display:inline-block;padding:6px 2px}}
+
 </style>
 <link rel="canonical" href="https://beshowready.co.uk/suppliers/">
 <meta property="og:type" content="website">
@@ -259,7 +271,9 @@ details.step[open] { padding-bottom: 14px; }
       <details class="step" id="step1" open>
         <summary>What you offer <small>what organisers find you for</small></summary>
         <div class="stepgrid">
-          <div class="field w4"><span class="label" id="servLbl">Tap everything you offer, then pick the details</span><div id="r-offer" role="group" aria-labelledby="servLbl"></div></div>
+          <div class="field w4" id="agencyField"><span class="label" id="agencyLbl">Are you an entertainment agency?</span><div role="radiogroup" aria-labelledby="agencyLbl" style="display:flex;flex-direction:column;gap:6px"><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="radio" name="r-agency" id="r-agency-no" value="no" checked style="width:auto;min-height:0"> No: I run my own business, act or service</label><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="radio" name="r-agency" id="r-agency-yes" value="yes" style="width:auto;min-height:0"> Yes: I book acts and performers for events</label></div><span class="hint" id="r-agency-hint">Agencies list each act separately, and every enquiry for them comes to your desk. No commission, whichever you choose.</span></div>
+          <div class="field w4"><span class="label" id="servLbl">Tap everything you offer, then pick the details</span><div id="r-offer" role="group" aria-labelledby="servLbl"></div><span class="hint">Offer more than one service? Tick them all: one profile covers everything your business does. A separate business or trading name needs its own profile and plan.</span></div>
+          <div class="field w4" id="adultField" hidden><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input id="r-adult" type="checkbox" style="width:auto;min-height:0"> My act includes adult material (18+ only)</label><span class="hint">Adult acts are only shown to organisers whose audience is adults only, never for children, teens or family events.</span></div>
       <div class="field w4" id="menusField" hidden><span class="label">Menus and prices <span style="font-weight:500">(optional)</span></span><span class="hint">Up to 6 menus or packages. Organisers see them before they enquire and can say which they're interested in. Prices are shown as guide prices; your reply is the real quote.</span>
         <div id="r-menus"></div><button type="button" class="btn small" id="addMenu" style="margin-top:8px">Add a menu or package</button>
         <label for="r-menuLink" style="margin-top:12px;display:block">Link to your full menu (optional)</label><input id="r-menuLink" type="url" maxlength="300" placeholder="https://yourbusiness.co.uk/menu"></div>
@@ -270,14 +284,15 @@ details.step[open] { padding-bottom: 14px; }
           <div class="field w2"><label for="r-area">Where you're based</label><input id="r-area" type="text" placeholder="Town or postcode, e.g. Mossley or OL5"></div>
           <div class="field w4"><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input id="r-listed" type="checkbox" checked style="width:auto;min-height:0"> Show my profile to organisers searching ShowReady</label><span class="hint">Organisers see your business name, town, services and the rest of this profile, never your address, phones or email. Untick to hide it for a while.</span></div>
           <div class="field w2"><label for="r-miles">How far you travel</label><select id="r-miles"><option value="10">Up to 10 miles</option><option value="25">Up to 25 miles</option><option value="50" selected>Up to 50 miles</option><option value="100">Up to 100 miles (Vendor Business)</option><option value="999">Anywhere in England and Wales (Enterprise)</option></select></div>
+          <div class="field w2"><label for="r-depots">How many depots or bases do you run?</label><select id="r-depots"><option value="">Choose…</option><option value="1">1</option><option value="2-5">2 to 5</option><option value="6-10">6 to 10</option><option value="10+">More than 10</option></select><p class="hint" id="r-depots-hint" hidden>With 6 or more depots, Enterprise is built for you: any distance from every depot, 10 logins, invoice billing. <a href="#enterprise" data-enterprise>Ask for an Enterprise quote</a>.</p></div>
           <div class="field w2"><label for="r-size">How many vans, trailers or depots take bookings, and how many people will use this desk?</label><select id="r-size"><option value="">Choose</option><option value="1">One base, just me</option><option value="biz">Up to 5 bases or up to 3 people</option><option value="ent">More than 5 bases or more than 3 people</option></select><p class="hint" id="r-size-hint" style="font-size:13px;margin:4px 0 0"></p></div>
         </div>
       </details>
       <details class="step" id="step2">
         <summary>2 · Build trust <small>insurance and reviews</small></summary>
         <div class="stepgrid">
-          <div class="field w2"><label for="r-insurance">Public liability insurance expires</label><input id="r-insurance" type="date"><span class="hint">We'll remind you before it runs out. Uploading the certificate arrives with accounts.</span></div>
-          <div class="field w2"><label for="r-dbs">Enhanced DBS check valid until</label><input id="r-dbs" type="date"><span class="hint">If you work with children or vulnerable adults. Organisers see “DBS checked” while it’s in date, and we remind you before it runs out.</span></div>
+          <div class="field w2"><label for="r-insurance">Public liability insurance expires</label><input id="r-insurance" type="date"><span class="hint">Your desk flags it when it's about to run out. <em class="soon" style="font-style:normal;font-weight:700;padding:0 6px;border-radius:999px">Coming soon</em> email reminders and uploading the certificate.</span></div>
+          <div class="field w2"><label style="display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:8px"><input id="r-dbsus" type="checkbox" style="width:auto;min-height:0" onchange="dbsUsHint()"> I'm on the DBS Update Service</label><label for="r-dbs" id="r-dbs-lbl">Enhanced DBS check valid until</label><input id="r-dbs" type="date"><span class="hint" id="r-dbs-hint">If you work with children or vulnerable adults. Organisers see “DBS checked” while it’s in date, and your desk flags it before it runs out (email reminders coming soon).</span></div>
           <div class="field w4 sr-promo" id="supPartners" hidden></div>
           <div class="field w2"><label for="r-google">Google reviews link</label><input id="r-google" type="url" inputmode="url" placeholder="https://g.page/r/your-business/review"><span class="hint" id="r-google-msg">In Google Business Profile, choose Ask for reviews and copy the link.</span></div>
           <div class="field w2"><label for="r-trustpilot">Trustpilot page</label><input id="r-trustpilot" type="url" inputmode="url" placeholder="https://uk.trustpilot.com/review/yourbusiness.co.uk"><span class="hint" id="r-trustpilot-msg">Optional. Your public Trustpilot review page.</span></div>
@@ -289,9 +304,8 @@ details.step[open] { padding-bottom: 14px; }
         <div class="stepgrid">
           <div class="field w4"><span class="label" id="typeLbl">Events you work</span><div class="picks" role="group" aria-labelledby="typeLbl" id="r-eventTypes"></div></div>
           <div class="field w4"><span class="label" id="audLbl">Audiences you work for</span><div class="picks" role="group" aria-labelledby="audLbl" id="r-audiences"></div><span class="hint">Leave blank if you suit any audience. Organisers say who their audience is, so you’re matched to the right events.</span></div>
-          <div class="field w4"><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input id="r-adult" type="checkbox" style="width:auto;min-height:0"> My act includes adult material (18+ only)</label><span class="hint">Adult acts are only shown to organisers whose audience is adults only, never for children, teens or family events.</span></div>
           <div class="field w2"><label for="r-biggest">Biggest crowd you've served</label><input id="r-biggest" type="number" min="0" step="50" placeholder="e.g. 5000"></div>
-          <div class="field w4"><label for="r-about">What makes you different</label><textarea id="r-about" maxlength="280" rows="2" placeholder="e.g. Wood-fired pizza from a 1970s horsebox, 80 pizzas an hour, own generator"></textarea><span class="hint">Up to 280 characters. Photos of past jobs arrive with accounts.</span></div>
+          <div class="field w4"><label for="r-about">What makes you different</label><textarea id="r-about" maxlength="280" rows="2" placeholder="e.g. What you do, what sets you apart and what you bring with you"></textarea><span class="hint">Up to 280 characters. Photos of past jobs arrive with accounts.</span></div>
         </div>
       </details>
       <div class="wiznav" id="wizNav" hidden><button class="btn" type="button" id="wizBack">Back</button><button class="btn primary" type="button" id="wizNext">Next</button></div>
@@ -299,6 +313,7 @@ details.step[open] { padding-bottom: 14px; }
     </form>
     <p class="note">Log in to keep your desk and profile in your account. Once your profile is saved and shown, organisers near you who need what you offer can find you and send an enquiry. There's no commission: you agree prices and payment directly with the organiser, and what you earn is yours.</p>
   </section>
+  <section class="reviews" id="medRules" hidden aria-labelledby="medRulesTitle"></section>
   <p class="note" id="exNote"><span class="ex">Examples</span> These are example enquiries to show how it works. <button class="btn small" type="button" id="clearEx">Clear examples</button></p>
   <span class="note" id="msg" role="status"></span>
 
@@ -356,7 +371,7 @@ details.step[open] { padding-bottom: 14px; }
 <script>
 /*SETTINGS-START*/
 // Site settings. Defaults live here; /settings.json on the live site overrides them, so prices and text can change without a rebuild.
-var SR_DEFAULTS = {"banner": {"show": false, "text": "", "link": "", "linkText": ""}, "contact": {"email": "hello@beshowready.co.uk", "phone": "07368 988038"}, "offers": {"pilotText": "Everything is free during the pilot, which runs until 1 May 2027.", "foundingText": "Founding members get 6 months free, then 30% off for life (excludes Enterprise). Founding suppliers stay free until 31 October 2027.", "charityText": "Charities, PTAs and parish councils get 50% off.", "priceNote": "Planned prices from summer 2027, shown before VAT. They may change before launch; founding members keep their discount.", "studentText": "Students get 50% off Film plans when they sign up with a university or college email (ending .ac.uk).", "hae": {"enabled": false, "vendorText": "HAE members: Vendor Pro free for the first 12 months, then the normal subscription.", "enterpriseText": "HAE members on Enterprise: 3 months free, then 20% off the first paid year."}, "earlyText": "After that, the next 200 in each category who join by 31 August 2027 get 20% off for life (excludes Enterprise). Offers never add together: you get the single best one."}, "pricingSummary": {"organisers": "Free for one event at a time. Optional extras from {event-pass} for a single event, or {pro} a month if you run events through the year.", "suppliers": "Free supplier desk for work you find yourself. Vendor Pro is {vendor-pro} a month + VAT, or £60 a year + VAT, to be listed for organisers and receive their enquiries. Everything is free during the pilot, and founding suppliers stay free until 31 October 2027.", "faq": "Everything is free during the pilot, which runs until 1 May 2027. After that, planning stays free forever. Suppliers pay from {vendor-pro} a month + VAT to be listed and receive enquiries, and organisers can add paid extras. Annual plans save about two months. See Pricing above for the details."}, "plans": {"organisers": [{"id": "free", "name": "Free", "price": "£0", "per": "Free forever", "for": "For anyone planning an event", "featured": false, "flag": "", "features": ["One event at a time", "Plan, licences, deadlines, costs and contacts", "Event folder: readiness checks, ShowReady’s PDFs and 5 document uploads", "Activities: bonfires, rides, animals, raffles and more", "Insurance guidance for your event", "Basic risk assessment and tracker", "Supplier quotes, up to 10", "Basic spreadsheet"]}, {"id": "event-pass", "name": "Event pass", "price": "£29", "per": "per event, 12 months’ access, including VAT", "for": "For a once-a-year event, like a fete or wedding", "featured": false, "flag": "", "features": ["Everything in Free", "3D site plan to scale: figures, routes and a council PDF, sent with your enquiries", "Event folder with 25 document uploads", "Full spreadsheet with colour timeline", "Event management plan export", "Vendor money and budget", "Two people on the team", "Cheaper than Pro if you plan for 4 months or more"]}, {"id": "pro", "name": "Pro", "price": "£8", "per": "a month, or £79 a year (save £17), including VAT", "for": "For organisers who run events through the year", "featured": true, "flag": "Best for regular organisers", "features": ["Everything in Event pass", "Up to 5 events at once", "Event folder with 100 document uploads", "Copy last year’s plan", "Three people on the team"]}, {"id": "pro-plus", "name": "Pro Plus", "price": "£24", "per": "a month, or £240 a year (save £48), including VAT", "for": "For shows, festivals and professionals", "featured": false, "flag": "", "features": ["Everything in Pro", "Unlimited events", "Event folder with 500 document uploads", "Trader applications and pitch allocation", "Automatic trader checks", "Volunteer rotas and branded exports", "Collect pitch fees in the app", "Ten people on the team"]}], "suppliers": [{"id": "supplier-free", "name": "Free", "price": "£0", "per": "Free forever", "for": "A free desk for work you find yourself", "featured": false, "flag": "", "features": ["Supplier desk: every enquiry, quote and follow-up", "What each job really earns after fees and costs", "Your profile and review links, kept ready", "Listed for organisers free during the pilot. From 1 May 2027 the desk stays free, but you need Vendor Pro to be listed and get enquiries"]}, {"id": "vendor-pro", "name": "Vendor Pro", "price": "£6", "per": "a month + VAT (£7.20), or £60 a year + VAT (£72)", "for": "For food traders and sole traders", "featured": true, "flag": "Needed to be found and get enquiries", "features": ["Everything in Free", "One login and one base, listed for organisers up to 50 miles away", "Receive enquiries and messages, unlimited", "Your Google and Trustpilot reviews on every quote", "Document vault with expiry reminders (coming 2027)"]}, {"id": "vendor-business", "name": "Vendor Business", "price": "£20", "per": "a month + VAT (£24), or £199 a year + VAT (£238.80)", "for": "For hire firms and traders with more than one van, trailer or person", "featured": false, "flag": "", "features": ["Everything in Vendor Pro", "Up to 3 logins: your team works on one shared desk", "Up to 5 bases: each van, trailer or depot with its own base and travel area", "Travel up to 100 miles from each base", "Organisers are matched to your nearest base, and told which one", "First notice of new briefs (coming 2027)", "Overflow network: post and take jobs (coming 2027)", "Featured in your area (coming 2027)"]}, {"id": "enterprise", "name": "Enterprise", "price": "£99", "per": "a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot", "for": "For national suppliers and firms with several depots", "featured": false, "flag": "", "quote": true, "features": ["Everything in Vendor Business", "10 logins included", "Up to 10 depots included, then £8 a month + VAT for each extra depot", "Any distance: national coverage from every depot", "Enquiries matched to your nearest depot", "Invoice billing and enquiry exports", "Not part of the founding offer"]}], "combined": [{"id": "combined", "name": "Combined", "price": "£12", "per": "a month + VAT (£14.40), or £115 a year + VAT (£138)", "for": "For businesses that organise events and supply them", "featured": false, "flag": "Organiser and supplier", "features": ["Everything in organiser Pro", "Everything in Vendor Pro: listed and receiving enquiries", "One account: switch between planner and Supplier desk", "Needed if you’re both an organiser and a supplier"]}], "film": [{"id": "film-free", "name": "Free", "price": "£0", "per": "Free forever", "for": "For trying ShowReady Film", "featured": false, "flag": "", "features": ["1 shoot with up to 2 locations", "Permits, deadlines and costs for each location", "Risk assessments and unit base plans on screen", "Contact unit caterers", "Printing, PDFs and the spreadsheet are on paid plans"]}, {"id": "film-pass", "name": "Production Pass", "price": "£39", "per": "per shoot, 6 months’ access, including VAT", "for": "For a single production", "featured": false, "flag": "", "features": ["Everything in Free", "1 shoot, unlimited locations", "Print or save PDFs: location plan, risk assessments, call sheets", "Download the spreadsheet"]}, {"id": "film-pro", "name": "Film Pro", "price": "£12", "per": "a month, or £120 a year (save £24), including VAT", "for": "For location managers and freelancers", "featured": true, "flag": "Best for regular shoots", "features": ["Everything in Production Pass", "Unlimited shoots and locations", "PDFs and spreadsheet for every shoot"]}, {"id": "film-studio", "name": "Film Studio", "price": "£39", "per": "a month, or £390 a year (save £78), including VAT", "for": "For production companies", "featured": false, "flag": "", "features": ["Everything in Film Pro", "Five people on the team (coming 2027)", "Extra people £6 a month each", "Your company name on exports (coming 2027)"]}]}, "mailerlite": {"account": "2753714", "organiserForm": "202687711498208740", "supplierForm": "202687712187123319"}, "supplierServices": ["Hot food", "Bar and drinks", "Coffee and cakes", "Ice cream and desserts", "Portable toilets", "Power and generators", "Marquees and tents", "Stage, sound and lighting", "Fencing and barriers", "Security and stewarding", "Event staff", "First aid and medical", "Waste and recycling", "Venue hire", "Accommodation, glamping and motorhomes", "Entertainment and activities", "Photography and video", "Furniture and decor", "Signs and printing", "Something else"], "eventTypes": ["Weddings", "Private parties", "Fetes and community", "Shows and fairs", "Festivals", "Markets", "Corporate", "Equestrian", "Motorsport", "Sport", "Film and TV"], "estimates": {"peoplePerToilet": 100, "alcoholToiletFactor": 1.25, "campingToiletFactor": 1.5, "peoplePerSteward": 250, "peoplePerBin": 75}, "founding": {"goLiveDate": "2027-05-01", "closesOn": "", "autoCloseMonths": 6, "openText": "Limited to the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade to a paid plan. Basic planning stays free for organisers.", "closedText": "Founding places are full. Early adopters who join by 31 August 2027 get 20% off for life (excludes Enterprise).", "joinEyebrowOpen": "Founding members", "joinEyebrowClosed": "Join the pilot", "joinButtonOpen": "Keep me posted", "joinButtonClosed": "Keep me posted", "showBannerWhileOpen": true, "bannerText": "Founding places: the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade get 6 months free, then 30% off for life (excludes Enterprise)."}, "councils": {"tameside": {"name": "Tameside Council", "checked": "2026-10-30", "events": {"url": "https://tameside.gov.uk/licensing/eventnotification", "label": "Tameside: event notification form", "weeks": 8, "note": "Tameside asks for its event notification form at least 8 weeks before the event, emailed to licensing@tameside.gov.uk."}, "roadClosure": {"url": "https://tameside.gov.uk/licensing/eventnotification", "label": "Tameside: event road closure application", "weeks": 6, "note": "Road closure application at least 6 weeks before, sent with the event notification. £32 admin fee."}, "email": "licensing@tameside.gov.uk"}, "oldham": {"name": "Oldham Council", "checked": "2026-10-30", "events": {"url": "https://www.oldham.gov.uk/eventnotification", "label": "Oldham: online event notification form", "weeks": 3, "note": "Oldham asks for its online event notification at least 3 weeks before; bigger events need more notice."}, "roadClosure": {"url": "https://www.oldham.gov.uk/eventnotification", "label": "Oldham: road closure requests", "weeks": 5, "note": "Road closures need at least 5 weeks' notice."}, "ten": {"url": "https://www.oldham.gov.uk/download/downloads/id/7082/guidance_on_temporary_event_notices.docx", "label": "Oldham: TEN guidance"}, "email": "events@oldham.gov.uk"}, "calderdale": {"name": "Calderdale Council", "checked": "2026-10-30", "ten": {"url": "https://www.gov.uk/apply-for-a-licence/temporary-event-notice/calderdale/apply-1", "label": "Calderdale: apply for a TEN online (GOV.UK)"}, "events": {"url": "https://www.visitcalderdale.com/wp-content/uploads/2026/01/Event-Application-Guide-V0.2.pdf", "label": "Calderdale: event application guide", "weeks": 12, "note": "Calderdale publishes an event application guide; check its notice periods for your event size."}, "email": "licensing@calderdale.gov.uk"}, "manchester": {"name": "Manchester City Council", "checked": "2026-10-30", "ten": {"url": "https://www.manchester.gov.uk/directory_record/451830/temporary_event_notice_ten", "label": "Manchester: Temporary Event Notice"}, "roadClosure": {"url": "https://www.manchester.gov.uk/online-directories/licences-and-permissions-directories/licensing/highways-and-pavements/request-a-streetroad-closure-for-your-event", "label": "Manchester: request a street or road closure"}, "parks": {"url": "https://www.manchester.gov.uk/parks-leisure-and-the-arts/parks-playgrounds-allotments-and-open-spaces/host-your-event-in-one-of-our-parks", "label": "Manchester: host your event in a park"}}}, "ticketing": {"enabled": true, "intro": "Selling tickets? These sites handle ticket sales and payments for you.", "community": [{"name": "Ticket Tailor", "url": "https://get.tickettailor.com/rdauuamkwimv", "note": "Low flat fee per ticket; good for fetes, fairs and community events. Signing up through this link gets you 50 free ticket credits."}, {"name": "TicketSource", "url": "https://www.ticketsource.com/signup/162353", "note": "Free for free events; simple for charities, schools and local shows."}], "music": [{"name": "Skiddle", "url": "https://www.skiddle.com/?sktag=15972", "note": "Gigs, club nights and festivals, with Skiddle’s own audience finding your event."}], "disclosure": "ShowReady may earn a small fee from these links. It costs you nothing extra."}, "billing": {"enabled": false}};
+var SR_DEFAULTS = {"banner": {"show": false, "text": "", "link": "", "linkText": ""}, "contact": {"email": "hello@beshowready.co.uk", "phone": "07368 988038"}, "offers": {"pilotText": "Everything is free during the pilot, which runs until 1 February 2027.", "foundingText": "Founding members get 3 months free, then 20% off for life (excludes Enterprise). Join by 31 December 2026 to get the original offer: 6 months free, then 30% off for life, with founding suppliers free until 31 July 2027.", "charityText": "Charities, PTAs, schools, parish and town councils and community groups get 50% off.", "priceNote": "Planned prices from 1 February 2027. Organiser and Film prices include VAT; supplier and Combined prices are shown before VAT, which is added at 20%. Prices may change before launch; founding members keep their discount.", "studentText": "Students get 50% off Film plans when they sign up with a university or college email (ending .ac.uk).", "hae": {"enabled": false, "vendorText": "HAE members: Vendor Pro free for the first 3 months, then the normal subscription.", "enterpriseText": "HAE members on Enterprise: 3 months free, then 20% off the first paid year."}, "earlyText": "After that, the next 200 in each category who join by 31 May 2027 get 20% off for their first 12 months (20% off for life if they join by 31 December 2026; excludes Enterprise). Offers never add together: you get the single best one.", "tiers": [{"label": "Join by 31 December 2026", "text": "6 months free, then 30% off for life, with founding suppliers free until 31 July 2027."}, {"label": "From 1 January 2027", "text": "Founding members get 3 months free, then 20% off for life (excludes Enterprise)."}, {"label": "Charities, PTAs, schools, parish and town councils and community groups", "text": "50% off."}]}, "pricingSummary": {"organisers": "Free for one event at a time. Optional extras from {event-pass} including VAT for a single event, or {pro} a month including VAT if you run events through the year.", "suppliers": "Free supplier desk for work you find yourself. Vendor Pro is {vendor-pro} a month + VAT, or £60 a year + VAT, to be listed for organisers and receive their enquiries. Everything is free during the pilot. Founding suppliers then get 3 months free (free until 31 July 2027 if they join by 31 December 2026).", "faq": "Everything is free during the pilot, which runs until 1 February 2027. After that, planning stays free forever. Suppliers pay from {vendor-pro} a month + VAT to be listed and receive enquiries, and organisers can add paid extras. Annual plans save about two months. See Pricing above for the details."}, "plans": {"organisers": [{"id": "free", "name": "Free", "price": "£0", "per": "Free forever", "for": "For anyone planning an event", "featured": false, "flag": "", "features": ["One event at a time", "Plan, licences, deadlines, costs and contacts", "Event folder: readiness checks, ShowReady’s PDFs and 5 document uploads", "Activities: bonfires, rides, animals, raffles and more", "Insurance guidance for your event", "Basic risk assessment and tracker", "Supplier quotes, up to 10", "Basic spreadsheet"]}, {"id": "event-pass", "name": "Event pass", "price": "£29", "per": "per event, 12 months’ access, including VAT", "for": "For a once-a-year event, like a fete or wedding", "featured": false, "flag": "", "features": ["Everything in Free", "3D site plan to scale: figures, routes and a council PDF, sent with your enquiries", "Event folder with 25 document uploads", "Full spreadsheet with colour timeline", "Event management plan export", "Vendor money and budget", "Two people on the team", "Cheaper than Pro if you plan for 4 months or more"]}, {"id": "pro", "name": "Pro", "price": "£8", "per": "a month, or £79 a year (save £17), including VAT", "for": "For organisers who run events through the year", "featured": true, "flag": "Best for regular organisers", "features": ["Everything in Event pass", "Up to 5 events at once", "Event folder with 100 document uploads", "Copy last year’s plan", "Three people on the team"]}, {"id": "pro-plus", "name": "Pro Plus", "price": "£24", "per": "a month, or £240 a year (save £48), including VAT", "for": "For shows, festivals and professionals", "featured": false, "flag": "", "features": ["Everything in Pro", "Unlimited events", "Event folder with 500 document uploads", "Trader applications and pitch allocation", "Automatic trader checks", "Volunteer rotas and branded exports", "Collect pitch fees in the app", "Ten people on the team"]}], "suppliers": [{"id": "supplier-free", "name": "Free", "price": "£0", "per": "Free forever", "for": "A free desk for work you find yourself", "featured": false, "flag": "", "features": ["Supplier desk: every enquiry, quote and follow-up", "What each job really earns after fees and costs", "Your profile and review links, kept ready", "Listed for organisers free during the pilot. From 1 February 2027 the desk stays free, but you need Vendor Pro to be listed and get enquiries"]}, {"id": "vendor-pro", "name": "Vendor Pro", "price": "£6", "per": "a month + VAT (£7.20), or £60 a year + VAT (£72)", "for": "For food traders and sole traders", "featured": true, "flag": "Needed to be found and get enquiries", "features": ["Everything in Free", "One login and one base, listed for organisers up to 50 miles away", "Receive enquiries and messages, unlimited", "Your Google and Trustpilot reviews on every quote", "Document vault with expiry reminders (coming 2027)"]}, {"id": "vendor-business", "name": "Vendor Business", "price": "£20", "per": "a month + VAT (£24), or £199 a year + VAT (£238.80)", "for": "For hire firms and traders with more than one van, trailer or person", "featured": false, "flag": "", "features": ["Everything in Vendor Pro", "Up to 3 logins: your team works on one shared desk", "Up to 5 bases: each van, trailer or depot with its own base and travel area", "Travel up to 100 miles from each base", "Organisers are matched to your nearest base, and told which one", "First notice of new briefs (coming 2027)", "Overflow network: post and take jobs (coming 2027)", "Featured in your area (coming 2027)"]}, {"id": "agency", "name": "Agency", "price": "£65", "per": "a month + VAT (£78), or £649 a year + VAT (£778.80)", "for": "For entertainment agencies booking acts and performers", "featured": false, "flag": "", "features": ["Everything in Vendor Pro", "Up to 20 acts, each listed on its own with its own 18+ setting", "Every enquiry for every act comes to your desk, marked with the act’s name", "Up to 3 logins: your team works on one shared desk", "National coverage: organisers anywhere in England and Wales can find your acts", "Founding offer applies"]}, {"id": "enterprise", "name": "Enterprise", "price": "£99", "per": "a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot", "for": "For national suppliers and firms with several depots", "featured": false, "flag": "", "quote": true, "features": ["Everything in Vendor Business", "10 logins included", "Up to 10 depots included, then £8 a month + VAT for each extra depot", "Any distance: national coverage from every depot", "No limit on acts for entertainment agencies", "Enquiries matched to your nearest depot", "Invoice billing and enquiry exports", "Not part of the founding offer"]}], "combined": [{"id": "combined", "name": "Combined", "price": "£12", "per": "a month + VAT (£14.40), or £115 a year + VAT (£138)", "for": "For businesses that organise events and supply them", "featured": false, "flag": "Organiser and supplier", "features": ["Everything in organiser Pro", "Everything in Vendor Pro: listed and receiving enquiries", "One account: switch between planner and Supplier desk", "Needed if you’re both an organiser and a supplier"]}], "film": [{"id": "film-free", "name": "Free", "price": "£0", "per": "Free forever", "for": "For trying ShowReady Film", "featured": false, "flag": "", "features": ["1 shoot with up to 2 locations", "Permits, deadlines and costs for each location", "Risk assessments and unit base plans on screen", "Contact unit caterers", "Printing, PDFs and the spreadsheet are on paid plans"]}, {"id": "film-pass", "name": "Production Pass", "price": "£39", "per": "per shoot, 6 months’ access, including VAT", "for": "For a single production", "featured": false, "flag": "", "features": ["Everything in Free", "1 shoot, unlimited locations", "Print or save PDFs: location plan, risk assessments, call sheets", "Download the spreadsheet"]}, {"id": "film-pro", "name": "Film Pro", "price": "£12", "per": "a month, or £120 a year (save £24), including VAT", "for": "For location managers and freelancers", "featured": true, "flag": "Best for regular shoots", "features": ["Everything in Production Pass", "Unlimited shoots and locations", "PDFs and spreadsheet for every shoot"]}, {"id": "film-studio", "name": "Film Studio", "price": "£39", "per": "a month, or £390 a year (save £78), including VAT", "for": "For production companies", "featured": false, "flag": "", "features": ["Everything in Film Pro", "Five people on the team (coming 2027)", "Extra people £6 a month each", "Your company name on exports (coming 2027)"]}]}, "mailerlite": {"account": "2753714", "organiserForm": "202687711498208740", "supplierForm": "202687712187123319"}, "supplierServices": ["Hot food", "Bar and drinks", "Coffee and cakes", "Ice cream and desserts", "Portable toilets", "Power and generators", "Marquees and tents", "Stage, sound and lighting", "Fencing and barriers", "Security and stewarding", "Event staff", "First aid and medical", "Waste and recycling", "Venue hire", "Accommodation, glamping and motorhomes", "Entertainment and activities", "Photography and video", "Furniture and decor", "Signs and printing", "Wristbands, lanyards and merchandise", "Something else"], "eventTypes": ["Weddings", "Private parties", "Fetes and community", "Shows and fairs", "Festivals", "Markets", "Corporate", "Equestrian", "Motorsport", "Sport", "Film and TV"], "estimates": {"peoplePerToilet": 100, "alcoholToiletFactor": 1.25, "campingToiletFactor": 1.5, "peoplePerSteward": 250, "peoplePerBin": 75}, "founding": {"goLiveDate": "2027-02-01", "closesOn": "", "autoCloseMonths": 6, "openText": "Limited to the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade to a paid plan. Basic planning stays free for organisers.", "closedText": "Founding places are full. Early adopters who join by 31 May 2027 get 20% off for their first 12 months (excludes Enterprise).", "joinEyebrowOpen": "Founding members", "joinEyebrowClosed": "Join the pilot", "joinButtonOpen": "Keep me posted", "joinButtonClosed": "Keep me posted", "showBannerWhileOpen": true, "bannerText": "Founding places for the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade. Join by 31 December 2026 for 6 months free, then 30% off for life; from 1 January 2027 it is 3 months free, then 20% off for life (excludes Enterprise).", "bannerShort": "Join by 31 December 2026: 6 months free, then 30% off for life.", "bannerShortFrom2027": "Founding places: 3 months free, then 20% off for life."}, "councils": {"tameside": {"name": "Tameside Council", "checked": "2026-10-30", "events": {"url": "https://tameside.gov.uk/licensing/eventnotification", "label": "Tameside: event notification form", "weeks": 8, "note": "Tameside asks for its event notification form at least 8 weeks before the event, emailed to licensing@tameside.gov.uk."}, "roadClosure": {"url": "https://tameside.gov.uk/licensing/eventnotification", "label": "Tameside: event road closure application", "weeks": 6, "note": "Road closure application at least 6 weeks before, sent with the event notification. £32 admin fee."}, "email": "licensing@tameside.gov.uk"}, "oldham": {"name": "Oldham Council", "checked": "2026-10-30", "events": {"url": "https://www.oldham.gov.uk/eventnotification", "label": "Oldham: online event notification form", "weeks": 3, "note": "Oldham asks for its online event notification at least 3 weeks before; bigger events need more notice."}, "roadClosure": {"url": "https://www.oldham.gov.uk/eventnotification", "label": "Oldham: road closure requests", "weeks": 5, "note": "Road closures need at least 5 weeks' notice."}, "ten": {"url": "https://www.oldham.gov.uk/download/downloads/id/7082/guidance_on_temporary_event_notices.docx", "label": "Oldham: TEN guidance"}, "email": "events@oldham.gov.uk"}, "calderdale": {"name": "Calderdale Council", "checked": "2026-10-30", "ten": {"url": "https://www.gov.uk/apply-for-a-licence/temporary-event-notice/calderdale/apply-1", "label": "Calderdale: apply for a TEN online (GOV.UK)"}, "events": {"url": "https://www.visitcalderdale.com/wp-content/uploads/2026/01/Event-Application-Guide-V0.2.pdf", "label": "Calderdale: event application guide", "weeks": 12, "note": "Calderdale publishes an event application guide; check its notice periods for your event size."}, "email": "licensing@calderdale.gov.uk"}, "manchester": {"name": "Manchester City Council", "checked": "2026-10-30", "ten": {"url": "https://www.manchester.gov.uk/directory_record/451830/temporary_event_notice_ten", "label": "Manchester: Temporary Event Notice"}, "roadClosure": {"url": "https://www.manchester.gov.uk/online-directories/licences-and-permissions-directories/licensing/highways-and-pavements/request-a-streetroad-closure-for-your-event", "label": "Manchester: request a street or road closure"}, "parks": {"url": "https://www.manchester.gov.uk/parks-leisure-and-the-arts/parks-playgrounds-allotments-and-open-spaces/host-your-event-in-one-of-our-parks", "label": "Manchester: host your event in a park"}}}, "ticketing": {"enabled": true, "intro": "Selling tickets? These sites handle ticket sales and payments for you.", "community": [{"name": "Ticket Tailor", "url": "https://get.tickettailor.com/rdauuamkwimv", "note": "Low flat fee per ticket; good for fetes, fairs and community events. Signing up through this link gets you 50 free ticket credits."}, {"name": "TicketSource", "url": "https://www.ticketsource.com/signup/162353", "note": "Free for free events; simple for charities, schools and local shows."}], "music": [{"name": "Skiddle", "url": "https://www.skiddle.com/?sktag=15972", "note": "Gigs, club nights and festivals, with Skiddle’s own audience finding your event."}], "disclosure": "ShowReady may earn a small fee from these links. It costs you nothing extra."}, "billing": {"enabled": false}, "testimonials": {"items": []}, "foundingMembers": {"items": []}, "reviews": {"google": "", "trustpilot": ""}, "pressMentions": {"items": []}, "founder": {"photo": "", "linkedin": ""}, "planShots": {"sitePlan": ""}};
 function srMerge(a, b) {
   if (b === null || typeof b !== 'object' || Array.isArray(b) || a === null || typeof a !== 'object' || Array.isArray(a)) return b === undefined ? a : b;
   var out = {}, k;
@@ -392,7 +407,7 @@ function srOfferState(cat) {
   // Organisers: basic planning is always free; places go to organisers who upgrade to a paid plan
   var up = cat === 'organisers', on = up ? ' on paid upgrades' : '';
   if (fl > 0) return { tier: 'founding', left: fl, cap: o.founding_cap, deadline: dl, short: 'Founding' + on + ': ' + fl + ' of ' + o.founding_cap + ' left', text: (up ? 'Basic planning is always free. Founding offer on paid upgrades: ' : 'Founding offer: ') + fl + ' of ' + o.founding_cap + ' places left' };
-  if (o.early_open && el > 0) return { tier: 'early', left: el, cap: o.early_cap, deadline: dl, short: 'Early adopter ' + o.early_discount_pct + '% off' + on + ': ' + el + ' left', text: (up ? 'Basic planning is always free. ' : '') + 'Founding places full. Early adopters' + on + ': ' + o.early_discount_pct + '% off for life, ' + el + ' of ' + o.early_cap + ' places left until ' + dl };
+  if (o.early_open && el > 0) return { tier: 'early', left: el, cap: o.early_cap, deadline: dl, short: 'Early adopter ' + o.early_discount_pct + '% off' + on + ': ' + el + ' left', text: (up ? 'Basic planning is always free. ' : '') + 'Founding places full. Early adopters' + on + ': ' + srEarlyLine(Date.now() < SR_TERMS_CUT, o.early_discount_pct) + ', ' + el + ' of ' + o.early_cap + ' places left until ' + dl };
   return { tier: 'none', deadline: dl, short: '', text: '' };
 }
 (function () {
@@ -418,7 +433,9 @@ function srBanner(s) {
   if ((!b.show || !b.text) && fo.state === 'open' && f.showBannerWhileOpen && f.bannerText) b = { show: true, text: srFoundingText(s, f.bannerText), link: '/#join', linkText: 'Join now' };
   if (!b.show || !b.text) { el.hidden = true; return; }
   el.textContent = '';
-  var t = document.createElement('span'); t.textContent = b.text; el.appendChild(t);
+  var t = document.createElement('span'); t.className = 'b-long'; t.textContent = b.text; el.appendChild(t);
+  var sh = b.short || ((b.linkText === 'Join now') ? ((new Date() >= new Date('2027-01-01T00:00:00') ? f.bannerShortFrom2027 : f.bannerShort) || '') : '');
+  if (sh) { var t2 = document.createElement('span'); t2.className = 'b-short'; t2.textContent = sh; el.appendChild(t2); el.classList.add('has-short'); }
   if (b.link && /^(https:\/\/|\/)/.test(b.link)) { var a = document.createElement('a'); a.href = b.link; a.textContent = b.linkText || 'Find out more'; el.appendChild(document.createTextNode(' ')); el.appendChild(a); }
   el.hidden = false;
 }
@@ -456,6 +473,9 @@ function supplierIncome(q) {
   }
 }
 function supplierNet(q) { return supplierIncome(q) - n(q.costs); }
+// Build 115: models paid out of takings can't show a figure until expected takings are entered (a pitch fee alone would show as a loss).
+var TAKINGS_MODELS = ['none', 'pitch', 'percent', 'both', 'greater'];
+function needsTakings(q) { return TAKINGS_MODELS.indexOf(q.model) !== -1 && String(q.takings == null ? '' : q.takings).trim() === ''; }
 function parseDay(s) { if (!s) return null; var p = s.split('-'); var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); return isNaN(d) ? null : d; }
 function followState(q, today) {
   if (q.stage === 'Won' || q.stage === 'Lost') return null;
@@ -466,7 +486,7 @@ function followState(q, today) {
 function pipeline(list, today) {
   var open = 0, openValue = 0, won = 0, wonValue = 0, due = 0, lost = 0;
   list.forEach(function (q) {
-    var v = supplierNet(q);
+    var v = needsTakings(q) ? 0 : supplierNet(q);
     if (q.stage === 'Won') { won++; wonValue += v; }
     else if (q.stage === 'Lost') lost++;
     else { open++; openValue += v; }
@@ -523,6 +543,11 @@ var PROFILE_STEPS = [
   { id: 'biggest', pts: 5, step: 3, prompt: 'Add the biggest crowd you’ve served.' },
   { id: 'about', pts: 5, step: 3, prompt: 'Write a line or two on what makes you different.' }
 ];
+function dbsUsHint() {
+  var on = document.getElementById('r-dbsus').checked;
+  document.getElementById('r-dbs-lbl').textContent = on ? 'Update Service subscription renews on (optional)' : 'Enhanced DBS check valid until';
+  document.getElementById('r-dbs-hint').textContent = on ? 'The Update Service keeps your enhanced DBS certificate current while you pay the yearly subscription, so it doesn’t expire. Organisers see “DBS checked (Update Service)”. Add your renewal date and your desk flags it when it’s due (email reminders coming soon).' : 'If you work with children or vulnerable adults. Organisers see “DBS checked” while it’s in date, and your desk flags it before it runs out (email reminders coming soon).';
+}
 function insuranceState(s, today) {
   var d = parseDay(s); if (!d) return 'none';
   var left = Math.round((d - today) / 864e5);
@@ -574,7 +599,7 @@ function profileStrength(p, today) {
       { id: 'e5', event: 'Example corporate fun day', date: '2027-08-14', size: 300, organiser: 'Example company', contact: 'organiser@example.com', location: 'Leeds', service: 'Ice cream for staff and families', received: '2026-10-05', stage: 'Lost', model: 'minspend', minSpend: 900, takings: 600, followUp: '', lastContact: '2026-10-12', costs: 200, notes: 'Went with a cheaper quote', example: true }
     ];
   }
-  var state = { list: exampleList(), filter: 'All', editing: null, profile: { business: '', google: '', trustpilot: '', services: [], area: '', miles: '50', insurance: '', dbs: '', eventTypes: [], audiences: [], adultContent: false, biggest: '', about: '' } };
+  var state = { list: exampleList(), filter: 'All', editing: null, profile: { business: '', google: '', trustpilot: '', services: [], area: '', miles: '50', insurance: '', dbs: '', dbsUpdate: false, eventTypes: [], audiences: [], adultContent: false, biggest: '', about: '' } };
   try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && Array.isArray(s.list)) state.list = s.list; if (s && s.profile) state.profile = Object.assign({}, state.profile, s.profile); } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify({ list: state.list, profile: state.profile })); } catch (e) {} if (window.SRAccount) window.SRAccount.changed(); }
   function $(id) { return document.getElementById(id); }
@@ -650,7 +675,7 @@ function profileStrength(p, today) {
         '<div class="meta">' + esc(q.organiser || '') + (q.contact ? ' · ' + esc(q.contact) : '') + (q.lastContact ? ' · last contact ' + esc(nice(q.lastContact)) : '') + '</div>' +
         (q.notes ? '<div class="meta">' + esc(q.notes) + '</div>' : '') +
         '<div class="meta" style="font-weight:700;color:var(--ink)">' + esc(quoteLine(q)) + '</div>' +
-        '</div><div class="right"><div class="earn">' + money(supplierNet(q)) + '<small>' + (n(q.costs) ? 'after costs' : 'before costs') + '</small></div><button class="btn small" type="button" data-edit="' + esc(q.id) + '">Edit</button></div></article>';
+        '</div><div class="right">' + (needsTakings(q) ? '<div class="earn" style="font-size:0.95rem">Add expected takings<small>to see what you take home</small></div>' : '<div class="earn">' + money(supplierNet(q)) + '<small>' + (n(q.costs) ? 'after costs' : 'before costs') + '</small></div>') + '<button class="btn small" type="button" data-edit="' + esc(q.id) + '">Edit</button></div></article>';
     }).join('');
   }
 
@@ -659,8 +684,13 @@ function profileStrength(p, today) {
     MONEY_FIELDS.forEach(function (f) { $('f-' + f).closest('.field').hidden = m.fields.indexOf(f) === -1; });
     $('l-fee').textContent = ['pitch', 'both', 'greater'].indexOf(m.id) !== -1 ? 'Pitch fee you pay £' : 'Your fee £';
     var draft = readForm(), inc = supplierIncome(draft), net = supplierNet(draft);
-    $('calcText').textContent = n(draft.costs) ? 'Take-home ' + money(inc) + ', minus costs ' + money(n(draft.costs)) : 'Take-home before your costs';
-    $('calcNet').textContent = money(net);
+    if (needsTakings(draft)) {
+      $('calcText').textContent = 'Enter your expected takings to see what you take home';
+      $('calcNet').textContent = '–';
+    } else {
+      $('calcText').textContent = n(draft.costs) ? 'Take-home ' + money(inc) + ', minus costs ' + money(n(draft.costs)) : 'Take-home before your costs';
+      $('calcNet').textContent = money(net);
+    }
     var pv = '<div class="qcard"><strong>' + esc(state.profile.business || 'Your business name') + '</strong>' +
       '<span>' + esc(draft.service || 'What you’re offering') + (draft.event ? ' for ' + esc(draft.event) : '') + '</span>' +
       '<span style="font-weight:700">' + esc(quoteLine(draft)) + '</span>' + reviewButtons() + '</div>';
@@ -693,6 +723,57 @@ function profileStrength(p, today) {
     });
   }
   function hasProfile() { var p = state.profile; return !!(p.saved || p.google || p.trustpilot); }
+  // ---- Build 82: medical suppliers see the rules for the nations they work in, with dates, and a note when one changes
+  var MED = { rules: null, loading: false };
+  var MED_NATIONS = [['England', 'england'], ['Wales', 'wales'], ['Scotland', 'scotland'], ['Northern Ireland', 'ni']];
+  var MED_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  function medOffer() { var o = (state.profile && state.profile.offer) || {}; return (o.cats || {}).medical || null; }
+  function loadMedRules() {
+    if (MED.rules || MED.loading || typeof fetch !== 'function') return;
+    MED.loading = true;
+    fetch('https://osqlwddeobiklrpdnons.supabase.co/rest/v1/medical_rules?select=id,nation,audience,title,body,applies,in_force_from,enforced_from,status,act_label,act_url,source_name,source_url,sort,last_checked,changed_at,change_note&audience=in.(supplier,both)&order=sort.asc,id.asc', { headers: { apikey: MED_ANON, Authorization: 'Bearer ' + MED_ANON } })
+      .then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) { MED.rules = Array.isArray(rows) ? rows : []; MED.loading = false; renderMedRules(); }, function () { MED.loading = false; });
+  }
+  function medPill(r) {
+    var t = todayUTC().toISOString ? todayUTC().toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+    if (r.status === 'proposed') return '<span class="tag">Being decided</span>';
+    if (r.in_force_from && r.in_force_from > t) return '<span class="tag warn">From ' + esc(nice(r.in_force_from)) + '</span>';
+    if (r.enforced_from && r.enforced_from > t) return '<span class="tag warn">Enforced from ' + esc(nice(r.enforced_from)) + '</span>';
+    return '<span class="tag ok">In force</span>';
+  }
+  function renderMedRules() {
+    var box = $('medRules'); if (!box) return;
+    var m = medOffer();
+    if (!m || !hasProfile()) { box.hidden = true; return; }
+    loadMedRules();
+    var picked = MED_NATIONS.filter(function (n) { return (m.chips || []).indexOf(n[0]) > -1; }), guessed = !picked.length;
+    if (guessed) picked = [MED_NATIONS[0]];
+    var codes = ['uk'].concat(picked.map(function (n) { return n[1]; }));
+    var d = (m.details || {}), reg = d.regulator || '', clin = (m.chips || []).filter(function (c) { return /Paramedics|Nurses|Doctors|Ambulance/.test(c); });
+    var h = '<div class="revhead"><div><h2 id="medRulesTitle">Medical rules for where you work</h2><p class="note">For ' + esc(picked.map(function (n) { return n[0]; }).join(', ')) + (guessed ? ' (tick <b>Where you work</b> under Event medical and first aid in step 1 to change this)' : '') + '. A summary to plan with, not legal advice. ShowReady checks these every month.</p></div></div>';
+    // What this means for them, from what they offer
+    if (picked.some(function (n) { return n[1] === 'england'; }) && clin.length && !/^CQC|More than one/.test(reg)) {
+      h += '<div class="qcard" style="border-left:6px solid #B03A48;padding-left:14px"><strong>You offer ' + esc(clin.join(', ').toLowerCase()) + ' in England.</strong> That’s treatment beyond first aid, so you need CQC registration by <b>6 December 2027</b>. CQC says applications made now may not be decided by then, so apply soon, then add your CQC provider ID to your profile. <a href="https://www.cqc.org.uk/guidance-regulation/registration" target="_blank" rel="noopener">How to register with CQC</a></div>';
+    } else if (reg) {
+      h += '<div class="qcard"><strong>Your profile says:</strong> ' + esc(reg) + (d.reg_no ? ', number ' + esc(d.reg_no) : '') + '. Organisers see this on your card with a link to check it.' + (/^CQC|HIW|HIS|RQIA|More/.test(reg) && !d.reg_no ? ' <b>Add your registration number</b> so organisers can check it.' : '') + '</div>';
+    } else {
+      h += '<div class="qcard"><strong>Add your registration to your profile.</strong> Under Event medical and first aid in step 1, choose who you’re registered with (or first aid only) and add the number. Organisers see it on your card with a link to check it.</div>';
+    }
+    if (!MED.rules) { box.innerHTML = h + '<p class="note">Loading the rules…</p>'; box.hidden = false; return; }
+    var rules = MED.rules.filter(function (r) { return codes.indexOf(r.nation) > -1; });
+    var max = rules.reduce(function (a, r) { return r.changed_at > a ? r.changed_at : a; }, ''), seen = '';
+    try { seen = localStorage.getItem('showready-medseen-sup') || ''; if (!seen && max) { localStorage.setItem('showready-medseen-sup', max); seen = max; } } catch (e) {}
+    var changed = rules.filter(function (r) { return seen && r.changed_at > seen; });
+    if (changed.length) h += '<div class="qcard" role="status" style="background:#FFF4D6"><strong>Updated:</strong> ' + changed.map(function (r) { return esc(r.change_note || r.title); }).join('; ') + ' <button type="button" class="btn small" data-medseen="' + esc(max) + '">Got it</button></div>';
+    h += '<ul class="medlist" style="list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px">' + rules.map(function (r) {
+      var nat = r.nation === 'uk' ? 'UK-wide' : (MED_NATIONS.filter(function (n) { return n[1] === r.nation; })[0] || ['', ''])[0];
+      return '<li class="qcard" style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><strong>' + esc(r.title) + '</strong><span class="tags"><span class="tag">' + esc(nat) + '</span>' + medPill(r) + '</span></div>' +
+        '<span>' + esc(r.body) + '</span>' + (r.act_url ? '<a href="' + esc(r.act_url) + '" target="_blank" rel="noopener">' + esc(r.act_label || 'Read more') + '</a>' : '') +
+        (r.source_name ? '<span class="note">Source: ' + (r.source_url ? '<a href="' + esc(r.source_url) + '" target="_blank" rel="noopener">' + esc(r.source_name) + '</a>' : esc(r.source_name)) + ' · checked ' + esc(nice(r.last_checked)) + '</span>' : '') + '</li>';
+    }).join('') + '</ul>';
+    box.innerHTML = h; box.hidden = false;
+  }
+  document.addEventListener('click', function (ev) { var b = ev.target.closest && ev.target.closest('#medRules [data-medseen]'); if (!b) return; try { localStorage.setItem('showready-medseen-sup', b.getAttribute('data-medseen')); } catch (e) {} renderMedRules(); });
   function renderStrength() {
     var st = profileStrength(state.profile, todayUTC());
     var h = '<div class="shead"><strong>Profile ' + st.pct + '% · ' + esc(st.label) + '</strong>' + (st.matchable ? '' : '<span class="hint">Step 1 gets you found</span>') + '</div>' +
@@ -701,6 +782,7 @@ function profileStrength(p, today) {
     $('strength').innerHTML = h;
   }
   function renderReviews() {
+    setTimeout(renderMedRules, 0);
     var p = state.profile, has = hasProfile();
     $('revForm').hidden = has && !state.editingReviews;
     $('revView').hidden = !has || state.editingReviews;
@@ -709,9 +791,10 @@ function profileStrength(p, today) {
     if (has) {
       var ins = insuranceState(p.insurance, todayUTC());
       var dbs = p.dbs ? insuranceState(p.dbs, todayUTC()) : 'none';
-      var dbsTag = dbs === 'valid' ? '<span class="tag ok">DBS until ' + esc(nice(p.dbs)) + '</span>' : dbs === 'soon' ? '<span class="tag warn">DBS check ends ' + esc(nice(p.dbs)) + '</span>' : dbs === 'expired' ? '<span class="tag bad">DBS date passed</span>' : '';
+      var dbsTag = p.dbsUpdate ? (dbs === 'soon' ? '<span class="tag warn">DBS Update Service renews ' + esc(nice(p.dbs)) + '</span>' : dbs === 'expired' ? '<span class="tag bad">DBS Update Service renewal date passed</span>' : '<span class="tag ok">DBS Update Service</span>')
+        : dbs === 'valid' ? '<span class="tag ok">DBS until ' + esc(nice(p.dbs)) + '</span>' : dbs === 'soon' ? '<span class="tag warn">DBS check ends ' + esc(nice(p.dbs)) + '</span>' : dbs === 'expired' ? '<span class="tag bad">DBS date passed</span>' : '';
       var insTag = ins === 'valid' ? '<span class="tag ok">Insured until ' + esc(nice(p.insurance)) + '</span>' : ins === 'soon' ? '<span class="tag warn">Insurance ends ' + esc(nice(p.insurance)) + '</span>' : ins === 'expired' ? '<span class="tag bad">Insurance date passed</span>' : '';
-      insTag += dbsTag + (p.adultContent ? '<span class="tag">Adult act (18+)</span>' : '');
+      insTag += dbsTag + (p.agency ? '<span class="tag">Entertainment agency</span>' : '') + (p.adultContent ? '<span class="tag">Adult act (18+)</span>' : '');
       var where = p.area ? esc(p.area) + (p.miles === '999' ? ', travels anywhere' : ', travels ' + esc(p.miles || 50) + ' miles') : '';
       $('revView').innerHTML = '<div class="qcard" style="display:flex;flex-direction:column;gap:8px"><strong>' + esc(p.business || 'Your business') + '</strong>' +
         (where ? '<span class="note">' + where + '</span>' : '') +
@@ -726,7 +809,7 @@ function profileStrength(p, today) {
     renderPhones(p.phones && p.phones.length ? p.phones : [{ label: 'Mobile', number: '' }]);
     $('startHere').hidden = has || state.wizard != null;
     $('saveRow').hidden = state.wizard != null;
-    $('r-area').value = p.area || ''; $('r-miles').value = String(p.miles || 50); $('r-size').value = p.size || ''; if (window.sizeHint) window.sizeHint(); $('r-insurance').value = p.insurance || ''; $('r-dbs').value = p.dbs || ''; $('r-adult').checked = !!p.adultContent;
+    $('r-area').value = p.area || ''; $('r-miles').value = String(p.miles || 50); $('r-depots').value = p.depots || ''; if (typeof depotsHint === 'function') depotsHint(); $('r-size').value = p.size || ''; if (window.sizeHint) window.sizeHint(); $('r-insurance').value = p.insurance || ''; $('r-dbs').value = p.dbs || ''; $('r-dbsus').checked = !!p.dbsUpdate; dbsUsHint(); $('r-adult').checked = !!p.adultContent; $('r-agency-yes').checked = !!p.agency; $('r-agency-no').checked = !p.agency;
     $('r-biggest').value = p.biggest || ''; $('r-about').value = p.about || '';
     var off = p.offer || {};
     state.offerDraft = JSON.parse(JSON.stringify(off));
@@ -830,7 +913,45 @@ function profileStrength(p, today) {
   }
   function renderMenus(list) { var box = $('r-menus'); if (!box) return; box.innerHTML = (list || []).map(menuRow).join(''); $('addMenu').hidden = (list || []).length >= 6; }
   function menuLinkOk() { var v = ($('r-menuLink') && $('r-menuLink').value.trim()) || ''; return /^https:\/\/[^\s"<>]+$/.test(v) ? v.slice(0, 300) : ''; }
-  function syncMenusField() { var o = readOfferForm(), cats = (o && o.cats) || {}; $('menusField').hidden = !(cats.food || cats.drink); }
+  function syncMenusField() { var o = readOfferForm(), cats = (o && o.cats) || {}; $('menusField').hidden = !(cats.food || cats.drink); fitStandOut(cats); }
+  // Build 81: step 3 fits the trade. The 18+ box is only for entertainers; audiences only where they matter;
+  // the example line is for the first thing they offer.
+  var ABOUT_EG = {
+    venue: 'Restored tithe barn for 200, licensed bar, parking for 80 cars and rooms on site',
+    food: 'Wood-fired pizza from a 1970s horsebox, 80 pizzas an hour, own generator',
+    drink: 'Converted horsebox bar, local cask ales and cocktails, own power and two bartenders',
+    stage: 'Stage, PA and sound engineer for crowds up to 3,000, set up in under two hours',
+    lighting: 'Festoon, uplighting and stage lighting, with a technician on the night',
+    power: 'Silent generators from 20 to 200 kVA, with fuel and an engineer on call all event',
+    toilets: 'Luxury trailers and accessible units, cleaned and restocked through the day',
+    structures: 'Marquees from 6 m to 30 m wide, with flooring, lighting and heating',
+    safety: 'SIA-licensed security and stewards, with event control and radios provided',
+    medical: 'CQC-registered, paramedics and an ambulance on every booking, medical plans written to the Purple Guide',
+    staff: 'Experienced bar and hospitality staff, personal licence holders, uniforms included',
+    entertainment: 'Interactive magic show for ages 4 to 10, two 45-minute sets, brings own PA',
+    services: 'Event photography with same-week edits, and two photographers for big days'
+  };
+  function isAgency() { var y = $('r-agency-yes'); return !!(y && y.checked); }
+  function fitStandOut(cats) {
+    cats = cats || {};
+    var ids = Object.keys(cats), act = !!cats.entertainment, agency = isAgency();
+    // Build 110: the 18+ box sits under Entertainment in step 1. Agencies set it for each act instead.
+    var adult = $('r-adult'), adultRow = adult && adult.closest('.field');
+    if (adultRow) { adultRow.hidden = !act || agency; if ((!act || agency) && adult.checked) { adult.checked = false; lockYoung(); } }
+    // Build 110: vans, trailers and depots questions aren't for entertainers, except funfair and inflatable operators
+    var ec = (cats.entertainment && cats.entertainment.chips) || [], kit = ec.indexOf('Funfair rides') > -1 || ec.indexOf('Inflatables') > -1;
+    var noFleet = agency || (ids.length > 0 && ids.every(function (k) { return k === 'entertainment'; }) && !kit);
+    ['r-size', 'r-depots'].forEach(function (id) { var f = $(id), row = f && f.closest('.field'); if (!row) return; row.hidden = noFleet; if (noFleet && f.value) { f.value = ''; if (id === 'r-depots') { if (typeof depotsHint === 'function') depotsHint(); } else if (typeof sizeHint === 'function') sizeHint(); } });
+    // Agencies cover England and Wales
+    var mi = $('r-miles'); if (mi) { var o9 = mi.querySelector('option[value="999"]'); if (o9) o9.textContent = 'Anywhere in England and Wales (' + (agency ? 'Agency' : 'Enterprise') + ')';
+      if (agency) { if (!mi.disabled && mi.value !== '999') mi.setAttribute('data-was', mi.value); mi.value = '999'; mi.disabled = true; } else if (mi.disabled) { mi.disabled = false; mi.value = mi.getAttribute('data-was') || '50'; } }
+    var ah = $('r-agency-hint'); if (ah) ah.textContent = agency ? 'Tick Entertainment below and the act types you cover. After you save, add each act under Your acts: each one is listed on its own, with its own 18+ setting, and every enquiry comes to your desk. Agencies cover all of England and Wales.' : 'Agencies list each act separately, and every enquiry for them comes to your desk. No commission, whichever you choose.';
+    var aud = $('r-audiences'), audRow = aud && aud.closest('.field');
+    if (audRow) audRow.hidden = ids.length > 0 && !ids.some(function (k) { return /^(entertainment|food|drink|venue|staff|services)$/.test(k); });
+    var about = $('r-about'), eg = ids.map(function (k) { return ABOUT_EG[k]; }).filter(Boolean)[0];
+    if (about) about.placeholder = 'e.g. ' + (eg || 'What you do, what sets you apart and what you bring with you');
+  }
+
   document.addEventListener('click', function (ev) {
     var t = ev.target;
     if (t.id === 'addMenu') { var raw = Array.prototype.slice.call(document.querySelectorAll('#r-menus [data-menu]')).map(function (r) { var f = function (k) { var x = r.querySelector('[data-mf="' + k + '"]'); return x ? x.value : ''; }; return { name: f('name'), price: f('price'), unit: f('unit'), min: f('min'), includes: f('includes'), tags: Array.prototype.slice.call(r.querySelectorAll('[data-mt]:checked')).map(function (c) { return c.getAttribute('data-mt'); }) }; });
@@ -920,9 +1041,9 @@ function profileStrength(p, today) {
     state.profile = {
       saved: true, listed: $('r-listed').checked, contactName: det.contactName, business: det.business, address: det.address, phones: det.phones, contactEmail: det.contactEmail,
       google: g.url || '', trustpilot: t.url || '', quoteLink: ql,
-      offer: readOfferForm(), services: offerServices(readOfferForm()), menus: readMenus(), menuLink: menuLinkOk(), area: $('r-area').value.trim(), miles: $('r-miles').value, size: $('r-size').value, insurance: $('r-insurance').value,
+      offer: readOfferForm(), services: offerServices(readOfferForm()), menus: readMenus(), menuLink: menuLinkOk(), area: $('r-area').value.trim(), miles: $('r-miles').value, depots: $('r-depots').value, size: $('r-size').value, insurance: $('r-insurance').value,
       eventTypes: picked('r-eventTypes'), biggest: $('r-biggest').value, about: $('r-about').value.trim(),
-      dbs: $('r-dbs').value, adultContent: $('r-adult').checked,
+      dbs: $('r-dbs').value, dbsUpdate: $('r-dbsus').checked, adultContent: $('r-adult').checked && !isAgency(), agency: isAgency() && !!(readOfferForm().cats || {}).entertainment,
       audiences: $('r-adult').checked ? ['adults'] : picked('r-audiences').map(audCode).filter(Boolean)
     };
     state.editingReviews = false; state.wizard = null; save(); renderWizard(); renderReviews(); render();
@@ -931,6 +1052,10 @@ function profileStrength(p, today) {
   });
   $('cancelProfile').addEventListener('click', function () { state.editingReviews = false; renderReviews(); });
   $('r-adult').addEventListener('change', lockYoung);
+  ['r-agency-no', 'r-agency-yes'].forEach(function (id) { $(id).addEventListener('change', function () {
+    if (isAgency() && window.SRCat) { var o = readOfferForm(); o.cats = o.cats || {}; if (!o.cats.entertainment) { o.cats.entertainment = { chips: [], must: [], details: {} }; state.offerDraft = Object.assign({}, state.offerDraft || {}, o); $('r-offer').innerHTML = window.SRCat.offerHtml(state.offerDraft); } }
+    syncMenusField();
+  }); });
   $('editReviews').addEventListener('click', function () { state.editingReviews = true; renderReviews(); $('r-business').focus(); });
   function readForm() { var q = {}; FIELDS.forEach(function (f) { q[f] = $('f-' + f).value; }); return q; }
   function openForm(q) {
@@ -983,7 +1108,7 @@ function profileStrength(p, today) {
     var cols = ['event', 'date', 'size', 'organiser', 'contact', 'location', 'service', 'received', 'stage', 'model', 'fee', 'pct', 'perHead', 'covers', 'minSpend', 'takings', 'costs', 'followUp', 'lastContact', 'notes'];
     var head = cols.concat(['take_home', 'net_after_costs']);
     var lines = [head.join(',')].concat(state.list.map(function (q) {
-      return cols.map(function (c) { var v = c === 'model' ? supModel(q.model).label : (q[c] == null ? '' : q[c]); return '"' + String(v).replace(/"/g, '""') + '"'; }).concat([Math.round(supplierIncome(q)), Math.round(supplierNet(q))]).join(',');
+      return cols.map(function (c) { var v = c === 'model' ? supModel(q.model).label : (q[c] == null ? '' : q[c]); return '"' + String(v).replace(/"/g, '""') + '"'; }).concat(needsTakings(q) ? ['', ''] : [Math.round(supplierIncome(q)), Math.round(supplierNet(q))]).join(',');
     }));
     var csv = lines.join('\r\n'), name = 'ShowReady enquiries.csv';
     if (window.claude && window.claude.use) {
@@ -1036,7 +1161,8 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     { id: 'planner', href: APP, t: 'Plan an event', d: 'Licences, suppliers, deadlines' },
     { id: 'desk', href: DESK, t: 'Supplier desk', d: 'Enquiries and your profile' },
     { id: 'film', href: '/film/', t: 'Film & TV', d: 'Locations, permits and shoot days' },
-    { id: 'tools', href: TOOLS, t: 'Tools and pricing', d: 'Every tool and plan' },
+    { id: 'pricing', href: TOOLS + '#pricing', t: 'Pricing and plans', d: 'What each plan costs and includes' },
+    { id: 'tools', href: TOOLS, t: 'All the tools', d: 'Everything ShowReady does' },
     { id: 'join', href: HOME + '#join', t: 'Join the pilot', d: 'Founding member sign-up' },
     { id: 'install', href: '#install', t: 'Install the apps', d: 'Organiser, Supplier and Film & TV on your phone or computer', install: true },
     { id: 'feedback', href: '#feedback', t: 'Send feedback', d: 'A problem, an idea or a question', feedback: true },
@@ -1060,7 +1186,8 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     '.srn-acct a.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink,#fff)}' +
     '.top .nav .srn-acct a{display:inline-flex!important}.top .nav .btn[data-planner-link]{display:none}.top .inner>a[data-home-link]:not(.logo){display:none}' +
     '@media (max-width:440px){.srn-left{gap:8px}.srn-btn{min-height:38px;min-width:38px;padding:0 8px}.srn-acct a,.sr-acct-btn{padding:0 10px!important;font-size:13px!important;min-height:36px}.srn-acct,.sr-acct-btns,.sr-acct-right{gap:5px!important}.top .logo,.topbar .brand{gap:6px}.top .logo svg,.topbar .brand svg{width:30px;height:30px}.top .logo .word,.topbar .brand .word{font-size:18px}.top .inner,.topbar .wrap{gap:8px}}' +
-    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}';
+    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}' +
+    '.srn-price{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:12px;font-weight:700;font-size:15px;color:var(--brand-text,var(--ink));text-decoration:none;white-space:nowrap}.srn-price:hover,.srn-price:focus-visible{background:var(--brand-soft)}@media (max-width:600px){.srn-price{display:none}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var box = document.createElement('div'); box.className = 'srn';
@@ -1076,6 +1203,8 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
   var logo = bar.querySelector('.brand, .logo');
   var left = document.createElement('div'); left.className = 'srn-left';
   bar.insertBefore(left, bar.firstChild); left.appendChild(box); if (logo) left.appendChild(logo);
+  // Build 89: Pricing always visible at the top, next to the logo
+  var price = document.createElement('a'); price.className = 'srn-price'; price.href = TOOLS + '#pricing'; price.textContent = 'Pricing'; left.appendChild(price);
 
   var btn = box.querySelector('#srnBtn'), menu = box.querySelector('#srnMenu');
   function setOpen(o) { menu.hidden = !o; btn.setAttribute('aria-expanded', String(o)); }
@@ -1413,7 +1542,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
   function say(t, kind) { A.msg = t; A.msgKind = kind || 'ok'; render(); }
   A.say = say;
   A.open = function (view) { A.view = view === 'signup' ? 'signup' : 'signin'; open(); };
-  function setBusy(b) { A.busy = b; var bs = back.querySelectorAll('button[data-act]'); for (var i = 0; i < bs.length; i++) bs[i].disabled = b; }
+  function setBusy(b) { A.busy = b; var bs = back.querySelectorAll('button[data-act]'); for (var i = 0; i < bs.length; i++) bs[i].disabled = b || (bs[i].id === 'srResend' && !!resendWait()); }
 
   function updateButton() {
     var t = btn.querySelector('.t');
@@ -1436,6 +1565,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       h += '<h2 id="srAcctTitle">Choose a new password</h2><p class="muted">At least 8 characters.</p>' +
         '<form data-form="newpass"><label for="srNewPass">New password</label><span class="sr-pw"><input id="srNewPass" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="sr-pwt" data-pwt aria-label="Show password" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span>' +
         '<div class="row"><button class="btn primary" type="submit" data-act>Save new password</button></div></form>';
+    } else if (!A.user && A.view === 'checkemail') {
+      // Build 79: after signing up (or trying to log in before confirming) there is one clear next step
+      var wait = resendWait();
+      h += '<h2 id="srAcctTitle">' + (A.unconfirmed ? 'You haven’t confirmed your email yet' : 'Check your email') + '</h2>' +
+        '<p>We’ve sent a link to <strong>' + esc(A.sentTo || 'your email') + '</strong> from hello@beshowready.co.uk. Open it on this device to finish. If it isn’t in your inbox in a few minutes, check your junk or spam folder.</p>' +
+        '<div class="row"><button class="btn" type="button" id="srResend" data-act="resendConfirm"' + (wait ? ' disabled' : '') + '>' + resendLabel(wait) + '</button></div>' +
+        '<p><button type="button" class="linky" data-view="signin">I’ve confirmed: log in</button> · <button type="button" class="linky" data-view="signup">Use a different email</button></p>';
     } else if (!A.user) {
       var up = A.view === 'signup';
       h += '<h2 id="srAcctTitle">' + (up ? 'Create your account' : 'Log in') + '</h2>' +
@@ -1470,23 +1606,28 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       var other = P.kind === 'plans' ? { k: 'desk', t: 'Go to my Supplier desk' } : { k: 'plans', t: 'Go to the event planner' };
       var curRole = (A.profile && A.profile.role) || 'organiser';
       h += '<div class="rolebar"><label for="srMyRole">I’m mainly</label><select id="srMyRole">' + roleOptions(curRole) + '</select>' +
-        '<button class="btn small" type="button" data-act="switchSide">' + other.t + '</button></div>' +
+        '<button class="btn small" type="button" data-act="switchSide">' + other.t + '</button>' + (P.kind !== 'film' && curRole === 'film' ? '<a class="btn small" href="' + START.film + '">Go to Film &amp; TV</a>' : '') + '</div>' +
         '<label for="srAlertMode" style="display:block;margin-top:12px;font-weight:700">Email me about enquiries and messages</label>' +
         '<select id="srAlertMode" style="width:100%;margin-top:4px">' + [['instant', 'Straight away, every time'], ['smart', 'New enquiries straight away, the rest in one 7am summary'], ['daily', 'One summary each morning at 7am'], ['off', 'No emails (check Messages yourself)']].map(function (o) { return '<option value="' + o[0] + '"' + (alertMode() === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
         '<label class="remember" style="margin-top:10px"><input type="checkbox" id="srAlerts"' + (A.profile && A.profile.email_alerts === false ? '' : ' checked') + '> Email me about changes to my council’s details</label>';
       var pi = planInfo(A.profile);
       h += '<div class="plancard" id="srPlanCard"><div class="ptop"><span class="plbl">Your plan</span><b class="pname">' + esc(pi.lapsed ? 'Free' : pi.name) + '</b>' +
         (pi.founding ? '<span class="pbadge">Founding member</span>' : '') + '</div><p>' +
-        (pi.lapsed ? 'Your ' + esc(pi.name) + ' plan ended on ' + esc(niceDate(pi.expires)) + ', so you’re back on Free.'
+        (pi.lapsed ? 'Your ' + esc(pi.name) + ' plan ended on ' + esc(niceDate(pi.expires)) + ', so you’re back on Free. Everything you made is still here; the paid extras come back as soon as you choose a plan again.'
+          : pi.paid && pi.granted ? (pi.expires ? 'Given to you by ShowReady until <b>' + esc(niceDate(pi.expires)) + '</b>.' : 'Given to you by ShowReady, with no end date.')
+          : pi.paid && pi.status === 'past_due' ? '<b class="danger">Your last payment didn’t go through.</b> Stripe will try again over the next few days. To keep your plan, update your card in Manage billing.'
+          : pi.paid && pi.cancelAt ? 'Your plan is set to end on <b>' + esc(niceDate(pi.cancelAt)) + '</b> and won’t renew. You can switch renewal back on in Manage billing.'
+          : pi.paid && pi.status === 'trialing' ? 'Free trial: your first payment is due on <b>' + esc(niceDate(new Date(Date.parse(pi.expires) - 3 * 864e5).toISOString().slice(0, 10))) + '</b>. You can cancel before then in Manage billing.'
           : pi.paid ? (pi.expires ? 'Paid up until <b>' + esc(niceDate(pi.expires)) + '</b>.' : 'Paid plan.')
-          : pi.founding && !(A.offer && A.offer.tier === 'founding') ? 'Free for now. As a founding member you get 6 months free, then 30% off for life (excludes Enterprise).'
+          : pi.founding && !(A.offer && A.offer.tier === 'founding') ? 'Free for now. As a founding member you get ' + srFoundLine(srV1(), A.offer && A.offer.category) + ' (excludes Enterprise).'
           : 'During the pilot every tool and any number of events are free.') +
         (!(A.settings && A.settings.ads && A.settings.ads.enabled) ? '' : pi.adFree ? ' No adverts.' : ' Adverts show along the bottom of the page.') + '</p>' +
         (pi.needsCombined && !pi.lapsed ? '<p class="muted" style="font-size:13px">You organise and supply, so after the pilot you’ll need the <b>Combined plan</b> (£12 a month or £115 a year, + VAT)' + (pi.founding ? ', with your founding discount' : '') + '.</p>' : '') +
         (pi.student ? '<p class="muted" style="font-size:13px">Student account: 50% off Film plans.</p>' : '') +
         offerHtml() +
-        '<div class="row"><a class="btn small" href="/toolkit.html#pricing">' + (pi.paid ? 'Change plan' : 'See plans and upgrade') + '</a></div>' +
+        '<div class="row"><a class="btn small" href="/toolkit.html?from=sup#pricing">' + (pi.paid ? 'Change plan' : 'See plans and upgrade') + '</a>' + (pi.hasSub && !pi.granted ? ' <button type="button" class="btn small" data-sr-portal>Manage billing</button>' : '') + '</div>' +
         '<p class="muted" style="font-size:13px">Paying online opens at launch. Until then, to change your plan email <a href="mailto:' + esc(CFG.contact) + '">' + esc(CFG.contact) + '</a>.</p></div>';
+      if (window.SRLogo && A.profile) h += window.SRLogo.html();
       h += '<p>' + (A.status === 'saving' ? 'Saving…' : A.status === 'error' ? '<span class="danger">Not saved to your account yet. It’s safe in this browser and will try again.</span>' : !P.isOwn(readLocal() || {}) ? (P.kind === 'plans' ? 'You’re looking at the example. Start your own event and it saves to your account.' : 'Add your own enquiries or profile and they save to your account.') : A.savedAt ? 'Saved to your account ' + ago(A.savedAt) + '.' : 'Changes save to your account automatically.') + '</p>';
       if (A.conflict) {
         h += '<div class="msg bad">This device has a different ' + (P.label || 'supplier desk') + ' from the one in your account. Which do you want to keep?</div>' +
@@ -1503,14 +1644,14 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
         h += '<hr><h2 style="font-size:16px">Team, vans and depots</h2>';
         if (!td) h += '<p class="muted">Loading…</p>';
         else {
-          var lim = td.limits || {}, pl = { pilot: 'Free during the pilot', 'vendor-business': 'Vendor Business', enterprise: 'Enterprise' }[lim.plan] || 'Vendor Pro';
+          var lim = td.limits || {}, pl = { pilot: 'Free during the pilot', 'vendor-business': 'Vendor Business', agency: 'Agency', enterprise: 'Enterprise' }[lim.plan] || 'Vendor Pro';
           h += '<p class="muted" style="font-size:13px">' + esc(pl) + ': ' + (lim.logins || 1) + (lim.logins === 1 ? ' login' : ' logins') + ' and ' + (lim.bases >= 1000 ? 'as many depots as you run' : (lim.bases || 1) + (lim.bases === 1 ? ' base' : ' bases')) + ', travelling ' + (lim.max_miles >= 1000 ? 'any distance' : 'up to ' + (lim.max_miles || 50) + ' miles') + ' from each base. You’re using ' + (lim.logins_used || 1) + ' and ' + (lim.bases_used || 1) + '.</p>' +
             '<p style="font-size:14px"><b>People</b> (you, plus anyone you invite). They log in with their own email and work on this desk; what they send goes out as your business.</p>' +
             '<ul class="plans">' + (td.members || []).map(function (m) { return '<li><div class="n"><b>' + esc(m.email) + '</b><span>' + (m.status === 'active' ? 'Active' : 'Invited: they sign up or log in with this email') + '</span></div><button class="btn small" type="button" data-act="teamRemove" data-id="' + esc(m.id) + '">Remove</button></li>'; }).join('') + '</ul>' +
-            ((lim.logins_used || 1) < (lim.logins || 1) ? '<div class="row"><input id="srTeamEmail" type="email" maxlength="254" placeholder="Their email" style="flex:1"><button class="btn small" type="button" data-act="teamInvite">Invite</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'enterprise' ? 'For more than ' + lim.logins + ' logins, email us and we’ll add seats.' : lim.plan === 'vendor-business' ? 'To add more people, move to Enterprise (10 logins).' : lim.plan === 'pilot' ? 'During the pilot you can have up to 3 logins. For more, Enterprise has 10.' : 'To add more people, move to Vendor Business (3 logins) or Enterprise (10).') + '</p>') +
+            ((lim.logins_used || 1) < (lim.logins || 1) ? '<div class="row"><input id="srTeamEmail" type="email" maxlength="254" placeholder="Their email" style="flex:1"><button class="btn small" type="button" data-act="teamInvite">Invite</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'enterprise' ? 'For more than ' + lim.logins + ' logins, email us and we’ll add seats.' : lim.plan === 'vendor-business' || lim.plan === 'agency' ? 'To add more people, move to Enterprise (10 logins).' : lim.plan === 'pilot' ? 'During the pilot you can have up to 3 logins. For more, Enterprise has 10.' : 'To add more people, move to Vendor Business (3 logins) or Enterprise (10).') + '</p>') +
             '<p style="font-size:14px;margin-top:12px"><b>Extra bases</b>: each van, trailer or depot with its own base and travel area. Organisers are matched to your nearest one, and the enquiry says which.</p>' +
             '<ul class="plans">' + (td.units || []).map(function (u) { return '<li><div class="n"><b>' + esc(u.name) + '</b><span>' + esc([u.town, u.outcode, u.miles ? 'up to ' + u.miles + ' miles' : ''].filter(Boolean).join(' · ')) + '</span></div><button class="btn small" type="button" data-act="unitRemove" data-id="' + esc(u.id) + '">Remove</button></li>'; }).join('') + '</ul>' +
-            ((lim.bases_used || 1) < (lim.bases || 1) ? '<div class="row" style="flex-wrap:wrap"><input id="srUnitName" maxlength="80" placeholder="Name, e.g. Van 2 or Leeds depot" style="flex:2 1 180px"><input id="srUnitPc" maxlength="8" placeholder="Postcode" style="flex:1 1 90px"><input id="srUnitMiles" type="number" min="1" max="500" placeholder="Miles" style="flex:1 1 70px"><button class="btn small" type="button" data-act="unitAdd">Add base</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'vendor-business' || lim.plan === 'pilot' ? 'To add more bases, move to Enterprise: £99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot.' : 'To add more bases, move to Vendor Business (5) or Enterprise (£99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot).') + '</p>') +
+            ((lim.bases_used || 1) < (lim.bases || 1) || lim.plan === 'enterprise' || srBaseHit(lim) ? '<div class="row" style="flex-wrap:wrap"><input id="srUnitName" maxlength="80" placeholder="Name, e.g. Van 2 or Leeds depot" style="flex:2 1 180px"><input id="srUnitPc" maxlength="8" placeholder="Postcode" style="flex:1 1 90px"><input id="srUnitMiles" type="number" min="1" max="500" placeholder="Miles" style="flex:1 1 70px"><button class="btn small" type="button" data-act="unitAdd">Add base</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'pilot' ? 'During the pilot you can have up to ' + (lim.bases || 5) + ' bases. For more, move to Enterprise: built for national firms with several depots, any distance from every depot. During the pilot, Enterprise is free until 1 February 2027; then £99 a month + VAT for up to 10 depots, and £8 a month + VAT for each extra depot.' : lim.plan === 'vendor-business' || lim.plan === 'agency' ? 'To add more bases, move to Enterprise: £99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot.' : 'To add more bases, move to Vendor Business (5) or Enterprise (£99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot).') + '</p>' + (lim.plan === 'vendor-business' || lim.plan === 'pilot' ? '<p><a class="btn small primary" href="#enterprise" data-enterprise>Ask for an Enterprise quote</a></p>' : '')) +
             '<p style="font-size:14px;margin-top:12px"><b>Companies House number</b> (needed for Vendor Business and Enterprise)</p><div class="row"><input id="srCoNo" maxlength="10" value="' + esc(td.company_no || '') + '" placeholder="e.g. 01234567" style="flex:1"><button class="btn small" type="button" data-act="coSave">Save</button></div>' +
             '<p class="muted" style="font-size:12px">One Vendor Pro account per business. A business with more than one base or more than one person uses Vendor Business or Enterprise.</p>';
         }
@@ -1554,7 +1695,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       switchSide: function () { goTo(P.kind === 'plans' ? 'desk' : 'plans'); return Promise.resolve(); },
       keepRemote: function () { var c = A.conflict; A.conflict = null; return pullDesk(c); }, keepLocal: function () { A.conflict = null; setLink({ user: A.owner(), dirty: true }); return push(); },
       useTeam: function () { return switchTeam(id); }, useOwn: function () { return switchTeam('own'); },
-      teamInvite: teamInvite, unitAdd: unitAdd, coSave: coSave,
+      teamInvite: teamInvite, unitAdd: unitAdd, coSave: coSave, resendConfirm: resendConfirm,
       teamRemove: function () { return teamJob(A.client.from('supplier_members').delete().eq('id', id)); },
       unitRemove: function () { return teamJob(A.client.from('supplier_units').delete().eq('id', id)); } }[act];
     if (job) { setBusy(true); job().catch(function (err) { say(friendly(err), 'bad'); }).then(function () { setBusy(false); }); }
@@ -1566,7 +1707,9 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     var here = location.origin + location.pathname;
     setBusy(true);
     ensureClient().then(function (c) {
-      if (f === 'signin') { A.freshLogin = true; return c.auth.signInWithPassword({ email: email, password: pass }).then(function (r) { if (r.error) { A.freshLogin = false; throw r.error; } A.msg = ''; }); }
+      if (f === 'signin') { A.freshLogin = true; return c.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+        if (r.error) { A.freshLogin = false; if (/email not confirmed/i.test(r.error.message || '')) { showConfirm(email, here, true); return; } throw r.error; }
+        A.msg = ''; try { sessionStorage.removeItem('showready-confirm'); } catch (e2) {} }); }
       if (f === 'signup') {
         if (pass.length < 8) throw new Error('Use at least 8 characters for your password.');
         var role = v('srRole') || P.role;
@@ -1578,7 +1721,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
           if (r.error) throw r.error;
           // Build 57: an email that already has an account comes back with no identities and no email is sent
           if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0) { say('There’s already a ShowReady account for ' + email + '. Choose Log in, or Forgot password if you don’t know the password.'); return; }
-          if (!r.data || !r.data.session) say('Nearly there. We’ve emailed a link to ' + email + '. Open it on this device to finish. Check your junk folder if it isn’t there in a few minutes. Already have an account with this email? Log in instead.');
+          if (!r.data || !r.data.session) { A.sentAt = Date.now(); showConfirm(email, landAt, false); }
         });
       }
       if (f === 'magic') return c.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false, emailRedirectTo: here } }).then(function (r) { if (r.error) throw r.error; say('If there’s an account for ' + email + ', a sign-in link is on its way.'); });
@@ -1590,12 +1733,44 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     }).catch(function (err) { say(friendly(err), 'bad'); }).then(function () { setBusy(false); });
   });
 
+  // ---- Build 79: confirmation email waiting screen, with a resend that respects Supabase's 60-second limit
+  var RESEND_GAP = 60000;
+  function resendWait() { return A.sentAt ? Math.max(0, Math.ceil((A.sentAt + RESEND_GAP - Date.now()) / 1000)) : 0; }
+  function resendLabel(w) { return w ? 'Resend confirmation email (' + w + 's)' : 'Resend confirmation email'; }
+  function showConfirm(email, land, unconfirmed) {
+    A.sentTo = email; A.sentLand = land; A.unconfirmed = !!unconfirmed; A.view = 'checkemail'; A.msg = '';
+    try { sessionStorage.setItem('showready-confirm', JSON.stringify({ to: email, land: land, at: A.sentAt || 0 })); } catch (e) {}
+    render(); tickResend();
+  }
+  function tickResend() {
+    clearInterval(A.resendTimer);
+    A.resendTimer = setInterval(function () {
+      var b = el('srResend'); var w = resendWait();
+      if (b) { b.textContent = resendLabel(w); b.disabled = !!w || !!A.busy; }
+      if (!w || A.view !== 'checkemail' || back.hidden) clearInterval(A.resendTimer);
+    }, 1000);
+  }
+  function resendConfirm() {
+    if (resendWait()) return Promise.resolve();
+    return ensureClient().then(function (c) {
+      return c.auth.resend({ type: 'signup', email: A.sentTo, options: { emailRedirectTo: A.sentLand || (location.origin + location.pathname) } });
+    }).then(function (r) {
+      if (r && r.error) throw r.error;
+      A.sentAt = Date.now(); A.unconfirmed = false;
+      try { sessionStorage.setItem('showready-confirm', JSON.stringify({ to: A.sentTo, land: A.sentLand, at: A.sentAt })); } catch (e) {}
+      say('Sent again. Check your inbox and junk folder for the email from hello@beshowready.co.uk.'); tickResend();
+    });
+  }
+  try { var keep = JSON.parse(sessionStorage.getItem('showready-confirm') || 'null'); if (keep && keep.to) { A.sentTo = keep.to; A.sentLand = keep.land; A.sentAt = keep.at || 0; } } catch (e) {}
+
   function friendly(err) {
     var m = String((err && (err.message || err.error_description)) || err || '');
     if (/invalid login credentials/i.test(m)) return 'That email and password don’t match. Try again, or use “Forgot password?”.';
     if (/email not confirmed/i.test(m)) return 'Confirm your email first: open the link we sent you. Check your junk folder too.';
     if (/already registered|already been registered/i.test(m)) return 'There’s already an account with that email. Log in instead.';
-    if (/rate limit|too many|security purposes/i.test(m)) return 'Too many attempts or emails just now. Wait a few minutes and try again.';
+    var secs = /after (\d+) seconds?/i.exec(m);
+    if (secs) { A.sentAt = Date.now() - (60 - Number(secs[1])) * 1000; tickResend(); return 'Please wait ' + secs[1] + ' seconds and try again.'; }
+    if (/rate limit|too many|security purposes/i.test(m)) return 'Please wait a few seconds and try again. If it keeps happening, wait a few minutes.';
     if (/password/i.test(m) && /(short|least|weak)/i.test(m)) return 'That password is too short or too common. Use at least 8 characters.';
     if (/fetch|network|load failed/i.test(m)) return 'Couldn’t reach ShowReady’s servers. Check your connection and try again.';
     return m || 'Something went wrong. Try again.';
@@ -1624,7 +1799,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
 
   function onAuth(event, session) {
     var before = A.user && A.user.id;
-    A.user = session && session.user ? session.user : null;
+    A.user = session && session.user ? session.user : null; window.SR_USER = A.user;
     // Build 76: hide an account's saved copy when nobody is signed in; give it back after signing in
     if (!A.user) holdLocal(); else restoreHeld();
     if (event === 'PASSWORD_RECOVERY') { A.view = 'recovery'; back.hidden = false; }
@@ -1716,7 +1891,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     var all = ((A.settings && A.settings.plans) || {}), list = [].concat(all.organisers || [], all.suppliers || [], all.combined || [], all.film || []);
     var found = list.filter(function (x) { return x.id === id; })[0];
     return { id: id, name: id === 'free' ? 'Free' : found ? found.name : id, paid: id !== 'free' && !lapsed, lapsed: !!lapsed, expires: exp,
-      founding: !!p.founding, student: !!p.student, needsCombined: p.role === 'both' && !/^(combined|enterprise)$/.test(id), adFree: !!((id !== 'free' && !lapsed) || p.founding || p.ad_free) };
+      founding: !!p.founding, student: !!p.student, status: p.billing_status || '', cancelAt: p.plan_cancel_at || '', granted: !!p.plan_grant_reason, hasSub: !!p.stripe_subscription_id, needsCombined: p.role === 'both' && !/^(combined|enterprise)$/.test(id), adFree: !!((id !== 'free' && !lapsed) || p.founding || p.ad_free || p.is_admin) };
   }
   A.planInfo = planInfo;
   function foundingOpen() { try { return typeof srFounding === 'function' && A.settings ? srFounding(A.settings).state !== 'closed' : true; } catch (e) { return true; } }
@@ -1728,7 +1903,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     return A.client.from('founding_signups').insert({ role: roleMap[p.role] || (P.role === 'supplier' ? 'Supplier or trader' : 'Organiser'), name: nm.slice(0, 120), email: A.user.email, consent_text: consent, founding_offer: true })
       .then(function (r) {
         if (r.error && r.error.code !== '23505') throw r.error;
-        A.msg = 'You’re a founding member. You get 6 months free, then 30% off for life (excludes Enterprise).' + (o.category === 'suppliers' ? ' As a supplier you stay free until 31 October 2027.' : '') + ''; A.msgKind = 'ok';
+        A.msg = 'You’re a founding member. You get ' + srFoundLine(srV1(), o.category) + ' (excludes Enterprise).'; A.msgKind = 'ok';
         A.profile = Object.assign({}, A.profile, { founding: true });
         checkAdFree(); render();
       });
@@ -1744,26 +1919,27 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
   function offerHtml() {
     var NAMES = { organisers: 'organisers', suppliers: 'suppliers', film: 'Film & TV accounts' }, o = A.offer, c = A.offerCounts || window.SR_OFFERS;
     var fcap = c ? c.founding_cap : 100, ecap = c ? c.early_cap : 200, pct = c ? c.early_discount_pct : 20;
-    if (o && o.tier === 'founding') return '<p class="muted" style="font-size:13px"><b>Founding place ' + o.place_no + ' of ' + fcap + ' (' + NAMES[o.category] + ').</b> You get 6 months free, then 30% off for life (excludes Enterprise).' + (o.category === 'suppliers' ? ' As a supplier you stay free until 31 October 2027.' : '') + '</p>';
-    if (o && o.tier === 'early') return '<p class="muted" style="font-size:13px"><b>Early-adopter place ' + o.place_no + ' of ' + ecap + ' (' + NAMES[o.category] + ').</b> ' + pct + '% off for life (excludes Enterprise).</p>';
+    if (o && o.tier === 'founding') return '<p class="muted" style="font-size:13px"><b>Founding place ' + o.place_no + ' of ' + fcap + ' (' + NAMES[o.category] + ').</b> You get ' + srFoundLine(srV1(), o.category) + ' (excludes Enterprise).</p>';
+    if (o && o.tier === 'early') return '<p class="muted" style="font-size:13px"><b>Early-adopter place ' + o.place_no + ' of ' + ecap + ' (' + NAMES[o.category] + ').</b> ' + srEarlyLine(srV1(), pct) + ' (excludes Enterprise).</p>';
     if (o || !c || !c.categories) return '';
     var role = A.profile && A.profile.role, cat = role === 'film' ? 'film' : (role === 'supplier' || role === 'both') ? 'suppliers' : 'organisers', x = c.categories[cat]; if (!x) return '';
     var fl = fcap - x.founding_taken, el = ecap - x.early_taken, what = P.kind === 'plans' ? 'Save your first plan' : P.kind === 'desk' ? 'Save your profile' : 'Save your first Film project';
     var dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(c.early_deadline || ''), dl = dm ? (+dm[3]) + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][+dm[2] - 1] + ' ' + dm[1] : '';
     // Organisers: basic planning is always free; a place is claimed only by upgrading to a paid plan
     if (cat === 'organisers') {
-      if (fl > 0) return '<div class="joinf"><b>Basic planning is always free.</b> If you upgrade to a paid plan, you could take one of the ' + fl + ' founding places left for organisers: 6 months free, then 30% off for life (excludes Enterprise).</div>';
-      if (c.early_open && el > 0) return '<div class="joinf"><b>Basic planning is always free.</b> Organisers who upgrade to a paid plan by ' + dl + ' get ' + pct + '% off for life (' + el + ' of ' + ecap + ' early-adopter places left, excludes Enterprise).</div>';
+      if (fl > 0) return '<div class="joinf"><b>Basic planning is always free.</b> If you upgrade to a paid plan, you could take one of the ' + fl + ' founding places left for organisers: ' + srFoundNow('organisers') + '.</div>';
+      if (c.early_open && el > 0) return '<div class="joinf"><b>Basic planning is always free.</b> Organisers who upgrade to a paid plan by ' + dl + ' get ' + srEarlyLine(Date.now() < SR_TERMS_CUT, pct) + ' (' + el + ' of ' + ecap + ' early-adopter places left, excludes Enterprise).</div>';
       return '';
     }
-    if (fl > 0) return '<div class="joinf"><b>Founding places: ' + fl + ' of ' + fcap + ' left for ' + NAMES[cat] + '.</b> ' + what + ' to claim one: 6 months free, then 30% off for life (excludes Enterprise).</div>';
-    if (c.early_open && el > 0) return '<div class="joinf"><b>Founding places are full. Early-adopter places: ' + el + ' of ' + ecap + ' left.</b> ' + what + ' by ' + dl + ' for ' + pct + '% off for life (excludes Enterprise).</div>';
+    if (fl > 0) return '<div class="joinf"><b>Founding places: ' + fl + ' of ' + fcap + ' left for ' + NAMES[cat] + '.</b> ' + what + ' to claim one: ' + srFoundNow(cat) + '.</div>';
+    if (c.early_open && el > 0) return '<div class="joinf"><b>Founding places are full. Early-adopter places: ' + el + ' of ' + ecap + ' left.</b> ' + what + ' by ' + dl + ' for ' + srEarlyLine(Date.now() < SR_TERMS_CUT, pct) + ' (excludes Enterprise).</div>';
     return '';
   }
   function checkAdFree() {
     var uid = A.user.id;
-    A.client.from('profiles').select('plan, plan_expires, founding, ad_free, role, display_name, email_alerts, alert_mode, student, is_admin').maybeSingle().then(function (r) {
+    A.client.from('profiles').select('plan, plan_expires, founding, ad_free, role, display_name, email_alerts, alert_mode, student, is_admin, logo_v, billing_status, plan_cancel_at, plan_grant_reason, stripe_subscription_id').maybeSingle().then(function (r) {
       var p = r && !r.error && r.data ? r.data : {};
+      if (window.SRLogo) window.SRLogo.bind(A.client, uid, p.logo_v, function () { if (!back.hidden) render(); });
       A.profile = p; var free = planInfo(p).adFree; if (!back.hidden) render(); loadOffer();
       try { localStorage.setItem('showready-adfree', JSON.stringify({ user: uid, adFree: free })); } catch (e) {}
       A.adFree = free; if (window.SRAds) window.SRAds.update();
@@ -1787,10 +1963,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     if (!A.client || !A.user) return;
     A.teamLoading = true;
     Promise.all([A.client.rpc('my_supplier_limits'), A.client.from('supplier_members').select('id, email, status').eq('owner', A.user.id).order('created_at'),
-      A.client.from('supplier_units').select('id, name, town, outcode, miles').eq('owner', A.user.id).order('created_at'), A.client.from('profiles').select('company_no').eq('id', A.user.id).maybeSingle()]).then(function (r) {
+      A.client.from('supplier_units').select('id, name, town, outcode, miles').eq('owner', A.user.id).eq('kind', 'base').order('created_at').then(function (r) { return r.error ? A.client.from('supplier_units').select('id, name, town, outcode, miles').eq('owner', A.user.id).order('created_at') : r; }), A.client.from('profiles').select('company_no').eq('id', A.user.id).maybeSingle()]).then(function (r) {
       A.teamData = { limits: (r[0].data || [])[0] || {}, members: r[1].data || [], units: r[2].data || [], company_no: r[3].data ? r[3].data.company_no : '' };
     }, function () { A.teamData = { limits: {}, members: [], units: [] }; }).then(function () { A.teamLoading = false; if (!back.hidden) render(); });
   }
+  // Build 109: at the base limit (not Enterprise) counts as a limit hit for the Enterprise candidate list. During the pilot, filling all bases flags straight away (checked on the server).
+  var srBaseHitDone = false;
+  function srBaseHit(lim) { if (!srBaseHitDone && lim.plan !== 'enterprise' && A.client && A.client.rpc) { srBaseHitDone = true; A.client.rpc('log_limit_hit', { p_kind: 'bases' }).then(function () {}, function () {}); } return false; }
   function teamJob(p) { return p.then(function (r) { if (r && r.error) throw r.error; A.teamData = null; if (!back.hidden) render(); }); }
   function teamInvite() {
     var em = (el('srTeamEmail') || {}).value || ''; em = em.trim().toLowerCase();
@@ -2001,12 +2180,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     return flush().then(function () { A.signingOut = true; return A.client.auth.signOut(); }, function () {
       throw new Error('Your latest changes couldn’t be saved to your account, so you’re still logged in. Check your connection and try again.');
     }).then(function () {
+      if (window.SRLogo) window.SRLogo.bind(null, null);
       try { localStorage.removeItem(P.store); localStorage.removeItem(P.remoteKey); localStorage.removeItem(heldKey()); localStorage.removeItem('showready-adfree'); } catch (e) {}
       A.signingOut = false; A.user = null; A._reload();
     });
   }
   function deleteAccount() {
-    return removeDocs(null).then(function () { return A.client.rpc('delete_my_account'); }).then(function (r) {
+    return removeDocs(null).then(function () { return A.client.storage.from('logos').remove([A.user.id + '/logo']).catch(function () {}); }).then(function () { return A.client.rpc('delete_my_account'); }).then(function (r) {
       if (r.error) {
         if (/delete_my_account|PGRST202|not find|does not exist/i.test(r.error.message + ' ' + (r.error.code || ''))) throw new Error('Deleting from here isn’t switched on yet. Email ' + CFG.contact + ' and your account will be deleted within 7 days.');
         throw r.error;
@@ -2958,7 +3138,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       groups: [
         { t: 'Suitable for', chips: ['Weddings', 'Conferences and conventions', 'Trade shows and exhibitions', 'Galas and awards', 'Workshops and training', 'Milestone parties', 'Memorials and wakes', 'Reunions', 'School proms and balls', 'Live music', 'Theatre and performance', 'Competitions and sport', 'Religious services', 'Festivals and fetes'] },
         { t: 'Facilities', chips: ['Kitchen', 'Bar area', 'Stage or performance area', 'PA or sound system', 'Stage lighting', 'Dance floor', 'Tables and chairs', 'Projector and screen', 'Wi-Fi', 'Toilets', 'Accessible toilets', 'Changing rooms', 'Green room or backstage', 'Mains power for traders', 'Water supply', 'Hardstanding for vehicles', 'Storage', 'Lift'] },
-        { t: 'Accommodation', chips: ['Bedrooms on site', 'Glamping', 'Bell tents', 'Motorhomes', 'Camping field', 'Holiday cottages', 'Hotel rooms nearby'] }
+        { t: 'Accommodation', chips: ['Bedrooms on site', 'Glamping', 'Bell tents', 'Motorhomes', 'Artist trailers and motorhomes for film and TV', 'Camping field', 'Holiday cottages', 'Hotel rooms nearby'] }
       ],
       must: ['Licensed bar', 'External caterers allowed', 'Step-free access', 'Parking on site', 'Exclusive use', 'Outdoor space', 'Late licence (after midnight)'],
       details: [{ id: 'seated', t: 'Most people seated', type: 'number', capacity: true }, { id: 'standing', t: 'Most people standing', type: 'number', capacity: true },
@@ -2984,37 +3164,60 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       chips: ['Generators', 'Distribution and cabling', 'Electrician', 'Silent generators'], must: ['Refuelling included'],
       details: [{ id: 'kva', t: 'Largest generator (kVA)', type: 'number' }] },
     { id: 'toilets', t: 'Toilets and welfare', c: '#2E6DA4', icon: 'M7 3h6v7H7z M4 10h14a6 6 0 0 1-6 6H9a5 5 0 0 1-5-6z M9 16l-1 5h7l-1-5',
-      chips: ['Standard units', 'Accessible units', 'Luxury trailers', 'Handwash stations', 'Showers'], must: ['Accessible units', 'Servicing during the event'],
+      chips: ['Standard units', 'Accessible units', 'Luxury trailers', 'Handwash stations', 'Showers', 'Honeywagons and welfare units (film and TV)'], must: ['Accessible units', 'Servicing during the event'],
       details: [{ id: 'units', t: 'Units available', type: 'number' }] },
     { id: 'structures', t: 'Marquees and structures', c: '#6B7F3A', icon: 'M2 19L12 5l10 14z M12 5v14 M7 19l5-7 5 7',
       chips: ['Marquees', 'Gazebos', 'Stretch tents', 'Bell tents', 'Furniture', 'Fencing and barriers', 'Ground protection', 'Mobile and field kitchens', 'Catering trailers', 'Cold rooms and refrigerated trailers', 'Catering equipment'], must: ['Crew supplied'],
       details: [{ id: 'largest', t: 'Largest structure', type: 'size' }] },
-    { id: 'safety', t: 'Safety', c: '#C0392B', icon: 'M12 5v14 M5 12h14',
-      chips: ['First aid', 'Medics and ambulance', 'Security', 'Stewards', 'Traffic management', 'Fire safety'], must: ['SIA licensed staff', 'Event medical cover plan'],
+    { id: 'safety', t: 'Safety', c: '#C0392B', icon: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
+      chips: ['Security', 'Stewards', 'Traffic management', 'Fire safety'], must: ['SIA licensed staff'],
       details: [{ id: 'staff', t: 'Staff available', type: 'number' }] },
+    // Build 79: event medical providers, from first aiders to ambulances and treatment centres
+    { id: 'medical', t: 'Event medical and first aid', c: '#B03A48', icon: 'M12 5v14 M5 12h14',
+      chips: ['First aiders', 'Event medics (FREC)', 'Paramedics', 'Nurses', 'Doctors', 'Ambulance (emergency and transfer)', 'Treatment centre or medical tent', 'Rapid response (bike, buggy or 4x4)', 'Welfare and mental health support', 'Drug and alcohol welfare', 'Defibrillator (AED) hire', 'Motorsport, equestrian or ringside cover'],
+      groups: [{ t: 'How you supply', ot: 'How it’s supplied', chips: ['Staff only', 'Team with a medical lead', 'Full medical plan and cover'] },
+        // Build 82: which nations' rules apply to them (their desk checklist shows those rules)
+        { t: 'Where you work', ot: 'Where they work', chips: ['England', 'Wales', 'Scotland', 'Northern Ireland'] }],
+      must: ['CQC registered (needed beyond first aid)', 'HCPC registered paramedics', 'Medical plan to the Purple Guide', 'Medical director and clinical governance', 'Medical malpractice insurance', 'DBS checked staff'],
+      details: [{ id: 'regulator', t: 'Registered with', type: 'select', options: ['CQC (England)', 'HIW (Wales)', 'HIS (Scotland)', 'RQIA (Northern Ireland)', 'More than one regulator', 'Not registered: first aid only'] },
+        { id: 'reg_no', t: 'Registration number (CQC provider ID, such as 1-123456789, or your HIW, HIS or RQIA number)', type: 'text' },
+        { id: 'cd_licence', t: 'Home Office controlled drugs licence', type: 'yesno' }, { id: 'blue_light', t: 'Blue light trained drivers', type: 'yesno' },
+        { id: 'staff', t: 'Medical staff available', type: 'number' }, { id: 'vehicles', t: 'Ambulances or response vehicles', type: 'number' }, { id: 'minhours', t: 'Minimum booking (hours)', type: 'number' }] },
     // Build 75: event staffing agencies (bar, hospitality, crew, box office, marshals)
     { id: 'staff', t: 'Event staff', c: '#5A6B7D', icon: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M2 20c0-3 3-5 6-5s6 2 6 5 M12 20c0-3 3-5 6-5s4 2 4 5',
       chips: ['Stewards', 'SIA security', 'Bar staff', 'Hospitality and waiting staff', 'Event crew and riggers', 'Box office and ticket scanning', 'Car park and traffic marshals', 'Cloakroom', 'Runners and event assistants', 'Cleaners and litter pickers'],
-      groups: [{ t: 'How you supply', chips: ['Staff only', 'Staff with a supervisor', 'Fully managed team'] }],
+      groups: [{ t: 'How you supply', ot: 'How it’s supplied', chips: ['Staff only', 'Staff with a supervisor', 'Fully managed team'] }],
       must: ['SIA licensed staff', 'Uniformed staff', 'Personal licence holders', 'DBS checked staff'],
       details: [{ id: 'staff', t: 'Staff available', type: 'number' }, { id: 'minhours', t: 'Minimum booking (hours)', type: 'number' }] },
     { id: 'entertainment', t: 'Entertainment', c: '#2F7D6D', icon: 'M9 18V5l12-2v13 M9 18a3 3 0 1 1-3-3 3 3 0 0 1 3 3z M21 16a3 3 0 1 1-3-3 3 3 0 0 1 3 3z',
-      chips: ['Live bands', 'DJs', 'Singers and musicians', 'Comedians and cabaret', 'Magicians', 'Children’s entertainers', 'Walkabout acts', 'Funfair rides', 'Inflatables', 'Displays', 'Fireworks'], must: ['Own power'],
+      // Build 110: more act types. Existing names are kept as they are, because saved profiles use them.
+      chips: ['Live bands', 'DJs', 'Singers and musicians', 'Tribute acts', 'Choirs, brass, steel bands and string quartets', 'Dancers', 'Comedians and cabaret', 'Burlesque and drag', 'Magicians', 'Hypnotists', 'Hosts and MCs', 'Children’s entertainers', 'Face painters and balloon modellers', 'Punch and Judy and puppetry', 'Santa’s grottos and character visits', 'Walkabout acts', 'Stilt walkers and street theatre', 'Circus, aerial and fire performers', 'Animal encounters and falconry', 'Fun casino and interactive games', 'Funfair rides', 'Inflatables', 'Stunt and arena displays', 'Displays', 'Drone and laser light shows', 'Fireworks'], must: ['Own power'],
       // Build 55: act details for entertainers (also saved to supplier_listings.act)
       details: [{ id: 'set_minutes', t: 'Set length (minutes)', type: 'number' }, { id: 'sets', t: 'Sets per booking', type: 'number' }, { id: 'own_pa', t: 'Brings own PA', type: 'yesno' },
         { id: 'power', t: 'Power', type: 'select', options: ['Own generator', 'Needs a hook-up', 'No power needed'] }, { id: 'space', t: 'Space needed', type: 'size' },
         { id: 'extras', t: 'Also offers (e.g. first dance, ceremony, drinks and evening sets)', type: 'text' }] },
+    { id: 'supplies', t: 'Event supplies and merchandise', c: '#7A5A1E', shipped: true, icon: 'M3 8l9-5 9 5v8l-9 5-9-5z M3 8l9 5 9-5 M12 13v8',
+      // Build 109: shipped goods. These chips (and Services, Signage and printing) can be set to deliver UK-wide.
+      chips: ['Wristbands (fabric, Tyvek, silicone)', 'Lanyards and ID passes', 'Accreditation and crew passes', 'Printed tickets and tokens', 'Bar tokens and drink vouchers', 'Branded merchandise and T-shirts', 'Promotional items and giveaways', 'Flags, banners and bunting', 'Badges and pin badges', 'Programmes and printed materials', 'Reusable and branded cups', 'Hi-vis and staff uniforms', 'Rosettes, trophies and medals', 'Race numbers and bibs'],
+      must: ['Custom printed', 'Next-day delivery available', 'Eco or recyclable options'],
+      details: [{ id: 'moq', t: 'Minimum order (items)', type: 'number' }, { id: 'lead_days', t: 'Usual lead time (days)', type: 'number' }, { id: 'rush', t: 'Express or rush service', type: 'yesno' }, { id: 'custom', t: 'Custom printing or branding', type: 'yesno' }] },
     { id: 'services', t: 'Services', c: '#3D4D8A', icon: 'M4 7h16v12H4z M9 7l1.5-3h3L15 7 M12 10a3 3 0 1 1 0 6 3 3 0 0 1 0-6z',
-      chips: ['Photography and video', 'Ticketing', 'Signage and printing', 'Cleaning and waste', 'Event planning and coordination'], must: [], details: [] }
+      chips: ['Photography and video', 'Ticketing systems and scanner hire', 'Signage and printing', 'Cleaning and waste', 'Event planning and coordination'], must: [], details: [] }
   ];
   // What each planner item needs, so the checklist can suggest categories and chips
-  var ITEM_CAT = { traders: ['food'], bar: ['drink'], stage: ['stage'], pa: ['stage'], power: ['power'], toilets: ['toilets'], showers: ['toilets'], firstaid: ['safety', 'First aid'],
+  var ITEM_CAT = { traders: ['food'], bar: ['drink'], stage: ['stage'], pa: ['stage'], power: ['power'], toilets: ['toilets'], showers: ['toilets'], firstaid: ['medical', 'First aiders'],
     stewards: ['safety', 'Stewards'], traffic: ['safety', 'Traffic management'], fencing: ['structures', 'Fencing and barriers'], waste: ['services', 'Cleaning and waste'],
-    signage: ['services', 'Signage and printing'], ticketing: ['services', 'Ticketing'], marquee: ['structures', 'Marquees'], water: ['toilets'], catering: ['food', 'Event catering (served to guests)'], kitchen: ['structures', 'Mobile and field kitchens'], staff: ['staff'] };
+    signage: ['services', 'Signage and printing'], ticketing: ['supplies', 'Printed tickets and tokens'], marquee: ['structures', 'Marquees'], water: ['toilets'], catering: ['food', 'Event catering (served to guests)'], kitchen: ['structures', 'Mobile and field kitchens'], staff: ['staff'],
+    // Build 110: entertainment the plan picks up from the activities and music
+    ent_music: ['entertainment', 'Live bands'], ent_rides: ['entertainment', 'Funfair rides'], ent_inflatables: ['entertainment', 'Inflatables'], ent_animals: ['entertainment', 'Animal encounters and falconry'],
+    ent_hypnotist: ['entertainment', 'Hypnotists'], ent_fireworks: ['entertainment', 'Fireworks'] };
   function cats() { try { var s = window.SR_SETTINGS_LIVE; if (s && Array.isArray(s.catalogue) && s.catalogue.length) return s.catalogue; } catch (e) {} return CAT; }
   function find(id) { return cats().filter(function (c) { return c.id === id; })[0]; }
+  // Build 109: shipped goods can deliver UK-wide. Mirrors public.is_shipped_chip in the database.
+  function isShipped(key) { return /^supplies:/.test(key) || key === 'services:Signage and printing'; }
+  function shippedNeed(need) { var ch = need.chips || []; return need.cat === 'supplies' || (need.cat === 'services' && ch.length > 0 && ch.every(function (x) { return x === 'Signage and printing'; })); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function icon(c, size) { return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="' + (c.id === 'safety' ? 3 : 2) + '" stroke-linecap="round" stroke-linejoin="round"><path d="' + c.icon + '"/></svg>'; }
+  function icon(c, size) { return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="' + (c.id === 'medical' ? 3 : 2) + '" stroke-linecap="round" stroke-linejoin="round"><path d="' + c.icon + '"/></svg>'; }
   if (typeof srLoadSettings === 'function') srLoadSettings(function (s) { window.SR_SETTINGS_LIVE = s; });
 
   var css = '.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(128px,100%),1fr));gap:8px}@media (max-width:480px){.cat-card{min-height:84px;padding:10px}.cat-card b{font-size:14px}}' +
@@ -3082,7 +3285,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       var c = find(openId), n = draft || needs[openId] || { chips: (sug[openId] || {}).chips || [], must: [], qty: (sug[openId] || {}).qty || '' };
       h += '<div class="cat-panel" id="needPanel"><h3><span class="ci" style="background:' + c.c + ';width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;color:#fff">' + icon(c, 18) + '</span>' + esc(c.t) + '</h3>' +
         '<div class="lbl">What kind?</div>' + chipsHtml(c.chips, n.chips, 'data-need-chip') +
-        (c.groups || []).map(function (g) { return '<div class="lbl">' + esc(g.t) + '</div>' + chipsHtml(g.chips, n.chips, 'data-need-chip'); }).join('') +
+        (c.groups || []).map(function (g) { return '<div class="lbl">' + esc(g.ot || g.t) + '</div>' + chipsHtml(g.chips, n.chips, 'data-need-chip'); }).join('') +
         (c.must && c.must.length ? '<div class="lbl">Must have</div>' + chipsHtml(c.must, n.must, 'data-need-must', 'must') : '') +
         '<div class="cat-row" style="margin-top:12px"><label for="needQty">How many?<input id="needQty" type="number" min="0" value="' + esc(n.qty || '') + '" placeholder="e.g. 6"></label></div>' +
         (c.details && c.details.length ? (n.moreOpen ? '<div class="lbl">More detail</div><div id="needDetails">' + detailHtml(c, n.details, 'need-') + '</div>' : '<button type="button" class="cat-more" data-need-more>More detail (space, power…)</button>') : '') +
@@ -3138,10 +3341,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
         chipsHtml(c.chips, o.chips, 'data-offer-chip') + (c.groups || []).map(function (g) { return '<div class="lbl">' + esc(g.t) + '</div>' + chipsHtml(g.chips, o.chips, 'data-offer-chip'); }).join('') + (c.must && c.must.length ? '<div class="lbl">You can also offer</div>' + chipsHtml(c.must, o.must, 'data-offer-must', 'must') : '') +
         (c.details && c.details.length ? '<div class="lbl">The practical bits</div>' + detailHtml(c, o.details, 'offer-') : '') + '</div>';
     });
+    // Build 109: UK-wide delivery, for shipped goods only
+    if (oc.supplies || oc.services) h += '<div class="cat-panel" data-offer-uk><label style="display:flex;gap:10px;align-items:flex-start;font-weight:700"><input type="checkbox" id="offerShipsUk"' + (offer.shipsUk ? ' checked' : '') + ' style="width:20px;height:20px;margin-top:2px"> We deliver these goods UK-wide (posted or couriered)</label>' +
+      '<p class="muted" style="font-size:13px;margin:6px 0 0">Only for Event supplies and merchandise, and Signage and printing. Organisers anywhere in England and Wales can find you for those. Anything you do on site keeps your normal travel distance.</p></div>';
     return h;
   }
   function readOffer(box, prev) {
-    var out = { cats: {} };
+    var out = { cats: {} }, uk = box.querySelector('#offerShipsUk'); if (uk) out.shipsUk = uk.checked;
     Array.prototype.slice.call(box.querySelectorAll('[data-offer-panel]')).forEach(function (p) {
       var id = p.getAttribute('data-offer-panel');
       out.cats[id] = { chips: Array.prototype.slice.call(p.querySelectorAll('[data-offer-chip][aria-pressed="true"]')).map(function (b) { return b.getAttribute('data-offer-chip'); }),
@@ -3184,14 +3390,15 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     if (p && cap && p > cap) miss.push('Holds up to ' + cap);
     if (p && l.min_size && p < l.min_size) miss.push('Events from ' + l.min_size + ' people');
     if (p && l.max_size && p > l.max_size) miss.push('Events up to ' + l.max_size + ' people');
-    if (l.dist != null) {
+    var uk = !!l.ships_uk && shippedNeed(need);
+    if (l.dist != null && !uk) {
       if (radius < 9999 && l.dist > radius) return null;
       if (l.miles && l.miles < 999 && l.dist > l.miles) miss.push('Travels ' + l.miles + ' miles');
     }
     // Build 55: audiences. Adult acts are only ever shown for events whose audience is adults only.
     var aud = audienceFit(need.audience, l); if (aud === null) return null; if (aud) miss.push(aud);
-    var score = why.length * 10 - (l.dist == null ? 50 : l.dist) / 10 + (l.insured_until ? 2 : 0) + (l.google || l.trustpilot ? 1 : 0);
-    return { why: why, miss: miss, score: score, hide: miss.length > 0 && l.only_matching !== false };
+    var score = why.length * 10 - (uk ? 0 : (l.dist == null ? 50 : l.dist) / 10) + (l.insured_until ? 2 : 0) + (l.google || l.trustpilot ? 1 : 0);
+    return { uk: uk, why: why, miss: miss, score: score, hide: miss.length > 0 && l.only_matching !== false };
   }
 
   // Audiences (build 55): codes match supplier_listings.audiences
@@ -3207,7 +3414,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     var want = ev.slice(); if (want.indexOf('family') > -1) want = want.concat(['children', 'adults']);
     return la.some(function (x) { return want.indexOf(x) > -1; }) ? '' : 'For ' + la.map(audienceName).join(', ').toLowerCase();
   }
-  window.SRCat = { list: cats, find: find, icon: icon, needsHtml: needsHtml, handleNeeds: handleNeeds, suggestions: suggestions, offerHtml: offerHtml, readOffer: readOffer, bindOffer: bindOffer, match: match, summary: summary, ITEM_CAT: ITEM_CAT, AUDIENCES: AUDIENCES, YOUNG: YOUNG, audienceName: audienceName, audienceFit: audienceFit };
+  window.SRCat = { isShipped: isShipped, shippedNeed: shippedNeed, list: cats, find: find, icon: icon, needsHtml: needsHtml, handleNeeds: handleNeeds, suggestions: suggestions, offerHtml: offerHtml, readOffer: readOffer, bindOffer: bindOffer, match: match, summary: summary, ITEM_CAT: ITEM_CAT, AUDIENCES: AUDIENCES, YOUNG: YOUNG, audienceName: audienceName, audienceFit: audienceFit };
 })();
 /*CATALOGUE-END*/
 /*MARKET-START*/
@@ -3702,6 +3909,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     var d = (l.details || {})[cat] || {}, c = window.SRCat && window.SRCat.find(cat), bits = [];
     ((c && c.details) || []).forEach(function (x) {
       var v = d[x.id]; if (v == null || v === '') return;
+      if (cat === 'medical' && (x.id === 'regulator' || x.id === 'reg_no')) return; // shown with its check link instead
       if (x.type === 'size') { if (v.w && v.d) bits.push(x.t + ' ' + v.w + ' × ' + v.d + ' m'); }
       else if (x.type === 'yesno') bits.push(x.t + ': ' + v);
       else if (x.type === 'text') bits.push(x.t.replace(/ \(.*\)$/, '') + ': ' + v);
@@ -3709,6 +3917,14 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       else bits.push(v);
     });
     return bits.join(' · ');
+  }
+  // Build 82: a medical provider's regulator and registration number, with a link to check it
+  function medRegHtml(l) {
+    var d = (l.details || {}).medical || {}, r = d.regulator, no = String(d.reg_no || '').trim();
+    if ((l.categories || []).indexOf('medical') === -1 || !r) return '';
+    var short = r.replace(/ \(.*\)$/, ''), url = /^CQC/.test(r) ? (/^1-\d{6,}$/.test(no) ? 'https://www.cqc.org.uk/provider/' + no : 'https://www.cqc.org.uk/') : /^HIW/.test(r) ? 'https://www.hiw.org.uk/' : /^HIS/.test(r) ? 'https://www.healthcareimprovementscotland.scot/' : /^RQIA/.test(r) ? 'https://www.rqia.org.uk/' : '';
+    if (/^Not registered/.test(r)) return '<p class="muted"><b>First aid only:</b> not registered with a health regulator, so no paramedic, nurse or doctor treatment.</p>';
+    return '<p class="muted"><b>Registered with ' + esc(short) + (no ? ': ' + esc(no) : '') + '</b>' + (url ? ' · <a href="' + esc(url) + '" target="_blank" rel="noopener">Check this provider on the ' + esc(short === 'More than one regulator' ? 'regulator’s' : short) + ' website</a>' : '') + '</p>';
   }
   function renderSearch() {
     var s = M.search, ev = eventInfo(), CATS = window.SRCat ? window.SRCat.list() : [];
@@ -3726,22 +3942,22 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     else if (s.error) h += '<p class="err">' + esc(s.error) + '</p>';
     else {
       var shown = s.results.filter(function (l) { return !l.m.miss.length || (s.near && !l.m.hide); }), callMode = isCallCat(s);
-      M.shownOwners = shown.map(function (l) { return l.owner; });
+      M.shownOwners = shown.map(function (l) { return l.key || l.owner; });
       var close = s.results.filter(function (l) { return l.m.miss.length && !l.m.hide; }).length;
       if (!shown.length) h += '<p>No ShowReady suppliers match yet.' + (close && !s.near ? ' ' + close + ' close ' + (close === 1 ? 'match' : 'matches') + ' miss one thing: tick <b>Show close matches too</b>.' : ' The pilot is just starting, so new suppliers are joining all the time. Try a wider distance or fewer must-haves.') + '</p>';
       else h += shown.map(function (l) {
         var dl = s.cat ? detailLine(l, s.cat) : '';
-        return '<div class="card"><b>' + esc(l.business) + '</b><div class="muted">' + esc(l.town || '') + (l.dist != null ? (l.dist <= 2 ? ' · in your area' : ' · about ' + l.dist + ' miles away') : '') + '</div>' +
+        return '<div class="card">' + (l.logo_v && window.SRLogo ? window.SRLogo.img(l.owner, l.logo_v, 'card', (l.business || 'Supplier') + ' logo') : '') + '<b>' + esc(l.business) + '</b>' + (l.agency ? '<div class="muted">Booked through ' + esc(l.agency) + ', an entertainment agency</div>' : '') + '<div class="muted">' + esc(l.town || '') + (l.m && l.m.uk ? ' · delivers UK-wide' : l.dist != null ? (l.dist <= 2 ? ' · in your area' : ' · about ' + l.dist + ' miles away') : '') + '</div>' +
           '<div class="why">' + l.m.why.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') + l.m.miss.map(function (x) { return '<span class="miss">' + esc(x) + '</span>'; }).join('') +
           (l.insured_until && l.insured_until >= new Date(M._now()).toISOString().slice(0, 10) ? '<span>Insured</span>' : '') +
-          (l.dbs_until && l.dbs_until >= new Date(M._now()).toISOString().slice(0, 10) ? '<span>DBS checked</span>' : '') +
+          (l.dbs_update ? '<span>DBS checked (Update Service)</span>' : l.dbs_until && l.dbs_until >= new Date(M._now()).toISOString().slice(0, 10) ? '<span>DBS checked</span>' : '') +
           (l.adult_content ? '<span>Adult act (18+)</span>' : '') + '</div>' +
-          (dl ? '<p class="muted">' + esc(dl) + '</p>' : '') + (l.about ? '<p>' + esc(l.about) + '</p>' : '') + menusHtml(l) +
+          (dl ? '<p class="muted">' + esc(dl) + '</p>' : '') + medRegHtml(l) + (l.about ? '<p>' + esc(l.about) + '</p>' : '') + menusHtml(l) +
           '<div class="acts">' + (l.google ? '<a class="btn small" href="' + esc(l.google) + '" target="_blank" rel="noopener">Google reviews</a>' : '') + (l.trustpilot ? '<a class="btn small" href="' + esc(l.trustpilot) + '" target="_blank" rel="noopener">Trustpilot</a>' : '') +
           (ownQuoteLink(l) ? '<a class="btn small" href="' + esc(ownQuoteLink(l)) + '" target="_blank" rel="noopener">Their own quote form</a>' : '') +
-          (callMode ? '<label class="pickl"><input type="checkbox" data-pickc="' + esc(l.owner) + '"' + (M.picks.indexOf(l.owner) > -1 ? ' checked' : '') + '> Include in call</label>' :
-          '<button class="btn" type="button" data-pick="' + esc(l.owner) + '" aria-pressed="' + (M.picks.indexOf(l.owner) > -1) + '">' + (M.picks.indexOf(l.owner) > -1 ? '✓ In my quote request' : 'Add to quote request') + '</button>') +
-          '<button class="btn primary" type="button" data-compose="' + esc(l.owner) + '">Send an enquiry</button></div></div>';
+          (callMode ? '<label class="pickl"><input type="checkbox" data-pickc="' + esc(l.key || l.owner) + '"' + (M.picks.indexOf(l.key || l.owner) > -1 ? ' checked' : '') + '> Include in call</label>' :
+          '<button class="btn" type="button" data-pick="' + esc(l.key || l.owner) + '" aria-pressed="' + (M.picks.indexOf(l.key || l.owner) > -1) + '">' + (M.picks.indexOf(l.key || l.owner) > -1 ? '✓ In my quote request' : 'Add to quote request') + '</button>') +
+          '<button class="btn primary" type="button" data-compose="' + esc(l.key || l.owner) + '">Send an enquiry</button></div>' + (l.logo_v && window.SRLogo ? window.SRLogo.reportBtn(l.owner) : '') + '</div>';
       }).join('');
       if (shown.length > 1 && callMode) h = h.replace('<h2 id="srmTitle">', '<div class="pickbar" id="srmPickBar">' + pickBarInner() + '</div><h2 id="srmTitle">') +
         '<p class="muted">Tick the traders you want to invite, or Select all. Each gets their own copy, nobody sees who else was asked, and you see who’s in against the pitches you have.</p>';
@@ -3761,23 +3977,34 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     var s = M.search, ev = eventInfo();
     // Anyone can browse suppliers; sending an enquiry needs an account.
     return A.ensureClient().then(function (c) {
-    var cols = 'owner, business, services, categories, chips, details, min_size, max_size, only_matching, event_types, town, outcode, lat, lon, miles, about, google, trustpilot, insured_until, audiences, adult_content, dbs_until, act';
-    var qy = c.from('supplier_listings').select(cols + ', reach').eq('listed', true);
-    if (s.cat) qy = qy.contains('categories', [s.cat]);
-    var qy0 = c.from('supplier_listings').select(cols); if (s.cat) qy0 = qy0.contains('categories', [s.cat]);
-    return Promise.all([qy.limit(300).then(q).catch(function () { return qy0.limit(300).then(q); }).then(function (ls) {
+    var cols = 'owner, business, services, categories, chips, details, min_size, max_size, only_matching, ships_uk, event_types, town, outcode, lat, lon, miles, about, google, trustpilot, insured_until, audiences, adult_content, dbs_until, dbs_update, act, logo_v';
+    // Build 110: is_agency (falls back to the older columns if the database hasn't been updated)
+    function lq(extra) { var x = c.from('supplier_listings').select(cols + extra).eq('listed', true); if (s.cat) x = x.contains('categories', [s.cat]); return x.limit(300).then(q); }
+    return Promise.all([lq(', reach, is_agency').catch(function () { return lq(', reach'); }).catch(function () { return lq(''); }).then(function (ls) {
       // Build 70: businesses with several vans or depots are matched from their nearest base
       var owners = (ls || []).map(function (l) { return l.owner; });
-      return (owners.length ? c.from('supplier_units').select('id, owner, name, town, outcode, lat, lon, miles, reach').in('owner', owners).then(q).catch(function () { return c.from('supplier_units').select('id, owner, name, town, outcode, lat, lon, miles').in('owner', owners).then(q).catch(function () { return []; }); }) : Promise.resolve([])).then(function (us) {
-        (ls || []).forEach(function (l) { l.bases = (us || []).filter(function (u) { return u.owner === l.owner && u.lat != null; }); });
+      var ucols = 'id, owner, name, town, outcode, lat, lon, miles';
+      return (owners.length ? c.from('supplier_units').select(ucols + ', reach, kind, chips, details, adult_content, audiences, about').in('owner', owners).then(q).catch(function () { return c.from('supplier_units').select(ucols + ', reach').in('owner', owners).then(q); }).catch(function () { return c.from('supplier_units').select(ucols).in('owner', owners).then(q).catch(function () { return []; }); }) : Promise.resolve([])).then(function (us) {
+        // Build 110: an agency's acts are each their own result; bases are only vans, trailers and depots
+        (ls || []).forEach(function (l) { var mine = (us || []).filter(function (u) { return u.owner === l.owner; }); l.bases = mine.filter(function (u) { return (u.kind || 'base') === 'base' && u.lat != null; }); l.acts = l.is_agency ? mine.filter(function (u) { return u.kind === 'act'; }) : []; });
         return ls;
       });
     }), geo(ev.outcode)]).then(function (r) {
       var here = r[1], radius = Number(s.radius), need = { cat: s.cat, chips: s.chips, must: s.must, people: ev.people, audience: ev.audience };
-      s.results = (r[0] || []).filter(function (l) { return l.owner !== myId(); }).map(function (l) {
-        var x = Object.assign({}, l, { dist: miles(here, l), unit_id: null, unit_name: '' }); if (l.reach != null) x.miles = l.reach;
-        (l.bases || []).forEach(function (u) { var d = miles(here, u); if (d != null && (x.dist == null || d < x.dist)) Object.assign(x, { dist: d, town: u.town || x.town, outcode: u.outcode || x.outcode, lat: u.lat, lon: u.lon, miles: (u.reach != null ? u.reach : u.miles) || x.miles, unit_id: u.id, unit_name: u.name }); }); x.m = window.SRCat ? window.SRCat.match(need, x, radius) : { why: [], miss: [], score: 0 }; return x;
-      }).filter(function (l) { return l.m; }).sort(function (a, b) { return (a.m.miss.length - b.m.miss.length) || (b.m.score - a.m.score); });
+      var out = [];
+      (r[0] || []).filter(function (l) { return l.owner !== myId(); }).forEach(function (l) {
+        var x = Object.assign({}, l, { key: l.owner, dist: miles(here, l), unit_id: null, unit_name: '' }); if (l.reach != null) x.miles = l.reach;
+        (l.bases || []).forEach(function (u) { var d = miles(here, u); if (d != null && (x.dist == null || d < x.dist)) Object.assign(x, { dist: d, town: u.town || x.town, outcode: u.outcode || x.outcode, lat: u.lat, lon: u.lon, miles: (u.reach != null ? u.reach : u.miles) || x.miles, unit_id: u.id, unit_name: u.name }); }); x.m = window.SRCat ? window.SRCat.match(need, x, radius) : { why: [], miss: [], score: 0 };
+        // Build 110: an agency with acts is shown as its acts, each booked through the agency's desk
+        if (!(l.acts || []).length) { out.push(x); return; }
+        l.acts.forEach(function (a) {
+          var ad = (a.details && typeof a.details === 'object') ? a.details : {};
+          var y = Object.assign({}, x, { key: l.owner + ':' + a.id, business: a.name, agency: l.business, categories: ['entertainment'], chips: (a.chips || []).map(function (k) { return 'entertainment:' + k; }),
+            details: { entertainment: ad }, act: ad, adult_content: !!a.adult_content, audiences: a.audiences || [], about: a.about || '', unit_id: a.id, unit_name: a.name, logo_v: null, ships_uk: false, menus: null });
+          y.m = window.SRCat ? window.SRCat.match(need, y, radius) : { why: [], miss: [], score: 0 }; out.push(y);
+        });
+      });
+      s.results = out.filter(function (l) { return l.m; }).sort(function (a, b) { return (a.m.miss.length - b.m.miss.length) || (b.m.score - a.m.score); });
       s.error = ''; if (M.view === 'search') renderSearch();
     });
     }).catch(function () { s.results = []; s.error = 'Couldn’t search just now. Check your connection and try again.'; if (M.view === 'search') renderSearch(); });
@@ -3789,7 +4016,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
   function openCompose(owner) {
     if (!A.user) { needLogin('Log in or sign up to send enquiries. It’s free.'); return; }
     var owners = Array.isArray(owner) ? owner : [owner];
-    var ls = owners.map(function (o) { return (M.search && M.search.results || []).filter(function (x) { return x.owner === o; })[0]; }).filter(Boolean); if (!ls.length) return;
+    var ls = owners.map(function (o) { return (M.search && M.search.results || []).filter(function (x) { return (x.key || x.owner) === o; })[0]; }).filter(Boolean); if (!ls.length) return;
     var l = ls[0], many = ls.length > 1;
     M.callMode = many && isCallCat(M.search);
     M.view = 'compose'; M.to = l; M.tos = ls; var ev = eventInfo(), s = M.search;
@@ -3861,7 +4088,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     var terms = readTerms(); if (terms.err) { say(terms.err, true); return Promise.resolve(); }
     var tos = (M.tos && M.tos.length ? M.tos : [M.to]), group = tos.length > 1 ? uuid() : null, lic = window.SRPlanner && window.SRPlanner.licencesHeld ? window.SRPlanner.licencesHeld() : null;
     var base = { event_name: v('srmEvName').slice(0, 120) || null, event_date: v('srmEvDate') || null, people: v('srmPeople') ? Math.max(0, Math.round(Number(v('srmPeople')))) : null,
-      event_town: v('srmTown').slice(0, 80) || null, service: v('srmSvc').slice(0, 120) || null, money: moneyText(terms), terms: terms,
+      event_town: v('srmTown').slice(0, 80) || null, event_outcode: (eventInfo().outcode || '').slice(0, 8) || null, service: v('srmSvc').slice(0, 120) || null, money: moneyText(terms), terms: terms,
       organiser_contact: { name: v('srmMyName').slice(0, 120), phone: share ? v('srmMyPhone').slice(0, 30) : '', email: share ? v('srmMyEmail').slice(0, 254) : '' } };
     if (group) base.quote_group = group;
     if (lic && lic.length) base.licences = lic;
@@ -3876,7 +4103,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
         // Build 52: quantities from the plan for this supplier's service (toilet units, fence panels…)
         var qty = window.SRSitePlan && window.SRSitePlan.quantitiesFor ? window.SRSitePlan.quantitiesFor(sp, row.service || to.services || '') : ''; if (qty && text.indexOf(qty) < 0) text += '\n\n' + qty; }
       return A.client.from('enquiries').insert(row).select('*').single().then(q).then(function (e) {
-        return A.client.from('enquiry_messages').insert({ enquiry_id: e.id, body: text }).then(q).then(function () { M.names[to.owner] = { owner: to.owner, business: to.business, town: to.town }; ok.push(e); });
+        return A.client.from('enquiry_messages').insert({ enquiry_id: e.id, body: text }).then(q).then(function () { M.names[to.owner] = { owner: to.owner, business: to.agency || to.business, town: to.town }; ok.push(e); });
       }).catch(function (err) { bad.push({ to: to, m: (err && err.message) || '' }); });
     }
     return tos.reduce(function (p, to) { return p.then(function () { return sendOne(to); }); }, Promise.resolve()).then(function () {
@@ -4015,7 +4242,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       listing.adult_content = !!p.adultContent;
       listing.audiences = (p.audiences || []).filter(function (x) { return ['under5', 'children', 'teens', 'adults', 'family'].indexOf(x) > -1 && !(listing.adult_content && YNG.indexOf(x) > -1); });
       if (listing.adult_content) listing.audiences = ['adults'];
-      listing.dbs_until = p.dbs || null;
+      listing.dbs_until = p.dbs || null; listing.dbs_update = !!p.dbsUpdate;
       var off = p.offer || {}, oCats = off.cats || {};
       listing.categories = Object.keys(oCats);
       listing.chips = []; Object.keys(oCats).forEach(function (k) { (oCats[k].chips || []).concat(oCats[k].must || []).forEach(function (x) { listing.chips.push(k + ':' + x); }); });
@@ -4024,12 +4251,20 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
       if ((oCats.food || oCats.drink) && Array.isArray(p.menus) && p.menus.length) listing.details.menus = p.menus.filter(function (x) { return x && x.name; }).slice(0, 6).map(function (x) { return { name: String(x.name).slice(0, 80), price: typeof x.price === 'number' ? x.price : null, unit: /^(head|item|event)$/.test(x.unit) ? x.unit : 'head', min: x.min || null, includes: String(x.includes || '').slice(0, 300), tags: (x.tags || []).slice(0, 4) }; });
       if ((oCats.food || oCats.drink) && p.menuLink && /^https:\/\/[^\s"<>]+$/.test(p.menuLink)) listing.details.menu_link = String(p.menuLink).slice(0, 300);
       listing.min_size = Number(off.minSize) || null; listing.max_size = Number(off.maxSize) || null; listing.only_matching = off.onlyMatching !== false;
+      // Build 109: UK-wide delivery only counts with shipped-goods chips (the database enforces this too)
+      listing.ships_uk = !!off.shipsUk && !!window.SRCat && listing.chips.some(window.SRCat.isShipped);
       var ent = (oCats.entertainment && oCats.entertainment.details) || {}; listing.act = {};
       ['set_minutes', 'sets', 'own_pa', 'power', 'space', 'extras'].forEach(function (k) { if (ent[k] != null && ent[k] !== '') listing.act[k] = ent[k]; });
       if (window.SRCat) listing.services = listing.categories.map(function (k) { var c = window.SRCat.find(k); return c ? c.t : k; });
+      // Build 110: entertainment agencies list their acts separately and cover England and Wales
+      listing.is_agency = !!p.agency && !!oCats.entertainment; if (listing.is_agency) listing.miles = 999;
       var contact = { owner: (A.owner ? A.owner() : A.user.id), contact_name: p.contactName || null, phones: (p.phones || []).slice(0, 6), email: p.contactEmail || null };
+      if (/^(1|2-5|6-10|10\+)$/.test(p.depots || '')) A.client.rpc('set_my_depots', { p: p.depots }).then(function () {}, function () {});
       return Promise.all([
-        A.client.from('supplier_listings').upsert(listing, { onConflict: 'owner' }).then(q),
+        A.client.from('supplier_listings').upsert(listing, { onConflict: 'owner' }).then(q).catch(function (err) {
+          // Before the Build 110 database update there's no is_agency column: save the rest
+          if (!/is_agency/.test(String((err && err.message) || ''))) throw err; delete listing.is_agency; return A.client.from('supplier_listings').upsert(listing, { onConflict: 'owner' }).then(q);
+        }),
         A.client.from('supplier_contacts').upsert(contact, { onConflict: 'owner' }).then(q)
       ]).then(function () { M.published = M._now(); return true; });
     }).catch(function () { return false; });
@@ -4048,13 +4283,15 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
 (function () {
   var B = window.SRBilling = {};
   var FN = 'https://osqlwddeobiklrpdnons.supabase.co/functions/v1/billing';
-  var NAMES = { 'event-pass': 'Event pass', 'pro': 'Pro', 'pro-plus': 'Pro Plus', 'vendor-pro': 'Vendor Pro', 'vendor-business': 'Vendor Business', 'combined': 'Combined', 'film-pass': 'Production Pass', 'film-pro': 'Film Pro', 'film-studio': 'Film Studio' };
+  var NAMES = { 'event-pass': 'Event pass', 'market-25': 'Market pass (25 traders)', 'market-75': 'Market pass (75 traders)', 'market-200': 'Market pass (200 traders)', 'pro': 'Pro', 'pro-plus': 'Pro Plus', 'vendor-pro': 'Vendor Pro', 'vendor-business': 'Vendor Business', agency: 'Agency', 'combined': 'Combined', 'film-pass': 'Production Pass', 'film-pro': 'Film Pro', 'film-studio': 'Film Studio' };
   var desk = !!(window.SR_ACCOUNT_PAGE && window.SR_ACCOUNT_PAGE.kind === 'desk');
   function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function fmt(d) { if (!d) return ''; var m = String(d).match(/^(\d{4})-(\d\d)-(\d\d)/); return m ? +m[3] + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][+m[2] - 1] + ' ' + m[1] : d; }
   function A() { return window.SRAccount; }
-  function live() { var s = window.SR_SETTINGS_LIVE || window.SR_DEFAULTS || {}; return !!(s.billing && s.billing.enabled === true); }
+  function live() { var s = window.SR_SETTINGS_LIVE || window.SR_DEFAULTS || {}; if (s.billing && s.billing.enabled === true) return true;
+    // Build 88: admin accounts (not in demo mode) can test checkout with the Stripe sandbox before billing is switched on for everyone
+    var p = window.SRAccount && window.SRAccount.profile; return !!(p && p.is_admin && !p.is_demo); }
 
   // ---- a short message across the top of the page
   var bar = document.createElement('div'); bar.className = 'srb-bar'; bar.setAttribute('role', 'status'); bar.hidden = true;
@@ -4069,6 +4306,9 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
   // ---- start a payment
   B.checkout = function (plan, period, seats) {
     if (!NAMES[plan]) return Promise.resolve(false);
+    // Signed in but the profile isn't loaded yet: wait briefly, so an admin's test checkout isn't turned away
+    var a0 = A(), tries = +(arguments[3] || 0);
+    if (!live() && a0 && a0.user && !a0.profile && tries < 15) return new Promise(function (res) { setTimeout(function () { res(B.checkout(plan, period, seats, tries + 1)); }, 300); });
     if (!live()) { ss('sr_upgrade', null); say('Paid plans open after the pilot. Everything is free until then, so there’s nothing to pay yet.'); return Promise.resolve(false); }
     var a = A();
     if (!a || !a.user) {
@@ -4121,7 +4361,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'desk', store: 'showready-supplier-desk-v1', re
     if (!s) return '';
     var y = '<a class="btn primary small" href="?upgrade=vendor-pro&period=year">Vendor Pro, £60 a year + VAT</a><a class="btn small" href="?upgrade=vendor-pro&period=month">£6 a month + VAT</a>';
     if (s.reason === 'pilot') return '<div class="srb-status"><p><b>Organisers can find you and send enquiries.</b> It’s free for every supplier during the pilot' + (s.until ? ', until ' + esc(fmt(s.until)) : '') + '.</p></div>';
-    if (s.reason === 'founding') return '<div class="srb-status"><p><b>Founding member: organisers can find you and send enquiries, free until ' + esc(fmt(s.until)) + '.</b> After that, Vendor Pro is 30% off for life.</p></div>';
+    if (s.reason === 'founding') return '<div class="srb-status"><p><b>Founding member: organisers can find you and send enquiries, free until ' + esc(fmt(s.until)) + '.</b> After that, Vendor Pro is ' + (srV1() ? '30' : '20') + '% off for life.</p></div>';
     if (s.reason === 'subscribed') return '<div class="srb-status"><p><b>Your plan is active: organisers can find you and send enquiries.</b>' + (s.until ? ' Paid up to ' + esc(fmt(s.until)) + '.' : '') + '</p>' + (live() ? '<div class="btns"><button type="button" class="btn small" data-srb-portal>Manage billing</button></div>' : '') + '</div>';
     return '<div class="srb-status off"><p><b>Organisers can’t find you or send enquiries yet.</b> Choose Vendor Pro to be listed and receive enquiries. You can keep using your desk free.</p><div class="btns">' + y + '</div></div>';
   };
@@ -4172,6 +4412,30 @@ function sizeHint() {
   h.textContent += tip + (tip ? ' Everything is free during the pilot.' : '');
 }
 document.addEventListener('change', function (e) { if (e.target && (e.target.id === 'r-size' || e.target.id === 'r-miles')) sizeHint(); });
+// Build 109: depots question. 6 or more points to Enterprise (the database flags it for Russell when saved).
+function depotsHint() { var d = document.getElementById('r-depots'), h = document.getElementById('r-depots-hint'); if (d && h) h.hidden = !/^(6-10|10\+)$/.test(d.value); }
+document.addEventListener('change', function (e) { if (e.target && e.target.id === 'r-depots') depotsHint(); });
+</script>
+<script src="/admin-tools.js?v=80" defer></script>
+<script src="/logo-tools.js?v=83" defer></script>
+<script src="/planmark.js?v=114" defer></script>
+<script src="/trader-desk.js?v=103" defer></script>
+<script src="/agency-acts.js?v=110" defer></script>
+
+<script>
+// Build 101: Manage billing from the plan card (opens Stripe's customer portal)
+document.addEventListener('click', function (e) {
+  var b = e.target && e.target.closest && e.target.closest('[data-sr-portal]'); if (!b) return;
+  var a = window.SRAccount; var c = a && a.client; if (!c) return;
+  b.disabled = true; var t = b.textContent; b.textContent = 'Opening…';
+  c.auth.getSession().then(function (r) {
+    var tok = r && r.data && r.data.session && r.data.session.access_token;
+    return fetch('https://osqlwddeobiklrpdnons.supabase.co/functions/v1/billing', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'portal' }) });
+  }).then(function (res) { return res.json(); }).then(function (d) {
+    if (d && d.url && /^https:\/\/billing\.stripe\.com\//.test(d.url)) location.href = d.url;
+    else { b.disabled = false; b.textContent = t; alert('Couldn’t open your billing page. Email hello@beshowready.co.uk and we’ll sort it.'); }
+  }, function () { b.disabled = false; b.textContent = t; alert('Couldn’t open your billing page. Check your connection and try again.'); });
+});
 </script>
 </body>
 </html>

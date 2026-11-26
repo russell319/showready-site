@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="theme-color" content="#1E5A43">
+<title>Apply for a pitch | ShowReady</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Manrope:wght@400;600;700;800&display=swap">
+<style>
+:root {
+  --bg: #F3F5F0;
+  --surface: #FFFFFF;
+  --surface-2: #E8ECE5;
+  --ink: #15231C;
+  --muted: #4B5A52;
+  --line: #D9DFD5;
+  --brand: #1E5A43;
+  --brand-deep: #123A2B;
+  --brand-ink: #FFFFFF;
+  --brand-soft: #E0ECE5;
+  --brand-text: #15402F;
+  --pennant: #E0892E;
+  --amber-soft: #F8EADB;
+  --amber-text: #763C06;
+  --red-soft: #F7E0DC;
+  --red-text: #8A1F18;
+  --on-deep: #DCEBE3;
+  --font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+    --brand: #2E7A5B; --brand-deep: #0B2219; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3; --pennant: #F0A04B;
+    --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; --on-deep: #C4D8CD; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1813; --surface: #15211A; --surface-2: #1C2A22; --ink: #E7EEE9; --muted: #A2B1A8; --line: #2A3A31;
+  --brand: #2E7A5B; --brand-deep: #0B2219; --brand-ink: #FFFFFF; --brand-soft: #1E392D; --brand-text: #A9DCC3; --pennant: #F0A04B;
+  --amber-soft: #3A2A17; --amber-text: #F2BC80; --red-soft: #3E1F1B; --red-text: #F4ABA3; --on-deep: #C4D8CD; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.65; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.inner { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--surface); border-bottom: 1px solid var(--line); z-index: 5; }
+.top .inner { max-width: 1120px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.logo .word { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.03em; }
+.logo .word span { color: var(--brand); }
+:root[data-theme="dark"] .logo .word span { color: var(--brand-text); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo .word span { color: var(--brand-text); } }
+main { padding-block: 40px 72px; }
+h1, h2 { font-family: var(--font-display); letter-spacing: -0.02em; text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(34px, 6vw, 48px); font-weight: 800; margin: 0 0 8px; }
+h2 { font-size: 22px; font-weight: 800; margin: 36px 0 8px; }
+p, li { max-width: 68ch; }
+a { color: var(--brand-text); font-weight: 700; }
+.meta { color: var(--muted); font-size: 14px; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-top: 20px; }
+.todo { background: var(--amber-soft); color: var(--amber-text); border-radius: 12px; padding: 10px 14px; font-size: 14px; font-weight: 600; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.tablewrap { overflow-x: auto; margin-top: 12px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-top: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border-top: 0; }
+footer { border-top: 1px solid var(--line); background: var(--surface); }
+footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; padding-block: 20px; font-size: 14px; color: var(--muted); }
+:focus-visible { outline: 3px solid var(--pennant); outline-offset: 3px; border-radius: 6px; }
+
+.form { display: flex; flex-direction: column; gap: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label, fieldset legend { font-weight: 700; font-size: 15px; }
+input[type=text], input[type=email], input[type=password], input[type=tel], input[type=number], input[type=date], select, textarea { font: inherit; font-size: 16px; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); width: 100%; }
+textarea { min-height: 96px; }
+.ck { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
+.ck input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+fieldset.doc { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin: 0; }
+h3 { font-family: var(--font-display); font-size: 19px; margin: 10px 0 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-weight: 800; cursor: pointer; text-decoration: none; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn[disabled] { opacity: .6; cursor: wait; }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 12px; }
+.chip { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font: inherit; font-weight: 700; cursor: pointer; color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+.msg { font-weight: 700; margin: 0; }
+.msg.bad { color: var(--red-text); }
+.msg.ok { color: var(--brand-text); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="top"><div class="inner"><a class="logo" href="/" data-home-link aria-label="ShowReady home">
+      <svg width="38" height="38" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#1E5A43"/><g transform="translate(9 10) scale(0.82)"><path d="M29.5 21 L39 15.5 L30.5 13 Z" fill="#F0A04B"/><path d="M71.5 15 L81 9.5 L72.5 7 Z" fill="#F0A04B"/><path d="M6 72 Q18 50 30 20 Q42 34 52 32 Q62 28 72 14 Q84 40 94 68 Q74 60 64 80 Q50 64 36 80 Q26 60 6 72 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/><circle cx="51" cy="54" r="21" fill="#FFFFFF"/><circle cx="51" cy="54" r="15" fill="none" stroke="#C9DAD1" stroke-width="6.5"/><circle cx="51" cy="54" r="15" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="75.4 94.2" transform="rotate(-90 51 54)"/><circle cx="36.7" cy="49.4" r="4.2" fill="#F0A04B"/><path d="M44 54.5 L49 59.5 L58.5 48.5" fill="none" stroke="#1E5A43" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <span class="word">Show<span>Ready</span></span>
+    </a><a href="/" data-home-link>Back to ShowReady</a></div></header>
+<main class="inner">
+  <p class="meta" id="kicker">Trader application</p>
+  <h1 id="evName">Loading…</h1>
+  <p class="meta" id="evWhen"></p>
+  <div id="evIntro"></div>
+
+  <section id="closed" class="box" hidden><p><strong>Applications for this event have closed.</strong> Contact the organiser if you think this is a mistake.</p></section>
+  <section id="bad" class="box" hidden><p><strong>This application link isn’t valid.</strong> Check you copied the whole link, or ask the organiser to send it again.</p></section>
+
+  <section id="signin" class="box" hidden>
+    <h2 style="margin-top:0">Apply with a free ShowReady account</h2>
+    <p>Your details and documents are saved, so next time you apply to an event it takes a minute. Applying is free. ShowReady takes no commission.</p>
+    <div class="seg" role="group" aria-label="Choose">
+      <button type="button" class="chip" data-auth="signup" aria-pressed="true">I’m new: sign up</button>
+      <button type="button" class="chip" data-auth="signin" aria-pressed="false">I have an account: log in</button>
+    </div>
+    <form id="authForm" class="form" novalidate>
+      <div class="field" id="fBiz"><label for="aBiz">Business or trading name</label><input id="aBiz" type="text" maxlength="120" autocomplete="organization"></div>
+      <div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="aPass">Password <span class="meta" id="passHint">(at least 8 characters)</span></label><input id="aPass" type="password" autocomplete="new-password" required minlength="8"></div>
+      <label class="ck" id="fTerms"><input type="checkbox" id="aTerms"> I agree to the <a href="/terms.html" target="_blank">terms of use</a> and have read the <a href="/privacy.html" target="_blank">privacy notice</a>.</label>
+      <p><button class="btn primary" type="submit" id="authBtn">Sign up and continue</button></p>
+      <p class="msg" id="authMsg" role="status"></p>
+      <p class="meta">Forgotten your password? <a href="/suppliers/">Reset it on the supplier desk</a>, then come back to this link.</p>
+    </form>
+  </section>
+
+  <section id="done" class="box" hidden>
+    <h2 style="margin-top:0" id="doneTitle">Application sent</h2>
+    <p id="doneText">The organiser will look at it and you’ll get an email when they decide. You can see where it’s up to on your <a href="/suppliers/?markets=open">supplier desk</a>.</p>
+    <p><button class="btn" type="button" id="editAgain">Change my application</button></p>
+  </section>
+
+  <form id="applyForm" class="box form" hidden novalidate>
+    <h2 style="margin-top:0">Your application</h2>
+    <p class="meta" id="who"></p>
+    <div class="grid">
+      <div class="field"><label for="business">Business or trading name</label><input id="business" type="text" maxlength="120" required></div>
+      <div class="field"><label for="kind">What you’d bring</label><select id="kind"></select></div>
+      <div class="field"><label for="contact_name">Contact name</label><input id="contact_name" type="text" maxlength="80" autocomplete="name"></div>
+      <div class="field"><label for="phone">Phone (for the organiser)</label><input id="phone" type="tel" maxlength="30" autocomplete="tel"></div>
+      <div class="field"><label for="email">Email for this event</label><input id="email" type="email" maxlength="120" autocomplete="email"></div>
+    </div>
+    <div class="field"><label for="offer">What you sell or offer <span class="meta">(menu, products, price range)</span></label><textarea id="offer" maxlength="1500" rows="4"></textarea></div>
+    <h3>Your pitch</h3>
+    <div class="grid">
+      <div class="field"><label for="pitch_w">Width needed (metres)</label><input id="pitch_w" type="number" min="0" max="50" step="0.5" inputmode="decimal"></div>
+      <div class="field"><label for="pitch_d">Depth needed (metres)</label><input id="pitch_d" type="number" min="0" max="50" step="0.5" inputmode="decimal"></div>
+      <div class="field"><label for="power">Power</label><select id="power"><option value="">No power needed</option><option>13 amp socket</option><option>16 amp</option><option>32 amp</option><option>I bring my own quiet generator</option></select></div>
+      <div class="field"><label for="vehicle">Vehicle or unit <span class="meta">(optional)</span></label><input id="vehicle" type="text" maxlength="120" placeholder="For example: catering trailer 4 m, towed"></div>
+    </div>
+    <label class="ck"><input type="checkbox" id="gas"> I cook or heat with gas (LPG)</label>
+    <div id="docsBox"></div>
+    <div class="field"><label for="trader_note">Anything else for the organiser <span class="meta">(optional)</span></label><textarea id="trader_note" maxlength="600" rows="3"></textarea></div>
+    <p class="meta">When you apply, the organiser of this event sees everything on this form, including your phone and email, so they can contact you about a pitch. Your documents are saved to your ShowReady account so you don’t type them again.</p>
+    <p><button class="btn primary" type="submit" id="sendBtn">Send my application</button></p>
+    <p class="msg" id="sendMsg" role="status"></p>
+  </form>
+</main>
+<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · VAT GB 494 3638 53</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a> · <a href="/refunds.html">Refund policy</a> · <a href="/about.html">About ShowReady</a></span></div></footer>
+<script src="/vendor/supabase-js@2.45.4/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+<script>
+/* ShowReady Build 103: a trader applies for a pitch at one event (/apply/?m=CODE). */
+(function () {
+  'use strict';
+  var URL_ = 'https://osqlwddeobiklrpdnons.supabase.co';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  var DOCS = {
+    pl: { t: 'Public liability insurance', f: ['insurer', 'cover', 'expires'] },
+    food_reg: { t: 'Food business registration', f: ['council', 'ref'], food: true },
+    fhrs: { t: 'Food hygiene rating', f: ['rating', 'council'], food: true },
+    gas: { t: 'Gas Safe certificate for your LPG appliances', f: ['expires'] },
+    elec: { t: 'Electrical safety (PAT) certificate', f: ['expires'] },
+    fire: { t: 'You carry a fire extinguisher and fire blanket', f: ['ok'] },
+    allergen: { t: 'You show allergen information to customers', f: ['ok'], food: true },
+    risk: { t: 'You have your own risk assessment', f: ['ok'] }
+  };
+  var KIND = { food: 'Food', drink: 'Drinks', craft: 'Crafts', retail: 'Retail', activity: 'Activity or entertainment', ride: 'Ride or attraction', other: 'Something else' };
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function nice(d) { if (!d) return ''; var x = new Date(String(d).slice(0, 10) + 'T12:00:00Z'); return isNaN(x) ? '' : x.getUTCDate() + ' ' + MONTHS[x.getUTCMonth()] + ' ' + x.getUTCFullYear(); }
+  function show(id) { ['signin', 'applyForm', 'done', 'closed', 'bad'].forEach(function (x) { $(x).hidden = x !== id; }); }
+  function friendly(e) { var m = (e && e.message) || String(e || ''); if (/Failed to fetch|NetworkError/i.test(m)) return 'Couldn’t reach ShowReady. Check your connection and try again.'; if (/Invalid login credentials/i.test(m)) return 'That email and password don’t match. Try again, or reset your password.'; if (/already registered/i.test(m)) return 'There’s already an account with that email. Choose “I have an account: log in”.'; return m.replace(/^.*?ERROR:\s*/, '') || 'Something went wrong. Try again.'; }
+
+  var code = (location.search.match(/[?&]m=([a-z0-9]{6,20})/i) || [])[1];
+  var sb = window.supabase && window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+  var M = null, user = null, mine = null, mode = 'signup';
+  if (!code || !sb) { $('evName').textContent = 'Trader application'; show('bad'); return; }
+
+  sb.rpc('market_public', { p_code: code }).then(function (r) {
+    M = r.data;
+    if (r.error || !M) { $('evName').textContent = 'Trader application'; show('bad'); return; }
+    document.title = 'Apply for a pitch: ' + M.name + ' | ShowReady';
+    $('evName').textContent = M.name;
+    $('evWhen').textContent = [M.event_date ? nice(M.event_date) + (M.days > 1 ? ' (' + M.days + ' days)' : '') : '', M.town || M.outcode || '', M.closes_on ? 'Applications close ' + nice(M.closes_on) : ''].filter(Boolean).join(' · ');
+    $('evIntro').innerHTML = (M.intro ? '<p style="white-space:pre-wrap">' + esc(M.intro) + '</p>' : '') + (M.fee_note ? '<div class="box"><strong>Pitch fees and terms</strong><p style="white-space:pre-wrap;margin:6px 0 0">' + esc(M.fee_note) + '</p></div>' : '');
+    $('kind').innerHTML = (M.kinds || Object.keys(KIND)).map(function (k) { return '<option value="' + k + '">' + esc(KIND[k] || k) + '</option>'; }).join('');
+    return sb.auth.getSession().then(function (s) { user = s.data.session && s.data.session.user; return start(); });
+  }).catch(function () { $('evName').textContent = 'Trader application'; $('bad').innerHTML = '<p><strong>Couldn’t reach ShowReady.</strong> Check your connection and reload the page.</p>'; show('bad'); });
+
+  function start() {
+    if (!user) { if (!M.open) { show('closed'); return; } authMode('signup'); show('signin'); return; }
+    return Promise.all([
+      sb.rpc('my_market_applications'),
+      sb.from('trader_profiles').select('data').eq('owner', user.id).maybeSingle(),
+      sb.from('supplier_listings').select('business').eq('owner', user.id).maybeSingle(),
+      sb.from('supplier_contacts').select('contact_name, phones, email').eq('owner', user.id).maybeSingle()
+    ]).then(function (r) {
+      mine = (r[0].data || []).filter(function (a) { return a.market && a.market.code === code; })[0] || null;
+      var tp = (r[1].data && r[1].data.data) || {}, li = r[2].data || {}, ct = r[3].data || {};
+      $('who').textContent = 'Signed in as ' + user.email + '.';
+      fill(tp, li, ct);
+      if (mine && (mine.status === 'approved' || mine.status === 'declined')) { doneView(mine.status); return; }
+      if (mine && mine.status !== 'withdrawn') { doneView(mine.status); return; }
+      if (!M.open && !mine) { show('closed'); return; }
+      show('applyForm');
+    });
+  }
+  function doneView(status) {
+    var t = { applied: ['Application sent', 'The organiser will look at it and you’ll get an email when they decide.'], waitlist: ['You’re on the waiting list', 'You’ll get an email if a pitch comes free.'], approved: ['You’re approved', 'The organiser will send arrival times and site details by email and on your supplier desk.'], declined: ['Not this time', 'The organiser wasn’t able to offer you a pitch at this event.'] }[status] || ['Application sent', ''];
+    $('doneTitle').textContent = t[0];
+    $('doneText').innerHTML = esc(t[1]) + ' See all your applications on your <a href="/suppliers/?markets=open">supplier desk</a>.';
+    $('editAgain').hidden = !(status === 'applied' || status === 'waitlist');
+    show('done');
+  }
+  $('editAgain').addEventListener('click', function () { show('applyForm'); });
+
+  // ---- sign in or sign up
+  function authMode(m) {
+    mode = m;
+    document.querySelectorAll('[data-auth]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-auth') === m)); });
+    $('fBiz').hidden = m !== 'signup'; $('fTerms').hidden = m !== 'signup';
+    $('aPass').autocomplete = m === 'signup' ? 'new-password' : 'current-password';
+    $('passHint').hidden = m !== 'signup';
+    $('authBtn').textContent = m === 'signup' ? 'Sign up and continue' : 'Log in and continue';
+    $('authMsg').textContent = '';
+  }
+  document.querySelectorAll('[data-auth]').forEach(function (b) { b.addEventListener('click', function () { authMode(b.getAttribute('data-auth')); }); });
+  $('authForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('aEmail').value.trim(), pass = $('aPass').value, msg = $('authMsg'), btn = $('authBtn');
+    msg.className = 'msg';
+    if (!/^\S+@\S+\.\S+$/.test(email)) { msg.className = 'msg bad'; msg.textContent = 'Enter your email address.'; return; }
+    if (mode === 'signup') {
+      if (!$('aBiz').value.trim()) { msg.className = 'msg bad'; msg.textContent = 'Enter your business or trading name.'; return; }
+      if (pass.length < 8) { msg.className = 'msg bad'; msg.textContent = 'Use at least 8 characters for your password.'; return; }
+      if (!$('aTerms').checked) { msg.className = 'msg bad'; msg.textContent = 'Tick the box to agree to the terms.'; return; }
+    }
+    btn.disabled = true; msg.textContent = mode === 'signup' ? 'Creating your account…' : 'Logging in…';
+    // After confirming their email, bring them back to this application (read by /auth/confirm/)
+    try { localStorage.setItem('sr-after-login', JSON.stringify({ url: location.pathname + location.search, at: Date.now() })); } catch (err) {}
+    var p = mode === 'signup'
+      ? sb.auth.signUp({ email: email, password: pass, options: { emailRedirectTo: location.href, data: { role: 'supplier', display_name: $('aBiz').value.trim().slice(0, 120) } } })
+      : sb.auth.signInWithPassword({ email: email, password: pass });
+    p.then(function (r) {
+      if (r.error) throw r.error;
+      if (mode === 'signup' && !r.data.session) {
+        msg.className = 'msg ok';
+        msg.innerHTML = '<strong>Check your email</strong> (and junk folder) for a link from ShowReady. Click it and you’ll come straight back here to finish your application.';
+        return;
+      }
+      user = r.data.user || (r.data.session && r.data.session.user);
+      try { localStorage.removeItem('sr-after-login'); } catch (err) {}
+      return start();
+    }).catch(function (err) { msg.className = 'msg bad'; msg.textContent = friendly(err); })
+      .then(function () { btn.disabled = false; });
+  });
+
+  // ---- the form
+  function docFields() {
+    var food = ['food', 'drink'].indexOf($('kind').value) !== -1, gas = $('gas').checked;
+    var keys = (M.need_docs || []).filter(function (k) { return DOCS[k] && (!DOCS[k].food || food) && (k !== 'gas' || gas); });
+    return keys;
+  }
+  var saved = {};
+  function drawDocs() {
+    var keys = docFields();
+    if (!keys.length) { $('docsBox').innerHTML = ''; return; }
+    var h = '<h3>What the organiser asks for</h3>';
+    keys.forEach(function (k) {
+      var d = saved[k] || {}, f = DOCS[k].f;
+      if (f[0] === 'ok') { h += '<label class="ck"><input type="checkbox" data-doc="' + k + '" data-f="ok"' + (d.ok ? ' checked' : '') + '> ' + esc(DOCS[k].t) + '</label>'; return; }
+      h += '<fieldset class="doc"><legend>' + esc(DOCS[k].t) + '</legend><div class="grid">';
+      f.forEach(function (fld) {
+        var id = 'd-' + k + '-' + fld, v = d[fld] || '';
+        if (fld === 'expires') h += '<div class="field"><label for="' + id + '">Valid until</label><input id="' + id + '" type="date" data-doc="' + k + '" data-f="expires" value="' + esc(v) + '"></div>';
+        else if (fld === 'insurer') h += '<div class="field"><label for="' + id + '">Insurer</label><input id="' + id + '" type="text" maxlength="80" data-doc="' + k + '" data-f="insurer" value="' + esc(v) + '"></div>';
+        else if (fld === 'cover') h += '<div class="field"><label for="' + id + '">Cover</label><select id="' + id + '" data-doc="' + k + '" data-f="cover">' + ['', '1 million', '2 million', '5 million', '10 million'].map(function (o) { return '<option value="' + o + '"' + (o === v ? ' selected' : '') + '>' + (o ? '£' + o : 'Choose') + '</option>'; }).join('') + '</select></div>';
+        else if (fld === 'council') h += '<div class="field"><label for="' + id + '">' + (k === 'fhrs' ? 'Rated by (council)' : 'Registered with (council)') + '</label><input id="' + id + '" type="text" maxlength="80" data-doc="' + k + '" data-f="council" value="' + esc(v) + '"></div>';
+        else if (fld === 'ref') h += '<div class="field"><label for="' + id + '">Registration reference <span class="meta">(optional)</span></label><input id="' + id + '" type="text" maxlength="40" data-doc="' + k + '" data-f="ref" value="' + esc(v) + '"></div>';
+        else if (fld === 'rating') h += '<div class="field"><label for="' + id + '">Rating</label><select id="' + id + '" data-doc="' + k + '" data-f="rating">' + [['', 'Choose'], ['5', '5 (very good)'], ['4', '4 (good)'], ['3', '3 (generally satisfactory)'], ['2', '2'], ['1', '1'], ['0', '0'], ['awaiting', 'Awaiting inspection']].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === String(v) ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>';
+      });
+      h += '</div>' + (k === 'fhrs' ? '<p class="meta">Check yours at <a href="https://ratings.food.gov.uk" target="_blank" rel="noopener">ratings.food.gov.uk</a>.</p>' : '') + '</fieldset>';
+    });
+    $('docsBox').innerHTML = h;
+  }
+  function readDocs() {
+    document.querySelectorAll('[data-doc]').forEach(function (i) {
+      var k = i.getAttribute('data-doc'), f = i.getAttribute('data-f'); saved[k] = saved[k] || {};
+      saved[k][f] = i.type === 'checkbox' ? i.checked : i.value.trim();
+    });
+    var out = {}; docFields().forEach(function (k) { if (saved[k]) out[k] = saved[k]; });
+    return out;
+  }
+  function fill(tp, li, ct) {
+    saved = tp.docs || {};
+    var a = tp.app || {};
+    $('business').value = a.business || li.business || (user.user_metadata && user.user_metadata.display_name) || '';
+    $('contact_name').value = a.contact_name || ct.contact_name || '';
+    $('phone').value = a.phone || (Array.isArray(ct.phones) ? ct.phones[0] : ct.phones) || '';
+    $('email').value = a.email || ct.email || user.email || '';
+    if (a.kind && (M.kinds || []).indexOf(a.kind) !== -1) $('kind').value = a.kind;
+    ['offer', 'pitch_w', 'pitch_d', 'power', 'vehicle'].forEach(function (k) { if (a[k] != null) $(k).value = a[k]; });
+    $('gas').checked = !!a.gas;
+    drawDocs();
+  }
+  $('kind').addEventListener('change', function () { readDocs(); drawDocs(); });
+  $('gas').addEventListener('change', function () { readDocs(); drawDocs(); });
+  $('applyForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = $('sendMsg'), btn = $('sendBtn'); msg.className = 'msg';
+    if (!$('business').value.trim()) { msg.className = 'msg bad'; msg.textContent = 'Enter your business or trading name.'; $('business').focus(); return; }
+    var docs = readDocs();
+    var p = { business: $('business').value.trim(), kind: $('kind').value, contact_name: $('contact_name').value.trim(), phone: $('phone').value.trim(), email: $('email').value.trim(),
+      offer: $('offer').value.trim(), pitch_w: $('pitch_w').value, pitch_d: $('pitch_d').value, power: $('power').value, gas: $('gas').checked, vehicle: $('vehicle').value.trim(),
+      trader_note: $('trader_note').value.trim(), docs: docs };
+    btn.disabled = true; msg.textContent = 'Sending…';
+    sb.rpc('market_apply', { p_code: code, p: p }).then(function (r) {
+      if (r.error) throw r.error;
+      var keep = { docs: saved, app: { business: p.business, kind: p.kind, contact_name: p.contact_name, phone: p.phone, email: p.email, offer: p.offer, pitch_w: p.pitch_w, pitch_d: p.pitch_d, power: p.power, gas: p.gas, vehicle: p.vehicle } };
+      return sb.from('trader_profiles').upsert({ owner: user.id, data: keep, updated_at: new Date().toISOString() }).then(function () { doneView(mine && mine.status === 'waitlist' ? 'waitlist' : 'applied'); });
+    }).catch(function (err) { msg.className = 'msg bad'; msg.textContent = friendly(err); })
+      .then(function () { btn.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>

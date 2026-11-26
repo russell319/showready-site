@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Demo mode · ShowReady</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f6f7f9;color:#1a1a1a}
+main{max-width:460px;margin:12vh auto 0;padding:24px;background:#fff;border:1px solid #d9dde3;border-top:6px solid #14213D;border-radius:16px}
+h1{margin:0 0 8px;font-size:22px}p{margin:8px 0}a.btn{display:inline-flex;align-items:center;min-height:42px;padding:0 16px;margin:10px 8px 0 0;border-radius:10px;background:#14213D;color:#fff;font-weight:700;text-decoration:none}
+a.btn.alt{background:#fff;color:#14213D;border:1px solid #14213D}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="h">Working…</h1>
+  <p id="m" role="status" aria-live="polite">One moment.</p>
+  <div id="links"></div>
+</main>
+<script src="/vendor/supabase-js@2.45.4/supabase.js" crossorigin="anonymous"></script>
+<script>
+/* Build 80: switches between your own account and a throwaway demo account.
+   Your own sign-in and the app data on this device are put aside while you're in demo mode, and put back when you leave.
+   The demo account and everything in it are deleted when you leave demo mode or sign out. */
+(function () {
+  'use strict';
+  var URL_ = 'https://osqlwddeobiklrpdnons.supabase.co', FN = URL_ + '/functions/v1/demo';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk';
+  var q = new URLSearchParams(location.search), act = q.get('do') || '';
+  var to = q.get('to') || '';
+  if (!/^\/(?!\/)/.test(to) || /^\/admin\/demo/.test(to)) to = '';
+  var sb = window.supabase.createClient(URL_, ANON, { auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: false } });
+
+  function el(id) { return document.getElementById(id); }
+  function say(h, m, links) {
+    el('h').textContent = h; el('m').textContent = m;
+    el('links').innerHTML = (links || []).map(function (l) { return '<a class="btn' + (l[2] ? ' alt' : '') + '" href="' + l[0] + '">' + l[1] + '</a>'; }).join('');
+  }
+  function read(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function write(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+  // The apps keep their working copies in localStorage under showready-…
+  function appKeys() { var out = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('showready-') === 0) out[k] = localStorage.getItem(k); } return out; }
+  function clearAppKeys() { Object.keys(appKeys()).forEach(function (k) { localStorage.removeItem(k); }); }
+  function putBack(keys) { Object.keys(keys || {}).forEach(function (k) { try { localStorage.setItem(k, keys[k]); } catch (e) {} }); }
+  function call(token, body) {
+    return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + token }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok || !d.ok) throw new Error(d.error || ('http ' + r.status)); return d; }); });
+  }
+  function current() { return sb.auth.getSession().then(function (r) { return r && r.data ? r.data.session : null; }); }
+  function fresh() { return sb.auth.refreshSession().then(function (r) { return r && r.data && r.data.session ? r.data.session : current(); }, current); }
+
+  function start() {
+    say('Starting demo mode', 'Setting up a fresh demo account.');
+    return fresh().then(function (me) {
+      if (!me) { say('Log in first', 'Log in to your own admin account, then open the Admin button again.', [['/admin/', 'Go to Admin']]); return; }
+      if (read('srdemo-on')) { say('Already in demo mode', 'Leave demo mode first.', [['/admin/demo.html?do=leave', 'Leave demo']]); return; }
+      return call(me.access_token, { action: 'start', role: q.get('role'), plan: q.get('plan') }).then(function (d) {
+        write('srdemo-return', { user: me.user.id, email: me.user.email, access_token: me.access_token, refresh_token: me.refresh_token, keys: appKeys(), at: Date.now() });
+        clearAppKeys();
+        return sb.auth.setSession(d.session).then(function (r) {
+          if (!r || r.error || !r.data.session) throw new Error('session');
+          write('srdemo-on', { user: r.data.session.user.id, role: d.role, plan: d.plan, at: Date.now() });
+          localStorage.removeItem('srdemo-admin');
+          location.replace(to || ({ organiser: '/app/', supplier: '/suppliers/', both: '/app/', film: '/film/' })[d.role] || '/');
+        });
+      });
+    }).catch(function (e) {
+      var back = read('srdemo-return');
+      if (back && !read('srdemo-on')) { putBack(back.keys); localStorage.removeItem('srdemo-return'); }
+      say('Demo mode didn’t start', e && /admin_only/.test(e.message) ? 'Only admin accounts can start demo mode.' : 'Something went wrong, and nothing has changed. Try again in a minute.', [['/admin/', 'Back to Admin']]);
+    });
+  }
+
+  function setLook() {
+    var on = read('srdemo-on');
+    if (!on) { say('Not in demo mode', 'Open the Admin button to start one.', [['/', 'Home']]); return; }
+    return current().then(function (s) {
+      if (!s) throw new Error('signin');
+      return call(s.access_token, { action: 'set', role: q.get('role'), plan: q.get('plan') }).then(function (d) {
+        on.role = d.role; on.plan = d.plan; write('srdemo-on', on);
+        location.replace(to || '/');
+      });
+    }).catch(function () { say('That didn’t work', 'The demo account couldn’t be changed. Leave demo mode and start again.', [['/admin/demo.html?do=leave', 'Leave demo']]); });
+  }
+
+  // Delete every demo account with the demo sign-in; if that has gone (signed out), with your own sign-in once it's back.
+  function leave(signOut) {
+    var back = read('srdemo-return');
+    say(signOut ? 'Signing out' : 'Leaving demo mode', 'Deleting the demo account and everything in it.');
+    return current().then(function (s) {
+      return s ? call(s.access_token, { action: 'end' }).then(function () { return true; }, function () { return false; }) : false;
+    }).then(function (gone) {
+      clearAppKeys();
+      return sb.auth.signOut({ scope: 'local' }).catch(function () {}).then(function () {
+        localStorage.removeItem('srdemo-on');
+        if (!back) return { gone: gone, me: null };
+        putBack(back.keys);
+        return sb.auth.setSession({ access_token: back.access_token, refresh_token: back.refresh_token }).then(function (r) {
+          var me = r && !r.error && r.data ? r.data.session : null;
+          if (gone || !me) return { gone: gone, me: me };
+          return call(me.access_token, { action: 'end' }).then(function () { return { gone: true, me: me }; }, function () { return { gone: false, me: me }; });
+        }, function () { return { gone: gone, me: null }; });
+      });
+    }).then(function (x) {
+      localStorage.removeItem('srdemo-return');
+      var note = x.gone ? 'The demo account and everything in it have been deleted.' : 'The demo account couldn’t be deleted just now. It’s hidden from everyone and is deleted automatically overnight.';
+      if (signOut) {
+        return sb.auth.signOut({ scope: 'local' }).catch(function () {}).then(function () { say('Signed out', note + ' You’re signed out on this device.', [['/', 'Home']]); });
+      }
+      if (!x.me) { say('Demo mode ended', note + ' Your own sign-in had expired, so log in again.', [['/admin/', 'Log in']]); return; }
+      location.replace(to || '/admin/');
+    });
+  }
+
+  // Signed in as someone else while the device still thinks it's in demo mode
+  function tidy() {
+    var back = read('srdemo-return');
+    return current().then(function (s) {
+      if (s) call(s.access_token, { action: 'end' }).catch(function () {});
+      localStorage.removeItem('srdemo-on');
+      if (back && s && back.user === s.user.id) putBack(back.keys);
+      localStorage.removeItem('srdemo-return');
+      location.replace(to || '/');
+    });
+  }
+
+  if (act === 'start') start();
+  else if (act === 'set') setLook();
+  else if (act === 'leave') leave(false);
+  else if (act === 'signout') leave(true);
+  else if (act === 'tidy') tidy();
+  else say('Demo mode', read('srdemo-on') ? 'You’re in demo mode.' : 'Open the Admin button at the bottom left of any page to start demo mode.',
+    read('srdemo-on') ? [['/admin/demo.html?do=leave', 'Leave demo']] : [['/', 'Home']]);
+})();
+</script>
+</body>
+</html>

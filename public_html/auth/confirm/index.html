@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ShowReady – confirming your email</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root { --ink:#15231C; --muted:#4B5A52; --line:#D9DFD5; --accent:#1E5A43; --deep:#123A2B; --pennant:#E0892E; --bg:#F3F5F0; --ok:#1E5A43; --bad:#8A1F18; }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:var(--bg); color:var(--ink); font:16px/1.5 -apple-system, "Segoe UI", Roboto, Arial, sans-serif; padding:24px; }
+  .card { width:100%; max-width:420px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:0 28px 32px; overflow:hidden; }
+  .brand { background:var(--deep); color:#fff; font-weight:800; font-size:22px; letter-spacing:-0.3px; margin:0 -28px 24px; padding:20px 28px; border-bottom:4px solid var(--pennant); }
+  h1 { font-size:20px; margin:0 0 8px; }
+  p { margin:0 0 16px; color:var(--muted); }
+  label { display:block; font-weight:600; font-size:14px; margin:14px 0 6px; }
+  input { width:100%; padding:12px; border:1px solid var(--line); border-radius:8px; font-size:16px; }
+  input:focus { outline:2px solid var(--accent); border-color:transparent; }
+  button, .btn { display:inline-block; width:100%; margin-top:18px; padding:13px; border:0; border-radius:8px;
+           background:var(--accent); color:#fff; font-weight:700; font-size:16px; text-align:center; text-decoration:none; cursor:pointer; }
+  button[disabled] { opacity:.6; cursor:default; }
+  .msg { font-size:14px; margin-top:12px; }
+  .msg.bad { color:var(--bad); } .msg.ok { color:var(--ok); }
+  .spin { width:28px; height:28px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%;
+          animation:s .8s linear infinite; margin:4px 0 16px; }
+  @keyframes s { to { transform:rotate(360deg); } }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main class="card">
+  <p class="brand">ShowReady</p>
+
+  <section id="working">
+    <div class="spin" aria-hidden="true"></div>
+    <h1>Just a moment…</h1>
+    <p>Checking your link.</p>
+  </section>
+
+  <section id="newpass" hidden>
+    <h1>Choose a new password</h1>
+    <p>Pick something at least 8 characters long.</p>
+    <form id="passform">
+      <label for="p1">New password</label>
+      <input id="p1" type="password" autocomplete="new-password" minlength="8" required>
+      <label for="p2">Type it again</label>
+      <input id="p2" type="password" autocomplete="new-password" minlength="8" required>
+      <button id="savebtn" type="submit">Save new password</button>
+      <div id="passmsg" class="msg" role="status"></div>
+    </form>
+  </section>
+
+  <section id="done" hidden>
+    <h1 id="donetitle">You're all set</h1>
+    <p id="donetext">Taking you to ShowReady…</p>
+    <a class="btn" href="/app/">Open ShowReady</a>
+  </section>
+
+  <section id="failed" hidden>
+    <h1>That link didn't work</h1>
+    <p id="failtext">It may have expired or already been used. Links in ShowReady emails only work once and for a limited time.</p>
+    <a class="btn" href="/app/">Go to ShowReady and try again</a>
+  </section>
+</main>
+
+<script src="/vendor/supabase-js@2.45.4/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+<script>
+(function () {
+  // Same project as the app, so the sign-in is shared with /app/ in this browser.
+  var SUPABASE_URL = 'https://osqlwddeobiklrpdnons.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcWx3ZGRlb2Jpa2xycGRub25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNjgwNzQsImV4cCI6MjEwODk0NDA3NH0.PmCrxAOxs8FgOIRokr_K9Mv-kPf1FByvMhEaINxcGAk'; // public anon key, the same one every ShowReady page uses (Build 103)
+  var APP_URL = '/app/';
+  var who = null;
+  // Build 103: send people back where they started (a trader application) or to their own part of ShowReady
+  function dest() {
+    try { var n = JSON.parse(localStorage.getItem('sr-after-login') || 'null'); if (n && typeof n.url === 'string' && /^\/[a-z]/.test(n.url) && !/^\/\//.test(n.url) && Date.now() - n.at < 864e5) { localStorage.removeItem('sr-after-login'); return n.url; } } catch (e) {}
+    var r = who && who.user_metadata && who.user_metadata.role;
+    return r === 'supplier' ? '/suppliers/' : r === 'film' ? '/film/' : APP_URL;
+  }
+
+  var TYPES = { signup:'email', email:'email', magiclink:'email', recovery:'recovery', invite:'invite', email_change:'email_change' };
+
+  function show(id) {
+    ['working','newpass','done','failed'].forEach(function (s) { document.getElementById(s).hidden = (s !== id); });
+  }
+  function fail(text) { if (text) document.getElementById('failtext').textContent = text; show('failed'); }
+  function finish(title, text) {
+    document.getElementById('donetitle').textContent = title;
+    document.getElementById('donetext').textContent = text;
+    show('done');
+    setTimeout(function () { location.replace(dest()); }, 1800);
+  }
+
+  var q = new URLSearchParams(location.search);
+  var tokenHash = q.get('token_hash');
+  var rawType = q.get('type');
+  var type = TYPES[rawType];
+
+  // Remove the one-time code from the address bar and history straight away.
+  history.replaceState(null, '', location.pathname);
+
+  if (!window.supabase || !window.supabase.createClient) { fail('ShowReady couldn\'t load. Check your connection and open the link again.'); return; }
+  if (!tokenHash || !type) { fail(); return; }
+
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  sb.auth.verifyOtp({ token_hash: tokenHash, type: type }).then(function (res) {
+    if (res.error) { fail(); return; }
+    who = (res.data && res.data.user) || null;
+
+    if (rawType === 'recovery') { show('newpass'); document.getElementById('p1').focus(); return; }
+    if (rawType === 'email_change') { finish('Email address updated', 'Your new email address is confirmed. Taking you to ShowReady…'); return; }
+    if (rawType === 'invite') { finish('Welcome to ShowReady', 'Your account is ready. Taking you to ShowReady…'); return; }
+    if (rawType === 'magiclink') { finish('You\'re signed in', 'Taking you to ShowReady…'); return; }
+    finish('Email confirmed', 'Thanks for confirming. Taking you to ShowReady…');
+  }).catch(function () { fail('Something went wrong checking your link. Open it again, or request a new one from ShowReady.'); });
+
+  document.getElementById('passform').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var p1 = document.getElementById('p1').value, p2 = document.getElementById('p2').value;
+    var msg = document.getElementById('passmsg'), btn = document.getElementById('savebtn');
+    msg.className = 'msg';
+    if (p1.length < 8) { msg.className = 'msg bad'; msg.textContent = 'Use at least 8 characters.'; return; }
+    if (p1 !== p2) { msg.className = 'msg bad'; msg.textContent = 'The two passwords don\'t match.'; return; }
+    btn.disabled = true; msg.textContent = 'Saving…';
+    sb.auth.updateUser({ password: p1 }).then(function (res) {
+      if (res.error) {
+        btn.disabled = false; msg.className = 'msg bad';
+        msg.textContent = res.error.message || 'Couldn\'t save that password. Try a different one.';
+        return;
+      }
+      finish('Password changed', 'Your new password is saved and you\'re signed in. Taking you to ShowReady…');
+    }).catch(function () { btn.disabled = false; msg.className = 'msg bad'; msg.textContent = 'Couldn\'t save. Check your connection and try again.'; });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+Fonts used by the ShowReady promo tool (posters and social images).
+
+All of these fonts are licensed under the SIL Open Font License, Version 1.1
+(https://openfontlicense.org). Copyright remains with each font's authors.
+Files are the Latin subsets published by Fontsource (https://fontsource.org).
+
+Abril Fatface, Alfa Slab One, Anton, Barlow Condensed, Bebas Neue, Bricolage Grotesque,
+Caveat, Cinzel, DM Serif Display, Fredoka, Great Vibes, Lato, Lobster, Manrope, Montserrat,
+Orbitron, Oswald, Permanent Marker, Playfair Display, Righteous, Rye.

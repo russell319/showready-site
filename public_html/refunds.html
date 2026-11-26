@@ -100,11 +100,11 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
     </a><a href="/" data-home-link>Back to ShowReady</a></div></header>
 <main class="inner">
 <h1>Cancellations and refunds</h1>
-<p class="meta">Last updated 13 November 2026</p>
+<p class="meta">Last updated 18 November 2026</p>
 <p>This policy explains how to cancel a paid ShowReady plan and when you can get your money back. It forms part of our <a href="/terms.html" data-terms-link>terms of use</a>. ShowReady is run by Russell Bowers, a sole trader trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW. Nothing in this policy affects your legal rights.</p>
 
 <h2>1. During the pilot</h2>
-<p>Everything on ShowReady is free during the pilot, which runs until 1 May 2027, so there's nothing to cancel or refund. Founding members and anyone on a free period (for example through a trade association offer) aren't charged until that free period ends, and we'll email you before your first payment is due.</p>
+<p>Everything on ShowReady is free during the pilot, which runs until 1 February 2027, so there's nothing to cancel or refund. Founding members and anyone on a free period (for example through a trade association offer) aren't charged until that free period ends, and we'll email you before your first payment is due.</p>
 
 <h2>2. Cancelling a monthly or yearly plan</h2>
 <ul>
@@ -143,7 +143,7 @@ footer .inner { max-width: 1120px; display: flex; flex-wrap: wrap; gap: 8px 20px
 <p>Email <strong>hello@beshowready.co.uk</strong>, call <a href="tel:+447368988038">07368 988038</a>, or write to RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW.</p>
 </main>
 
-<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · VAT GB 494 3638 53</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a> · <a href="/refunds.html">Refunds</a></span></div></footer>
+<footer><div class="inner"><span>ShowReady is run by Russell Bowers, trading as RSB Entertainment, Unit 2, Audley Street Trading Estate, Audley Street, Mossley OL5 9HW · VAT GB 494 3638 53</span><span><a href="/privacy.html" data-privacy-link>Privacy notice</a> · <a href="/terms.html" data-terms-link>Terms of use</a> · <a href="/refunds.html">Refund policy</a> · <a href="/about.html">About ShowReady</a></span></div></footer>
 <script>
 /*SHARED-START*/
 window.SR_NAV_PAGE = 'refunds';
@@ -157,7 +157,8 @@ window.SR_NAV_PAGE = 'refunds';
     { id: 'home', href: HOME, t: 'Home', d: 'What ShowReady does' },
     { id: 'planner', href: APP, t: 'Plan an event', d: 'Licences, suppliers, deadlines' },
     { id: 'desk', href: DESK, t: 'Supplier desk', d: 'Enquiries and your profile' },
-    { id: 'tools', href: TOOLS, t: 'Tools and pricing', d: 'Every tool and plan' },
+    { id: 'pricing', href: TOOLS + '#pricing', t: 'Pricing and plans', d: 'What each plan costs and includes' },
+    { id: 'tools', href: TOOLS, t: 'All the tools', d: 'Everything ShowReady does' },
     { id: 'join', href: HOME + '#join', t: 'Join the pilot', d: 'Founding member sign-up' },
     { id: 'install', href: '#install', t: 'Install ShowReady', d: 'Add the app to your phone, tablet or laptop', install: true },
     { id: 'feedback', href: '#feedback', t: 'Send feedback', d: 'A problem, an idea or a question', feedback: true },
@@ -181,7 +182,8 @@ window.SR_NAV_PAGE = 'refunds';
     '.srn-acct a.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink,#fff)}' +
     '.top .nav .srn-acct a{display:inline-flex!important}.top .nav .btn[data-planner-link]{display:none}.top .inner>a[data-home-link]:not(.logo){display:none}' +
     '@media (max-width:440px){.srn-left{gap:8px}.srn-btn{min-height:38px;min-width:38px;padding:0 8px}.srn-acct a,.sr-acct-btn{padding:0 10px!important;font-size:13px!important;min-height:36px}.srn-acct,.sr-acct-btns,.sr-acct-right{gap:5px!important}.top .logo,.topbar .brand{gap:6px}.top .logo svg,.topbar .brand svg{width:30px;height:30px}.top .logo .word,.topbar .brand .word{font-size:18px}.top .inner,.topbar .wrap{gap:8px}}' +
-    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}';
+    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}' +
+    '.srn-price{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:12px;font-weight:700;font-size:15px;color:var(--brand-text,var(--ink));text-decoration:none;white-space:nowrap}.srn-price:hover,.srn-price:focus-visible{background:var(--brand-soft)}@media (max-width:600px){.srn-price{display:none}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var box = document.createElement('div'); box.className = 'srn';
@@ -197,6 +199,8 @@ window.SR_NAV_PAGE = 'refunds';
   var logo = bar.querySelector('.brand, .logo');
   var left = document.createElement('div'); left.className = 'srn-left';
   bar.insertBefore(left, bar.firstChild); left.appendChild(box); if (logo) left.appendChild(logo);
+  // Build 89: Pricing always visible at the top, next to the logo
+  var price = document.createElement('a'); price.className = 'srn-price'; price.href = TOOLS + '#pricing'; price.textContent = 'Pricing'; left.appendChild(price);
 
   var btn = box.querySelector('#srnBtn'), menu = box.querySelector('#srnMenu');
   function setOpen(o) { menu.hidden = !o; btn.setAttribute('aria-expanded', String(o)); }

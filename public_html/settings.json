@@ -19,23 +19,37 @@
     "phone": "07368 988038"
   },
   "offers": {
-    "pilotText": "Everything is free during the pilot, which runs until 1 May 2027.",
-    "foundingText": "Founding members get 6 months free, then 30% off for life (excludes Enterprise). Founding suppliers stay free until 31 October 2027.",
-    "charityText": "Charities, PTAs and parish councils get 50% off.",
-    "priceNote": "Planned prices from summer 2027, shown before VAT. They may change before launch; founding members keep their discount.",
+    "pilotText": "Everything is free during the pilot, which runs until 1 February 2027.",
+    "foundingText": "Founding members get 3 months free, then 20% off for life (excludes Enterprise). Join by 31 December 2026 to get the original offer: 6 months free, then 30% off for life, with founding suppliers free until 31 July 2027.",
+    "charityText": "Charities, PTAs, schools, parish and town councils and community groups get 50% off.",
+    "priceNote": "Planned prices from 1 February 2027. Organiser and Film prices include VAT; supplier and Combined prices are shown before VAT, which is added at 20%. Prices may change before launch; founding members keep their discount.",
     "studentText": "Students get 50% off Film plans when they sign up with a university or college email (ending .ac.uk).",
     "hae": {
       "_note": "HAE member offers. Leave enabled false until HAE agrees. To switch on, set this to true AND run in Supabase: update public.app_settings set value = 'on' where key = 'hae_offer';",
       "enabled": false,
-      "vendorText": "HAE members: Vendor Pro free for the first 12 months, then the normal subscription.",
+      "vendorText": "HAE members: Vendor Pro free for the first 3 months, then the normal subscription.",
       "enterpriseText": "HAE members on Enterprise: 3 months free, then 20% off the first paid year."
     },
-    "earlyText": "After that, the next 200 in each category who join by 31 August 2027 get 20% off for life (excludes Enterprise). Offers never add together: you get the single best one."
+    "earlyText": "After that, the next 200 in each category who join by 31 May 2027 get 20% off for their first 12 months (20% off for life if they join by 31 December 2026; excludes Enterprise). Offers never add together: you get the single best one.",
+    "tiers": [
+      {
+        "label": "Join by 31 December 2026",
+        "text": "6 months free, then 30% off for life, with founding suppliers free until 31 July 2027."
+      },
+      {
+        "label": "From 1 January 2027",
+        "text": "Founding members get 3 months free, then 20% off for life (excludes Enterprise)."
+      },
+      {
+        "label": "Charities, PTAs, schools, parish and town councils and community groups",
+        "text": "50% off."
+      }
+    ]
   },
   "pricingSummary": {
-    "organisers": "Free for one event at a time. Optional extras from {event-pass} for a single event, or {pro} a month if you run events through the year.",
-    "suppliers": "Free supplier desk for work you find yourself. Vendor Pro is {vendor-pro} a month + VAT, or £60 a year + VAT, to be listed for organisers and receive their enquiries. Everything is free during the pilot, and founding suppliers stay free until 31 October 2027.",
-    "faq": "Everything is free during the pilot, which runs until 1 May 2027. After that, planning stays free forever. Suppliers pay from {vendor-pro} a month + VAT to be listed and receive enquiries, and organisers can add paid extras. Annual plans save about two months. See Pricing above for the details."
+    "organisers": "Free for one event at a time. Optional extras from {event-pass} including VAT for a single event, or {pro} a month including VAT if you run events through the year.",
+    "suppliers": "Free supplier desk for work you find yourself. Vendor Pro is {vendor-pro} a month + VAT, or £60 a year + VAT, to be listed for organisers and receive their enquiries. Everything is free during the pilot. Founding suppliers then get 3 months free (free until 31 July 2027 if they join by 31 December 2026).",
+    "faq": "Everything is free during the pilot, which runs until 1 February 2027. After that, planning stays free forever. Suppliers pay from {vendor-pro} a month + VAT to be listed and receive enquiries, and organisers can add paid extras. Annual plans save about two months. See Pricing above for the details."
   },
   "plans": {
     "organisers": [
@@ -126,7 +140,7 @@
           "Supplier desk: every enquiry, quote and follow-up",
           "What each job really earns after fees and costs",
           "Your profile and review links, kept ready",
-          "Listed for organisers free during the pilot. From 1 May 2027 the desk stays free, but you need Vendor Pro to be listed and get enquiries"
+          "Listed for organisers free during the pilot. From 1 February 2027 the desk stays free, but you need Vendor Pro to be listed and get enquiries"
         ]
       },
       {
@@ -165,6 +179,23 @@
         ]
       },
       {
+        "id": "agency",
+        "name": "Agency",
+        "price": "£65",
+        "per": "a month + VAT (£78), or £649 a year + VAT (£778.80)",
+        "for": "For entertainment agencies booking acts and performers",
+        "featured": false,
+        "flag": "",
+        "features": [
+          "Everything in Vendor Pro",
+          "Up to 20 acts, each listed on its own with its own 18+ setting",
+          "Every enquiry for every act comes to your desk, marked with the act’s name",
+          "Up to 3 logins: your team works on one shared desk",
+          "National coverage: organisers anywhere in England and Wales can find your acts",
+          "Founding offer applies"
+        ]
+      },
+      {
         "id": "enterprise",
         "name": "Enterprise",
         "price": "£99",
@@ -178,6 +209,7 @@
           "10 logins included",
           "Up to 10 depots included, then £8 a month + VAT for each extra depot",
           "Any distance: national coverage from every depot",
+          "No limit on acts for entertainment agencies",
           "Enquiries matched to your nearest depot",
           "Invoice billing and enquiry exports",
           "Not part of the founding offer"
@@ -289,6 +321,7 @@
     "Photography and video",
     "Furniture and decor",
     "Signs and printing",
+    "Wristbands, lanyards and merchandise",
     "Something else"
   ],
   "eventTypes": [
@@ -313,23 +346,26 @@
   },
   "founding": {
     "_help": [
-      "goLiveDate: the public launch day, YYYY-MM-DD. Set to 2027-05-01.",
+      "goLiveDate: the public launch day, YYYY-MM-DD. Set to 2027-02-01.",
       "Founding places are limited by number, not by date: the first 100 suppliers and 100 Film & TV accounts to save a profile or project, and the first 100 organisers to upgrade to a paid plan (basic planning is always free). The live counts come from the database (app_settings founding_cap, early_cap, early_deadline, early_discount_pct).",
-      "When a category's 100 founding places are taken, the next 200 in that category get the early-adopter offer if they claim by the early_deadline (31 August 2027).",
+      "When a category's 100 founding places are taken, the next 200 in that category get the early-adopter offer if they claim by the early_deadline (31 May 2027).",
       "closesOn and autoCloseMonths are no longer used.",
       "A real limit must be honoured: never reset counts or extend the deadline more than once, as that can count as fake urgency under consumer law."
     ],
-    "goLiveDate": "2027-05-01",
+    "goLiveDate": "2027-02-01",
     "closesOn": "",
     "autoCloseMonths": 6,
     "openText": "Limited to the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade to a paid plan. Basic planning stays free for organisers.",
-    "closedText": "Founding places are full. Early adopters who join by 31 August 2027 get 20% off for life (excludes Enterprise).",
+    "closedText": "Founding places are full. Early adopters who join by 31 May 2027 get 20% off for their first 12 months (excludes Enterprise).",
     "joinEyebrowOpen": "Founding members",
     "joinEyebrowClosed": "Join the pilot",
     "joinButtonOpen": "Keep me posted",
     "joinButtonClosed": "Keep me posted",
     "showBannerWhileOpen": true,
-    "bannerText": "Founding places: the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade get 6 months free, then 30% off for life (excludes Enterprise)."
+    "bannerText": "Founding places for the first 100 suppliers, 100 Film & TV accounts and 100 organisers who upgrade. Join by 31 December 2026 for 6 months free, then 30% off for life; from 1 January 2027 it is 3 months free, then 20% off for life (excludes Enterprise).",
+    "bannerShort": "Join by 31 December 2026: 6 months free, then 30% off for life.",
+    "bannerShortFrom2027": "Founding places: 3 months free, then 20% off for life.",
+    "_noteBannerShort": "Shown instead of bannerText on phones (600px wide or less). bannerShortFrom2027 is used from 1 January 2027."
   },
   "councils": {
     "_help": [
@@ -419,7 +455,7 @@
   "maps": {
     "_note": "Site plan maps. maptilerKey: MapTiler public key (aerial photos and street map). esriKey: paste an Esri (ArcGIS Location Platform) API key restricted to beshowready.co.uk to use Esri's sharper aerial photos; leave empty to use MapTiler.",
     "maptilerKey": "eAD4HiQJVKUllkxiy363",
-    "esriKey": ""
+    "esriKey": "AAPTa3bonElEi5VEtHryQcwEulw..fVuGIev7cRzqpP0Thfe_wb5yI1WfX6ZpMiFOqqu_kEXp4Cn0wObiYdhquV3_h_Dv-tRB0Dl7SZMcb5e-Vy5_7PSsFXpq8p8i58evGjfKW2zwYRZhUrvzoepu0IKJYb7p_gsCGG9NPSUiai7FTEntsMGOEhejApWSHVMhlSAPxA09ugGzM3YxjSf3Jxivb1B2d47iIYcVvvSFHhX1M1WPURJZozxjy3EyrFIs_rEJoMkR5IVOCfiqn48rAT1_j720y1FT"
   },
   "billing": {
     "_note": "Turn on when Stripe is connected: set enabled to true. Until then pricing shows no buy buttons and everything stays free.",
@@ -428,7 +464,7 @@
   "social": {
     "_note": "Paste each full profile address (https://...) here once the profile is live, then rebuild. Empty ones are skipped.",
     "facebook": "https://www.facebook.com/beshowready",
-    "instagram": "",
+    "instagram": "https://www.instagram.com/showready_events/",
     "linkedin": "",
     "youtube": "",
     "tiktok": ""
@@ -457,5 +493,31 @@
       }
     ],
     "disclosure": "ShowReady may earn a small fee from these links. It costs you nothing extra."
+  },
+  "testimonials": {
+    "_note": "Real quotes only, collected with permission: name, role or organisation and area, and what ShowReady did for them. Leave the list empty and the section stays hidden.",
+    "items": []
+  },
+  "foundingMembers": {
+    "_note": "Names or organisations of founding members who have said they're happy to be listed. Empty = hidden.",
+    "items": []
+  },
+  "reviews": {
+    "_note": "Paste the full https:// address of ShowReady's Google Business Profile and Trustpilot page once they exist. Empty ones are hidden.",
+    "google": "",
+    "trustpilot": ""
+  },
+  "pressMentions": {
+    "_note": "Dated third-party mentions, e.g. {\"name\": \"Tameside Reporter\", \"url\": \"https://...\", \"date\": \"2027-01-12\"}. Empty = hidden.",
+    "items": []
+  },
+  "founder": {
+    "_note": "About page. photo: a path such as /russell.jpg once the file is uploaded; linkedin: the full https:// profile address.",
+    "photo": "",
+    "linkedin": ""
+  },
+  "planShots": {
+    "_note": "Set sitePlan to an image path, e.g. /img/plan/site-plan.webp, once a real site plan is drawn for the example event. Leave empty to keep the slot hidden.",
+    "sitePlan": ""
   }
 }

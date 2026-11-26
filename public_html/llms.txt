@@ -14,6 +14,8 @@ ShowReady (beshowready.co.uk) is run by Russell Bowers, trading as RSB Entertain
 - [Do I need public liability insurance for an event?](https://beshowready.co.uk/guides/event-insurance-public-liability/): Whether event organisers need public liability insurance, how much cover councils and venues ask for, employers’ liability, and what to tell your insurer.
 - [Do I need a licence for a raffle or tombola at an event?](https://beshowready.co.uk/guides/raffles-and-tombolas-at-events/): When a raffle or tombola at a fete, fair or community event needs no licence, the £500 prize and £100 expenses limits, and when you must register a small society lottery.
 - [Do I need a licence for music at a community event?](https://beshowready.co.uk/guides/music-at-community-events/): When live or recorded music at a fete, fair or community event needs a TEN or premises licence, the exemptions, and the separate music copyright licence.
+- [ShowReady or a spreadsheet: which is easier for planning an event?](https://beshowready.co.uk/guides/showready-vs-a-spreadsheet/): What a spreadsheet does well, where it falls short on licences and council deadlines, and when it’s enough on its own.
+- [Do you need a ticketing platform or just a plan?](https://beshowready.co.uk/guides/ticketing-platform-or-a-plan/): What ticketing sites do and don’t do, and how selling tickets can change the licences you need.
 
 ## Tools
 
@@ -21,3 +23,7 @@ ShowReady (beshowready.co.uk) is run by Russell Bowers, trading as RSB Entertain
 - [Council pages](https://beshowready.co.uk/plan/): each council's event licences, notice periods and forms, e.g. https://beshowready.co.uk/plan/tameside
 - [For suppliers](https://beshowready.co.uk/suppliers/): a free supplier desk and listing for organisers
 - [Tools and pricing](https://beshowready.co.uk/toolkit.html)
+
+## About
+
+- [About ShowReady](https://beshowready.co.uk/about.html): who runs ShowReady and why it was built.

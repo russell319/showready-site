@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
+<script>/* Build 98: offer terms. Anyone who joined by 31 Dec 2026 keeps the original offer; from 1 Jan 2027 the new one applies. */
+window.SR_TERMS_CUT = Date.parse('2027-01-01T00:00:00Z');
+function srV1(u) { u = u || window.SR_USER; var t = u && u.created_at ? Date.parse(u.created_at) : Date.now(); return t < SR_TERMS_CUT; }
+function srFoundLine(v1, cat) { if (v1) return '6 months free, then 30% off for life' + (cat === 'suppliers' ? '. As a supplier you stay free until 31 July 2027' : ''); return '3 months free ' + (cat === 'suppliers' ? 'from when you joined (from 1 February 2027 if you joined during the pilot)' : 'from your first paid plan') + ', then 20% off for life'; }
+function srEarlyLine(v1, pct) { return (pct || 20) + '% off ' + (v1 ? 'for life' : 'for your first 12 months'); }
+function srFoundNow(cat) { return Date.now() < SR_TERMS_CUT ? 'join by 31 December 2026 for 6 months free, then 30% off for life' + (cat === 'suppliers' ? ' (suppliers free until 31 July 2027)' : '') + '; from 1 January 2027 it is 3 months free, then 20% off for life (excludes Enterprise)' : srFoundLine(false, cat) + ' (excludes Enterprise)'; }
+</script>
 <script>
 // Build 76: a saved shoots copy that belongs to an account is hidden unless someone is signed in on this browser
 (function () { try { var S = 'showready-film-v1', R = 'showready-film-remote', l = JSON.parse(localStorage.getItem(R) || 'null'); if (!l || !l.user) return;
@@ -25,6 +32,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vendor/leaflet@1.9.4/leaflet.css" crossorigin="anonymous">
 <style>
+  /* Build 97: maps keep their own layers inside them, so menus and panels always sit above the map */
+  .leaflet-container, .maplibregl-map { isolation: isolate; z-index: 0; }
   /* ShowReady Film preview (build 47+). Standalone page; saves to this browser only. */
   :root {
     --field: #1F4D3A; --field-ink: #153527; --turf: #EAF2EC; --pennant: #F2B705; --ink: #17251F; --slate: #4B5B54;
@@ -129,6 +138,8 @@
   label.inline { display: flex; gap: 8px; align-items: center; font-weight: 400; margin-top: 8px; }
   label.inline input { width: 18px; height: 18px; }
   .raprint { display: none; } .raprint table { width: 100%; border-collapse: collapse; font-size: 10pt; } .raprint th, .raprint td { border: 1px solid #999; padding: 4px 6px; text-align: left; vertical-align: top; }
+  .cs-wrap { overflow-x: auto; } .cs-t { width: 100%; border-collapse: collapse; margin: 6px 0; } .cs-t th { text-align: left; font-size: .8rem; color: var(--muted); padding: 2px 4px; } .cs-t td { padding: 2px 4px; vertical-align: top; } .cs-t input, .cs-t select { margin: 0; min-width: 4.5rem; }
+  .cs-auto { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin-top: 14px; background: var(--surface); } .cs-auto h3 { margin: 0 0 6px; } .cs-auto ul { margin: 0; padding-left: 18px; } .cs-auto li { margin: 3px 0; }
   .ca-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0 10px; }
   .meals { display: grid; gap: 6px; margin-top: 6px; }
   .meal { display: grid; grid-template-columns: minmax(0, 1fr) 7.5rem; gap: 8px; align-items: center; }
@@ -154,7 +165,7 @@
   <section class="hero">
     <h1>Every permit, every location, one tracker.</h1>
     <p class="lead">Add each location and shoot day on your production. ShowReady finds the council, highway authority and police force for each one, works out the permits and clearances it needs and the latest date to apply, and keeps the costs, owners, light and unit base plans alongside.</p>
-    <nav class="jump noprint" aria-label="On this page"><a href="#loc-h">Locations</a><a href="#ra-h"><b>Risk assessments</b></a><a href="#tr-h">Permit tracker</a><a href="#co-h">Costs</a><a href="#ca-h">Crew catering</a><a href="#pl-h">Unit base plans</a><a href="#sh-h">Documents</a></nav>
+    <nav class="jump noprint" aria-label="On this page"><a href="#loc-h">Locations</a><a href="#ra-h"><b>Risk assessments</b></a><a href="#tr-h">Permit tracker</a><a href="#co-h">Costs</a><a href="#ca-h">Crew catering</a><a href="#fv-h">Vehicles and accommodation</a><a href="#pl-h">Unit base plans</a><a href="#cs-h"><b>Call sheets</b></a><a href="#sh-h">Documents</a></nav>
     <div class="row noprint"><button class="btn ghost small" type="button" id="example">Load an example shoot</button><button class="btn ghost small" type="button" id="clear">Start again</button><span class="msg">Saved in this browser only.</span><a class="btn ghost small" href="/toolkit.html#film-plans">Film plans and prices</a></div>
   </section>
 
@@ -264,11 +275,25 @@
     <div id="caHost" style="margin-top:12px"></div>
   </section>
 
+  <section class="card" id="fvCard" aria-labelledby="fv-h">
+    <h2 id="fv-h">Unit vehicles and accommodation</h2>
+    <p class="msg" style="margin:0 0 6px">Artist trailers, motorhomes, honeywagons, welfare units and crew rooms for each location: put them on the unit base plan, and ask ShowReady suppliers nearby for a quote.</p>
+    <label for="fvLoc" class="noprint">Location</label><select id="fvLoc" class="noprint" style="max-width:28rem"></select>
+    <div id="fvHost" style="margin-top:12px"></div>
+  </section>
+
   <section class="card" id="planCard" aria-labelledby="pl-h">
     <h2 id="pl-h">Unit base plans</h2>
     <p class="msg" style="margin:0 0 8px">Draw each location's unit base on the aerial photo, to scale: tech trucks, honeywagons, catering, crew parking, camera positions, cable runs and emergency access.</p>
     <label for="planLoc">Location</label><select id="planLoc" style="max-width:28rem"></select>
     <div id="planHost" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card" id="csCard" aria-labelledby="cs-h">
+    <h2 id="cs-h">Call sheets</h2>
+    <p class="msg" style="margin:0 0 6px">A call sheet for every shoot day. Add the times, scenes, cast and contacts; ShowReady fills in the location, unit base, weather, sun times, nearest A&amp;E, police, catering, permits and safety notes, then makes the PDF.</p>
+    <label for="csDay" class="noprint">Shoot day</label><select id="csDay" class="noprint" style="max-width:36rem"></select>
+    <div id="csHost" style="margin-top:12px"></div>
   </section>
 
   <section class="card shared tint" aria-labelledby="sh-h">
@@ -280,7 +305,7 @@
   <footer>
     <p><b>This is a preview for feedback.</b> Lead times are typical figures to plan with, not rules: every film office, highway authority and landowner sets its own, so confirm with each one. ShowReady gives guidance, not legal advice.</p>
     <p>What's missing, wrong or would make this useful on a real shoot? Email <a href="mailto:hello@beshowready.co.uk?subject=ShowReady%20Film%20feedback">hello@beshowready.co.uk</a>.</p>
-    <p>Postcode data: <a href="https://postcodes.io" rel="noopener">postcodes.io</a> (Open Government Licence). Police areas: <a href="https://data.police.uk" rel="noopener">data.police.uk</a>. Maps © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>, aerial photos © MapTiler. Sun times are calculated, not observed.</p>
+    <p>Postcode data: <a href="https://postcodes.io" rel="noopener">postcodes.io</a> (Open Government Licence). Police areas: <a href="https://data.police.uk" rel="noopener">data.police.uk</a>. Maps © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap contributors</a>, aerial photos © MapTiler, or Esri where a key is set. Weather: Open-Meteo. Sun times are calculated, not observed.</p>
   </footer>
 </main>
 
@@ -311,9 +336,12 @@
     honeywagon: { t: 'Honeywagon (toilets and dressing rooms)', c: '#2E6DA4', k: 'HW', w: 12, d: 3, numbered: true, film: true }, makeup: { t: 'Make-up and costume trailer', c: '#7A3E9D', k: 'MU', w: 10, d: 3, film: true },
     catering: { t: 'Catering truck', c: '#D9822B', k: 'CT', w: 8, d: 2.6, film: true }, diningbus: { t: 'Dining bus', c: '#B5651D', k: 'DB', w: 12, d: 2.6, film: true },
     crewpark: { t: 'Crew parking', c: '#3D4D8A', k: 'CP', w: 25, d: 15, film: true }, camera: { t: 'Camera position', c: '#C0392B', k: 'CAM', w: 1, d: 1, numbered: true, film: true },
-    video: { t: 'Video village (monitors)', c: '#1E5A43', k: 'VV', w: 4, d: 4, film: true }, holding: { t: 'Holding area (cast or extras)', c: '#00796B', k: 'HA', w: 10, d: 8, film: true }
+    video: { t: 'Video village (monitors)', c: '#1E5A43', k: 'VV', w: 4, d: 4, film: true }, holding: { t: 'Holding area (cast or extras)', c: '#00796B', k: 'HA', w: 10, d: 8, film: true },
+    // Build 85: accommodation and facility vehicles
+    motorhome: { t: 'Motorhome or campervan', c: '#6D4C41', k: 'MH', w: 8, d: 2.4, numbered: true }, artisttrailer: { t: 'Artist trailer (cast dressing room)', c: '#8E5B9E', k: 'AT', w: 10, d: 2.6, numbered: true, film: true },
+    welfareunit: { t: 'Welfare unit (crew rest, kitchen, toilet)', c: '#00897B', k: 'WU', w: 7, d: 2.5, numbered: true, film: true }
   };
-  SP.FILM_TYPES = ['unitbase', 'techtruck', 'honeywagon', 'makeup', 'catering', 'diningbus', 'crewpark', 'camera', 'video', 'holding', 'generator', 'toilets', 'firstaid', 'fire', 'security', 'waste', 'parking', 'other'];
+  SP.FILM_TYPES = ['unitbase', 'techtruck', 'honeywagon', 'artisttrailer', 'motorhome', 'welfareunit', 'makeup', 'catering', 'diningbus', 'crewpark', 'camera', 'video', 'holding', 'generator', 'toilets', 'firstaid', 'fire', 'security', 'waste', 'parking', 'other'];
   // Simple line pictures for each item (drawn in white on the item's colour). Original artwork.
   var ICONS = {
     stage: 'M3 15h18v4H3z M5 15V8h14v7 M9 5h6',
@@ -344,7 +372,10 @@
     other: 'M12 21s-6-6-6-11a6 6 0 0 1 12 0c0 5-6 11-6 11z M12 10.5v.5',
     unitbase: 'M4 4h16v16H4z M8 8h8 M8 12h8 M8 16h5', techtruck: 'M2 7h12v9H2z M14 10h4l3 3v3h-7 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M15 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0', honeywagon: 'M2 7h12v9H2z M14 10h4l3 3v3h-7 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M15 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0', makeup: 'M2 7h12v9H2z M14 10h4l3 3v3h-7 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M15 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0', catering: 'M2 7h12v9H2z M14 10h4l3 3v3h-7 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M15 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0', diningbus: 'M2 7h12v9H2z M14 10h4l3 3v3h-7 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M15 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0',
     crewpark: 'M8 20V4h5a4 4 0 0 1 0 8H8', camera: 'M3 8h4l2-3h6l2 3h4v11H3z M9 13a3 3 0 1 0 6 0a3 3 0 1 0-6 0', video: 'M3 5h18v11H3z M8 20h8 M12 16v4',
-    holding: 'M4 10a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0 M15 10a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0 M2 20v-1a4.5 4.5 0 0 1 9 0v1 M13 20v-1a4.5 4.5 0 0 1 9 0v1'
+    holding: 'M4 10a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0 M15 10a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0 M2 20v-1a4.5 4.5 0 0 1 9 0v1 M13 20v-1a4.5 4.5 0 0 1 9 0v1',
+    motorhome: 'M2 8h14l5 4v5H2z M5 11h4 M11 11h3 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M14 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0',
+    artisttrailer: 'M2 6h16v10H2z M18 14h4 M10 8l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z M6 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M12 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0',
+    welfareunit: 'M2 7h15v9H2z M17 10h3l2 3v3h-5 M6 11h6 M9 8.5v5 M5 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0 M14 18.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0'
   };
   function iconSvg(type, size) { return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="' + (type === 'firstaid' ? 3.2 : 2) + '" stroke-linecap="round" stroke-linejoin="round"><path d="' + (ICONS[type] || ICONS.other) + '"/></svg>'; }
   SP.iconSvg = iconSvg; SP.ICONS = ICONS;
@@ -426,6 +457,11 @@
   if (typeof srLoadSettings === 'function') srLoadSettings(function (s) { window.SR_SETTINGS_LIVE = s; });
   function addBase(L, map, base) {
     var key = mapKey();
+    // Build 85: Esri's sharper aerial photos when a key is set in settings.json (maps.esriKey)
+    if (base === 'aerial' && esriKey()) {
+      return L.tileLayer('https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}?token=' + encodeURIComponent(esriKey()), { maxZoom: 21, maxNativeZoom: 19, crossOrigin: true,
+        attribution: 'Powered by Esri. Imagery © Esri, Maxar, Earthstar Geographics' }).addTo(map);
+    }
     if (base === 'aerial' && key) {
       return L.tileLayer('https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=' + encodeURIComponent(key), { tileSize: 512, zoomOffset: -1, maxZoom: 21, crossOrigin: true,
         attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>' }).addTo(map);
@@ -701,12 +737,34 @@
     crew: { t: 'Backstage or crew area', c: '#7D8A90', k: 'BS', w: 15, d: 10 }, bins: { t: 'Bin', c: '#3B7A3B', k: 'BN', w: 1, d: 1 }, skip: { t: 'Skip', c: '#C77A2A', k: 'SK', w: 6, d: 2.5 }
   };
   Object.keys(MORE).forEach(function (k) { TYPES[k] = MORE[k]; });
+  // Build 92: more items, each with its own top-down drawing and 3D height
+  var MORE2 = {
+    stretch: { t: 'Stretch tent', c: '#B8A07A', k: 'STR', w: 15, d: 10 }, tent: { t: 'Camping tent', c: '#E2A13B', k: 'TN', w: 3, d: 3, numbered: true },
+    ticket: { t: 'Ticket booth', c: '#1E5A43', k: 'TB', w: 2.5, d: 2 },
+    bigscreen: { t: 'Big screen', c: '#1D1D20', k: 'BS', w: 6, d: 2 }, bowser: { t: 'Water bowser', c: '#2E6DA4', k: 'WB', w: 3.5, d: 1.8, numbered: true },
+    charging: { t: 'Charging point', c: '#2C9B4A', k: 'EV', w: 1, d: 1, numbered: true }, atm: { t: 'Cash machine', c: '#37474F', k: '£', w: 3, d: 2 },
+    van: { t: 'Van', c: '#607D8B', k: 'V', w: 5.9, d: 2, numbered: true }, car: { t: 'Car', c: '#3D5A80', k: 'C', w: 4.5, d: 1.9, numbered: true }, hgv: { t: 'Rigid lorry', c: '#455A64', k: 'HGV', w: 10, d: 2.55, numbered: true }, artic: { t: 'Articulated lorry (artic)', c: '#455A64', k: 'ART', w: 16.5, d: 2.55, numbered: true },
+    rv: { t: 'American RV, slide-outs in', c: '#8A6A45', k: 'RV', w: 11, d: 2.6, numbered: true }, fifthwheel: { t: 'Fifth-wheel caravan and pickup, slide-outs in', c: '#6B5136', k: '5W', w: 15, d: 2.5, numbered: true },
+    rvslide: { t: 'American RV, slide-outs out', c: '#8A6A45', k: 'RV', w: 11, d: 4.3, numbered: true }, aclass: { t: 'A-class motorhome (flat front)', c: '#7D8790', k: 'AC', w: 7.5, d: 2.35, numbered: true }, aclassslide: { t: 'A-class motorhome, slide-outs out', c: '#7D8790', k: 'AC', w: 7.5, d: 3.55, numbered: true },
+    fifthwheelslide: { t: 'Fifth-wheel and pickup, slide-outs out', c: '#6B5136', k: '5W', w: 15, d: 4.1, numbered: true }, fifthcaravan: { t: 'Fifth-wheel caravan (no pickup)', c: '#6B5136', k: '5W', w: 11, d: 2.5, numbered: true }, fifthcaravanslide: { t: 'Fifth-wheel caravan, slide-outs out', c: '#6B5136', k: '5W', w: 11, d: 4.1, numbered: true },
+    horsebox: { t: 'Horsebox', c: '#8A6A45', k: 'HB', w: 7.5, d: 2.5, numbered: true },
+    waltzer: { t: 'Waltzer', c: '#7A3E9D', k: 'WZ', w: 14, d: 14, zone: 'queue' }, dodgems: { t: 'Dodgems', c: '#E94B3C', k: 'DG', w: 20, d: 12, zone: 'queue' },
+    ferris: { t: 'Big wheel', c: '#3D7FD9', k: 'BW', w: 14, d: 8, zone: 'queue' },
+    grandstand: { t: 'Seating stand', c: '#1E5A43', k: 'SS', w: 10, d: 5 }, viewing: { t: 'Accessible viewing platform', c: '#2E6DA4', k: 'AVP', w: 6, d: 4 },
+    jump: { t: 'Show jump', c: '#FFFFFF', k: 'J', w: 4, d: 1, numbered: true },
+    gentruck: { t: 'Generator truck', c: '#E3B51C', k: 'GT', w: 8, d: 2.5, film: true }, dolly: { t: 'Camera track (dolly)', c: '#6E5233', k: 'DT', w: 8, d: 1.2, film: true },
+    crane: { t: 'Camera crane', c: '#C0392B', k: 'CR', w: 4, d: 4, film: true }
+  };
+  Object.keys(MORE2).forEach(function (k) { TYPES[k] = MORE2[k]; });
+  SP.FILM_TYPES.push('gentruck', 'dolly', 'crane', 'hgv', 'artic', 'car', 'rv', 'fifthwheel', 'rvslide', 'aclass', 'aclassslide', 'fifthwheelslide', 'fifthcaravan', 'fifthcaravanslide', 'van', 'bowser', 'charging', 'light', 'tent');
+  LINES.trackway = { t: 'Trackway (ground protection)', c: '#6E6A5E', dash: null, width: 6 };
+  LINES.heras = { t: 'Heras fencing', c: '#9AA3A8', dash: '3 2', width: 2.5 };
   LINES.barrier = { t: 'Pedestrian barrier', c: '#8A949A', dash: null };
   LINES.walk = { t: 'Walking route', c: '#1F8A4C', dash: '2 6', width: 2 };
   LINES.route.width = 3; LINES.emergency.width = 3.7;
   // Groups for the library, 3D heights ([share of footprint, height in m] per tier), covered space, flat zones
   var GROUPS = [['tents', 'Tents and stands'], ['food', 'Food and drink'], ['rides', 'Rides, inflatables and animals'], ['welfare', 'Toilets and welfare'], ['power', 'Power and production'],
-    ['safety', 'Safety and access'], ['zones', 'Zones and parking'], ['waste', 'Waste'], ['film', 'Film unit base'], ['other', 'Other']];
+    ['safety', 'Safety and access'], ['arena', 'Arenas, seating and crowds'], ['vehicles', 'Vehicles'], ['zones', 'Zones, parking and camping'], ['waste', 'Waste'], ['film', 'Film unit base'], ['other', 'Other']];
   var META = {
     stage: ['tents', [[1, 1.2]]], marquee: ['tents', [[1, 2.4], [0.45, 4]], 1], pagoda: ['tents', [[1, 2.4], [0.35, 4.4]], 1], gazebo: ['tents', [[1, 2.2], [0.35, 2.9]], 1], trader: ['tents', [[1, 2.4]], 1],
     food: ['food', [[1, 3]]], trailer: ['food', [[1, 2.6]]], icecream: ['food', [[1, 2.8]]], bar: ['food', [[1, 2.4], [0.4, 3.3]], 1], picnic: ['food', [[1, 0.75]]], water: ['food', [[1, 1]]],
@@ -718,11 +776,20 @@
     crowd: ['zones', null], spectators: ['zones', null], arena: ['zones', null], parking: ['zones', null], blue: ['zones', null], camping: ['zones', null], crew: ['zones', null], fwfiring: ['zones', null], bonfire: ['zones', [[1, 3]]],
     waste: ['waste', [[1, 1.2]]], bins: ['waste', [[1, 1.1]]], skip: ['waste', [[1, 1.8]]],
     unitbase: ['film', null], techtruck: ['film', [[1, 3.6]]], honeywagon: ['film', [[1, 3.6]]], makeup: ['film', [[1, 3.6]]], catering: ['film', [[1, 3.4]]], diningbus: ['film', [[1, 3.8]]],
-    crewpark: ['film', null], camera: ['film', [[1, 1.6]]], video: ['film', [[1, 2.4]], 1], holding: ['film', null], other: ['other', [[1, 2]]]
+    crewpark: ['film', null], artisttrailer: ['film', [[1, 3.6]]], welfareunit: ['film', [[1, 3.4]]], motorhome: ['welfare', [[1, 3.1]]], camera: ['film', [[1, 1.6]]], video: ['film', [[1, 2.4]], 1], holding: ['film', null], other: ['other', [[1, 2]]]
   };
   var ROUND = { ride: 1, kidsride: 1, helter: 1, bonfire: 1 };
+  // Build 92: groups and 3D heights for the new items
+  [['stretch', 'tents', [[1, 2.6], [0.3, 6]], 1], ['tent', 'zones', [[1, 1.3], [0.3, 1.9]], 1], ['ticket', 'safety', [[1, 2.4]], 1], 
+   ['bigscreen', 'power', [[1, 1.5], [0.4, 6]]], ['bowser', 'welfare', [[1, 2]]], ['charging', 'power', [[1, 1.5]]], ['atm', 'other', [[1, 2.4]]],
+   ['van', 'vehicles', [[1, 2.7]]], ['car', 'vehicles', [[1, 1.5]]], ['hgv', 'vehicles', [[1, 4]]], ['artic', 'vehicles', [[1, 4]]], ['rv', 'vehicles', [[1, 3.6]]], ['fifthwheel', 'vehicles', [[1, 3.8]]], ['rvslide', 'vehicles', [[1, 3.6]]], ['aclass', 'vehicles', [[1, 3]]], ['aclassslide', 'vehicles', [[1, 3]]], ['fifthwheelslide', 'vehicles', [[1, 3.8]]], ['fifthcaravan', 'vehicles', [[1, 3.8]]], ['fifthcaravanslide', 'vehicles', [[1, 3.8]]], ['horsebox', 'vehicles', [[1, 3.2]]], ['motorhome', 'vehicles', [[1, 3.1]]], ['trailer', 'food', [[1, 2.6]]],
+   ['waltzer', 'rides', [[1, 1.5], [0.4, 5]]], ['dodgems', 'rides', [[1, 4.5]]], ['ferris', 'rides', [[1, 3], [0.15, 30]]],
+   ['grandstand', 'arena', [[1, 1.5], [0.66, 3], [0.33, 4.5]]], ['viewing', 'arena', [[1, 0.9]]], ['jump', 'arena', [[1, 1.3]]], ['arena', 'arena', null], ['spectators', 'arena', null], ['crowd', 'arena', null], ['animals', 'arena', null],
+   ['gentruck', 'film', [[1, 3.6]]], ['dolly', 'film', [[1, 0.2]]], ['crane', 'film', [[1, 1.5], [0.2, 6]]], ['light', 'power', [[1, 1.5], [0.3, 9]]]
+  ].forEach(function (r) { META[r[0]] = [r[1], r[2], r[3]]; });
+  ROUND.waltzer = 1;
   function meta(type) { var m = META[type] || ['other', [[1, 2]]]; return { g: m[0], tiers: m[1], covered: !!m[2], flat: !m[1] }; }
-  SP.meta = meta; SP.GROUPS = GROUPS;
+  SP.meta = meta; SP.GROUPS = GROUPS; SP.ROUND = ROUND;
 
   // ---- figures: what the plan adds up to (feeds the council PDF, the event plan and supplier enquiries)
   function itemArea(it) { var w = Number(it.w) || 0, d = Number(it.d) || 0; return ROUND[it.type] ? Math.PI * Math.pow(Math.min(w, d) / 2, 2) : w * d; }
@@ -796,44 +863,138 @@
     var ty = TYPES[type] || TYPES.other, ppm = Math.max(8, Math.min(48, 900 / Math.max(w, d, 0.5)));
     var W = Math.max(8, Math.round(w * ppm)), H = Math.max(8, Math.round(d * ppm));
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var g = cv.getContext('2d'); if (!g) return '';
+    // Build 92: realistic top-down artwork. m(x) converts metres to pixels.
+    var P = ppm, mn = Math.min(W, H);
+    function m(x) { return x * P; }
     function rect(x, y, a, b, f) { g.fillStyle = f; g.fillRect(x, y, a, b); }
-    function edge(c) { g.strokeStyle = c || 'rgba(0,0,0,.4)'; g.lineWidth = Math.max(1, ppm * 0.1); g.strokeRect(1, 1, W - 2, H - 2); }
-    function shade() { var gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, 'rgba(0,0,0,.10)'); gr.addColorStop(0.5, 'rgba(255,255,255,.2)'); gr.addColorStop(1, 'rgba(0,0,0,.15)'); rect(0, 0, W, H, gr); }
+    function rr(x, y, a, b, r, f, s, lw) { r = Math.min(r, a / 2, b / 2); g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + a, y, x + a, y + b, r); g.arcTo(x + a, y + b, x, y + b, r); g.arcTo(x, y + b, x, y, r); g.arcTo(x, y, x + a, y, r); g.closePath(); if (f) { g.fillStyle = f; g.fill(); } if (s) { g.strokeStyle = s; g.lineWidth = lw || Math.max(1, P * 0.06); g.stroke(); } }
+    function circ(x, y, r, f, s, lw) { g.beginPath(); g.arc(x, y, Math.max(0.5, r), 0, 2 * Math.PI); if (f) { g.fillStyle = f; g.fill(); } if (s) { g.strokeStyle = s; g.lineWidth = lw || Math.max(1, P * 0.05); g.stroke(); } }
+    function line(x1, y1, x2, y2, c, lw) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.strokeStyle = c; g.lineWidth = lw || Math.max(1, P * 0.06); g.stroke(); }
+    function lin(x1, y1, x2, y2, stops) { var gr = g.createLinearGradient(x1, y1, x2, y2); stops.forEach(function (s) { gr.addColorStop(s[0], s[1]); }); return gr; }
+    function glow(x, y, r, c, a) { var gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, c.replace(')', ',' + a + ')').replace('rgb', 'rgba')); gr.addColorStop(1, c.replace(')', ',0)').replace('rgb', 'rgba')); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fill(); }
+    function edge(c) { g.strokeStyle = c || 'rgba(0,0,0,.4)'; g.lineWidth = Math.max(1, P * 0.08); g.strokeRect(1, 1, W - 2, H - 2); }
+    function shade() { rect(0, 0, W, H, lin(0, 0, 0, H, [[0, 'rgba(0,0,0,.10)'], [0.5, 'rgba(255,255,255,.2)'], [1, 'rgba(0,0,0,.15)']])); }
     function icon() {
-      if (Math.min(W, H) < 16 || typeof Path2D === 'undefined') return;
-      var s = Math.min(W, H) * 0.6 / 24; g.save(); g.translate(W / 2 - 12 * s, H / 2 - 12 * s); g.scale(s, s);
-      g.strokeStyle = '#FFFFFF'; g.lineWidth = type === 'firstaid' ? 3.2 : 2; g.lineCap = 'round'; g.lineJoin = 'round';
+      if (mn < 16 || typeof Path2D === 'undefined') return;
+      var s = mn * 0.6 / 24; g.save(); g.translate(W / 2 - 12 * s, H / 2 - 12 * s); g.scale(s, s);
+      g.strokeStyle = '#FFFFFF'; g.lineWidth = 2; g.lineCap = 'round'; g.lineJoin = 'round';
       try { g.stroke(new Path2D(ICONS[type] || ICONS.other)); } catch (e) {} g.restore();
     }
-    if (/^(marquee|pagoda|gazebo|bar|firstaid|info|welfare)$/.test(type)) {
-      rect(0, 0, W, H, type === 'bar' ? '#2F7A5C' : type === 'info' ? '#1E5A43' : '#F4F4F0'); shade();
-      g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = Math.max(1, ppm * 0.08); g.beginPath();
-      if (type === 'pagoda' || type === 'gazebo') { g.moveTo(0, 0); g.lineTo(W, H); g.moveTo(W, 0); g.lineTo(0, H); }
-      else { g.moveTo(0, H / 2); g.lineTo(W, H / 2); var bays = Math.max(1, Math.round(w / 3)); for (var i = 1; i < bays; i++) { g.moveTo(i * W / bays, 0); g.lineTo(i * W / bays, H); } }
-      g.stroke(); edge();
-      if (type === 'firstaid') { var s1 = Math.min(W, H) * 0.5; rect(W / 2 - s1 / 2, H / 2 - s1 / 7, s1, s1 * 2 / 7, '#D7261E'); rect(W / 2 - s1 / 7, H / 2 - s1 / 2, s1 * 2 / 7, s1, '#D7261E'); }
-      else if (type === 'welfare') { rect(W * 0.35, H * 0.35, W * 0.3, H * 0.3, '#00796B'); }
-      else if (type === 'bar') rect(0, H * 0.8, W, H * 0.2, '#8B5A2B');
-    } else if (type === 'stage') {
-      rect(0, 0, W, H, '#2B2B2E'); g.strokeStyle = '#B9BEC4'; g.lineWidth = Math.max(2, ppm * 0.25); g.strokeRect(ppm * 0.3, ppm * 0.3, W - ppm * 0.6, H - ppm * 0.6); rect(0, H - ppm * 0.5, W, ppm * 0.5, '#E0892E');
-    } else if (/^(food|trailer|icecream|catering|techtruck|honeywagon|makeup|diningbus)$/.test(type)) {
-      rect(0, 0, W, H, type === 'icecream' ? '#F7D7E4' : '#FAFAF7'); rect(0, 0, W * 0.24, H, '#D9DDE0'); rect(W * 0.3, H - Math.max(2, ppm * 0.45), W * 0.62, Math.max(2, ppm * 0.45), ty.c); edge('rgba(0,0,0,.35)'); icon2(ty.c);
-    } else if (type === 'toilets') {
-      var u = Math.max(1, Math.round(Math.max(w, d) / 1.25)), along = w >= d;
-      for (var k = 0; k < u; k++) { if (along) { rect(k * W / u + 1, 1, W / u - 2, H - 2, '#2F6DB5'); rect(k * W / u + W / u * 0.3, H * 0.15, W / u * 0.4, H * 0.35, '#5C93D6'); } else { rect(1, k * H / u + 1, W - 2, H / u - 2, '#2F6DB5'); rect(W * 0.15, k * H / u + H / u * 0.3, W * 0.35, H / u * 0.4, '#5C93D6'); } }
-    } else if (type === 'generator') { rect(0, 0, W, H, '#F2C230'); edge('#333'); rect(W * 0.75, H * 0.3, W * 0.12, H * 0.4, '#333');
-    } else if (ROUND[type]) {
-      var R = Math.min(W, H) / 2, cx = W / 2, cy = H / 2, n = 12;
-      for (var q = 0; q < n; q++) { g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R - 1, q * 2 * Math.PI / n, (q + 1) * 2 * Math.PI / n); g.closePath(); g.fillStyle = q % 2 ? ty.c : (type === 'bonfire' ? '#7A4A1E' : '#FFFFFF'); g.fill(); }
-      g.beginPath(); g.arc(cx, cy, R * 0.18, 0, 2 * Math.PI); g.fillStyle = '#FFFFFF'; g.fill();
-    } else if (/^(bouncy|inflatable)$/.test(type)) {
-      rect(0, 0, W, H, '#E94B3C'); rect(W * 0.16, H * 0.16, W * 0.68, H * 0.68, '#3D7FD9');
-      [[0.1, 0.1], [0.9, 0.1], [0.1, 0.9], [0.9, 0.9]].forEach(function (p) { g.beginPath(); g.arc(W * p[0], H * p[1], Math.min(W, H) * 0.12, 0, 2 * Math.PI); g.fillStyle = '#F2C230'; g.fill(); });
-    } else if (type === 'trader') { for (var z = 0; z < 6; z++) rect(z * W / 6, 0, W / 6 + 1, H, z % 2 ? '#D7261E' : '#FBFBF8'); edge('rgba(0,0,0,.35)');
-    } else if (type === 'picnic') { rect(0, H * 0.32, W, H * 0.36, '#9C6B3C'); rect(0, 0, W, H * 0.18, '#7A5230'); rect(0, H * 0.82, W, H * 0.18, '#7A5230');
-    } else if (type === 'bins') { rect(0, 0, W, H, '#3B7A3B'); edge('#244d24');
+    function awning(x, y, a, b, c1, c2, n) { n = n || Math.max(4, Math.round(a / Math.max(4, P * 0.5))); for (var i = 0; i < n; i++) rect(x + i * a / n, y, a / n + 0.5, b, i % 2 ? c2 : c1); rect(x, y, a, b, lin(0, y, 0, y + b, [[0, 'rgba(0,0,0,.18)'], [1, 'rgba(255,255,255,.12)']])); }
+    // a tent roof: ridge along the long side, bays every 3 m
+    function tentRoof(base, ridge) {
+      var along = W >= H;
+      rect(0, 0, W, H, along ? lin(0, 0, 0, H, [[0, '#d5dcdf'], [0.48, base], [0.52, '#eef1f2'], [1, '#c9d1d4']]) : lin(0, 0, W, 0, [[0, '#d5dcdf'], [0.48, base], [0.52, '#eef1f2'], [1, '#c9d1d4']]));
+      var L = along ? w : d, bays = Math.max(1, Math.round(L / 3));
+      for (var i = 1; i < bays; i++) along ? line(i * W / bays, 0, i * W / bays, H, 'rgba(120,130,135,.45)') : line(0, i * H / bays, W, i * H / bays, 'rgba(120,130,135,.45)');
+      if (ridge !== false) along ? line(0, H / 2, W, H / 2, 'rgba(110,120,125,.7)', Math.max(1.5, P * 0.12)) : line(W / 2, 0, W / 2, H, 'rgba(110,120,125,.7)', Math.max(1.5, P * 0.12));
+      for (var j = 0; j <= bays; j++) { var px = along ? Math.min(W - 2, Math.max(2, j * W / bays)) : W / 2, py = along ? H / 2 : Math.min(H - 2, Math.max(2, j * H / bays)); circ(px, py, P * 0.14, '#c9d0d2', '#8f989b'); }
+      edge('rgba(90,100,105,.6)');
+    }
+    function pyramid(base, dark) { rect(0, 0, W, H, base); g.fillStyle = dark || 'rgba(0,0,0,.12)'; g.beginPath(); g.moveTo(0, 0); g.lineTo(W / 2, H / 2); g.lineTo(W, 0); g.fill(); g.beginPath(); g.moveTo(0, H); g.lineTo(W / 2, H / 2); g.lineTo(0, 0); g.globalAlpha = 0.5; g.fill(); g.globalAlpha = 1; line(0, 0, W, H, 'rgba(0,0,0,.25)'); line(W, 0, 0, H, 'rgba(0,0,0,.25)'); edge('rgba(0,0,0,.35)'); }
+    // a vehicle seen from above: body, cab at the right end, roof details
+    function vehicle(body, opts) {
+      opts = opts || {}; var along = W >= H; g.save(); if (!along) { g.translate(W, 0); g.rotate(Math.PI / 2); } var VW = along ? W : H, VH = along ? H : W;
+      var cab = opts.noCab ? 0 : Math.min(VW * 0.3, m(opts.cab || 1.8));
+      rr(1, 1, VW - 2, VH - 2, P * 0.25, body, 'rgba(0,0,0,.45)');
+      rect(1, 1, VW - 2, VH - 2, lin(0, 0, 0, VH, [[0, 'rgba(0,0,0,.12)'], [0.5, 'rgba(255,255,255,.18)'], [1, 'rgba(0,0,0,.18)']]));
+      if (cab) { rr(VW - cab, 2, cab - 2, VH - 4, P * 0.3, opts.cabC || body, 'rgba(0,0,0,.4)'); rr(VW - cab * 0.55, VH * 0.14, cab * 0.4, VH * 0.72, P * 0.15, '#2a3a45'); line(VW - cab, 2, VW - cab, VH - 2, 'rgba(0,0,0,.35)', Math.max(1, P * 0.1)); }
+      if (opts.awning) awning(VW * 0.08, VH - Math.max(3, m(0.9)), (VW - cab) * 0.8, Math.max(3, m(0.9)), opts.awning[0], opts.awning[1]);
+      if (opts.vents !== false) { rect(VW * 0.18, VH * 0.25, Math.max(2, m(0.8)), Math.max(2, m(0.6)), '#cfd3d6'); circ(VW * 0.45, VH * 0.4, Math.max(1.5, m(0.2)), '#9aa0a4', '#666'); }
+      if (opts.stripe) rect(0, VH * 0.45, VW - cab, Math.max(2, VH * 0.1), opts.stripe);
+      if (opts.windows) for (var i = 0; i < opts.windows; i++) rect(VW * 0.06 + i * (VW - cab) * 0.88 / opts.windows, 2, (VW - cab) * 0.88 / opts.windows - m(0.25), Math.max(2, m(0.15)), '#3a4a55');
+      if (opts.label && mn >= 18) { g.fillStyle = 'rgba(255,255,255,.9)'; g.font = 'bold ' + Math.round(Math.min(VH * 0.38, VW * 0.12)) + 'px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(opts.label, (VW - cab) / 2, VH / 2); }
+      g.restore();
+    }
+    function unitsRow(n, c, top, vent) { var along = W >= H; for (var k = 0; k < n; k++) { var x = along ? k * W / n : 0, y = along ? 0 : k * H / n, a = along ? W / n : W, b = along ? H : H / n; rr(x + 1, y + 1, a - 2, b - 2, P * 0.12, c, 'rgba(0,0,0,.4)'); rr(x + a * 0.2, y + b * 0.2, a * 0.6, b * 0.6, P * 0.08, top); circ(x + a * 0.72, y + b * 0.28, Math.max(1, P * 0.08), vent || '#333'); } }
+    function wheel(x, y, r) { circ(x, y, r, '#1b1b1b', '#444'); circ(x, y, r * 0.45, '#777'); }
+    var light = ['rgb(255,211,107)', 'rgb(185,160,255)', 'rgb(255,107,154)', 'rgb(107,211,255)'];
+
+    if (type === 'stage') {
+      rect(0, 0, W, H, '#2a2a2e'); for (var px = 0; px < W; px += m(1.2)) line(px, 0, px, H, 'rgba(255,255,255,.05)');
+      [0.25, 0.5, 0.75].forEach(function (f, i) { glow(W * f, H * 0.5, mn * 0.3, light[i % 4], 0.55); });
+      rr(W / 2 - m(1.2), H * 0.12, m(2.4), m(1.6), P * 0.1, '#3d3d44', '#55555c'); circ(W / 2, H * 0.12 + m(0.8), m(0.45), '#8c8c94', '#666');
+      rect(0, 0, W, Math.max(2, m(0.3)), '#a8adb2'); rect(0, H * 0.55, W, Math.max(2, m(0.25)), '#a8adb2');
+      for (var li = 0; li < 6; li++) { circ(W * (0.12 + li * 0.152), m(0.15), Math.max(1.5, m(0.17)), '#141414', light[li % 4].replace('rgb', 'rgb'), Math.max(1, P * 0.06)); circ(W * (0.12 + li * 0.152), H * 0.55 + m(0.12), Math.max(1.5, m(0.15)), '#141414', light[(li + 1) % 4], Math.max(1, P * 0.06)); }
+      [0, 1].forEach(function (sd) { var sx = sd ? W - m(1) - 1 : 1; rr(sx, H - m(2.2), m(1), m(1.7), P * 0.08, '#121212'); circ(sx + m(0.5), H - m(1.8), m(0.25), '#3a3a3a'); circ(sx + m(0.5), H - m(1.05), m(0.3), '#3a3a3a'); });
+      rect(0, H - m(0.5), W, m(0.5), '#1a1a1d'); for (var mo = 0; mo < 4; mo++) rr(W * (0.22 + mo * 0.15), H - m(0.45), m(0.7), m(0.35), P * 0.05, '#3a3a40');
+      edge('#111');
+    } else if (type === 'marquee' || type === 'stretch') {
+      if (type === 'stretch') { rect(0, 0, W, H, '#e9dcc4'); g.strokeStyle = 'rgba(120,95,60,.35)'; g.lineWidth = Math.max(1, P * 0.1); [[0.3, 0.35], [0.7, 0.35], [0.5, 0.7]].forEach(function (p) { circ(W * p[0], H * p[1], mn * 0.08, '#d4c3a3', 'rgba(120,95,60,.5)'); for (var a = 0; a < 8; a++) line(W * p[0], H * p[1], W * p[0] + Math.cos(a * 0.785) * mn * 0.4, H * p[1] + Math.sin(a * 0.785) * mn * 0.4, 'rgba(120,95,60,.18)'); }); edge('rgba(120,95,60,.5)'); }
+      else tentRoof('#ffffff');
+    } else if (type === 'pagoda') { pyramid('#f7f7f4'); circ(W / 2, H / 2, mn * 0.06, '#c9d0d2', '#888');
+    } else if (type === 'gazebo' || type === 'trader') {
+      pyramid(type === 'trader' ? '#fbfbf8' : '#ffffff', type === 'trader' ? 'rgba(200,40,30,.35)' : null);
+      if (type === 'trader') awning(0, H - Math.max(3, m(0.6)), W, Math.max(3, m(0.6)), '#d7261e', '#fbfbf8');
+    } else if (type === 'bar') {
+      tentRoof('#ffffff'); awning(0, H - Math.max(3, m(0.9)), W, Math.max(3, m(0.9)), '#1E5A43', '#ffffff');
+      for (var bt = 0; bt < 8; bt++) circ(W * (0.15 + bt * 0.1), H - m(1.2), Math.max(1, m(0.08)), ['#2d6b2d', '#7a2d2d', '#c9a227'][bt % 3]);
+    } else if (type === 'firstaid' || type === 'welfare' || type === 'info' || type === 'lostchild') {
+      pyramid(type === 'info' ? '#1E5A43' : '#ffffff', type === 'info' ? 'rgba(0,0,0,.18)' : null);
+      g.strokeStyle = type === 'firstaid' ? '#2c9b4a' : type === 'info' ? '#F0A04B' : '#00796B'; g.lineWidth = Math.max(2, P * 0.25); g.strokeRect(2, 2, W - 4, H - 4);
+      var s1 = mn * 0.5;
+      if (type === 'firstaid') { rect(W / 2 - s1 / 2, H / 2 - s1 / 7, s1, s1 * 2 / 7, '#2c9b4a'); rect(W / 2 - s1 / 7, H / 2 - s1 / 2, s1 * 2 / 7, s1, '#2c9b4a'); }
+      else if (type === 'info') { circ(W / 2, H / 2 - s1 * 0.3, s1 * 0.09, '#fff'); rect(W / 2 - s1 * 0.07, H / 2 - s1 * 0.12, s1 * 0.14, s1 * 0.45, '#fff'); }
+      else { circ(W / 2 - s1 * 0.18, H / 2 - s1 * 0.12, s1 * 0.13, '#00796B'); circ(W / 2 + s1 * 0.2, H / 2 - s1 * 0.02, s1 * 0.09, '#00796B'); rr(W / 2 - s1 * 0.32, H / 2 + s1 * 0.05, s1 * 0.28, s1 * 0.32, s1 * 0.05, '#00796B'); rr(W / 2 + s1 * 0.1, H / 2 + s1 * 0.1, s1 * 0.2, s1 * 0.24, s1 * 0.04, '#00796B'); }
+    } else if (type === 'food' || type === 'trailer' || type === 'catering') {
+      vehicle(type === 'trailer' ? '#f2f2ee' : '#fafaf7', { awning: ['#e0483a', '#ffffff'], noCab: type === 'trailer', cab: 2, cabC: type === 'catering' ? '#e9e9e4' : null });
+    } else if (type === 'icecream') { vehicle('#fbe3ee', { awning: ['#d86a9a', '#ffffff'], cab: 1.8, stripe: '#79c3e8' });
+    } else if (/^(techtruck|honeywagon|makeup|diningbus|artisttrailer|welfareunit|gentruck|hgv|artic|rv|rvslide|aclass|aclassslide|fifthwheel|fifthwheelslide|fifthcaravan|fifthcaravanslide|car|horsebox|motorhome|van|bowser|atm)$/.test(type)) {
+      var vc = { techtruck: ['#eceff1', {}], honeywagon: ['#f5f7f8', { stripe: '#2E6DA4', windows: 4 }], makeup: ['#f5f2f7', { stripe: '#7A3E9D', windows: 3 }], diningbus: ['#d9c9a8', { windows: 6, cab: 2.2, cabC: '#c9b48c' }],
+        artisttrailer: ['#f4f0f6', { stripe: '#8E5B9E', windows: 2, noCab: true }], welfareunit: ['#e9f3f2', { stripe: '#00897B', windows: 2 }], gentruck: ['#e3b51c', { cab: 2.2, cabC: '#eeeeee' }], hgv: ['#f0f0ee', { cab: 2.3, cabC: '#2f4d7a' }],
+        horsebox: ['#e7ddc8', { cab: 2, cabC: '#3a5a40', windows: 2 }], motorhome: ['#f6f3ec', { stripe: '#8a6a45', windows: 3, cab: 1.6 }], van: ['#e8edf0', { cab: 1.8, vents: false }], car: ['#3d5a80', { cab: 1.6, cabC: '#2f4866', vents: false }], artic: ['#f0f0ee', { cab: 2.3, cabC: '#b3261e' }], rv: ['#f4f1ea', { stripe: '#8a6a45', windows: 4, cab: 1.4, cabC: '#ece8df' }], fifthwheel: ['#f4f1ea', { stripe: '#6b5136', windows: 3, cab: 3.4, cabC: '#2b3a4a' }], rvslide: ['#f4f1ea', { stripe: '#8a6a45', windows: 4, cab: 1.4, cabC: '#ece8df' }], aclass: ['#f7f7f5', { stripe: '#7d8790', windows: 3, cab: 1.3, cabC: '#eeeeec' }], aclassslide: ['#f7f7f5', { stripe: '#7d8790', windows: 3, cab: 1.3, cabC: '#eeeeec' }], fifthwheelslide: ['#f4f1ea', { stripe: '#6b5136', windows: 3, cab: 3.4, cabC: '#2b3a4a' }], fifthcaravan: ['#f4f1ea', { stripe: '#6b5136', windows: 3, noCab: true }], fifthcaravanslide: ['#f4f1ea', { stripe: '#6b5136', windows: 3, noCab: true }], bowser: ['#2E6DA4', { noCab: true, vents: false, label: 'H₂O' }], atm: ['#37474F', { noCab: true, vents: false, label: '£' }] }[type];
+      var sp2 = { rvslide: 0.85, aclassslide: 0.6, fifthwheelslide: 0.8, fifthcaravanslide: 0.8 }[type];
+      if (sp2 && W >= H) { var pS = m(sp2), cv2 = document.createElement('canvas'); cv2.width = W; cv2.height = H - 2 * pS; var g0 = g; g = cv2.getContext('2d'); var H0 = H; H = H - 2 * pS; vehicle(vc[0], vc[1]); g = g0; H = H0;
+        var sx0 = type === 'fifthwheelslide' ? W * 0.05 : W * 0.25, sx1 = type === 'fifthwheelslide' ? W * 0.3 : W * 0.55; rr(sx0, 1, sx1 - sx0, pS + 2, P * 0.1, vc[0], 'rgba(0,0,0,.45)'); rr(W * 0.06, H - pS - 3, W * 0.2, pS + 2, P * 0.1, vc[0], 'rgba(0,0,0,.45)'); g.drawImage(cv2, 0, pS); }
+      else vehicle(vc[0], vc[1]);
+    } else if (type === 'toilets') { unitsRow(Math.max(1, Math.round(Math.max(w, d) / 1.25)), '#3a8bd1', '#e8eef2');
+    } else if (type === 'accessible') { unitsRow(1, '#255b8a', '#e8eef2'); if (mn >= 14) { g.save(); g.globalAlpha = 0.9; icon(); g.restore(); }
+    } else if (type === 'handwash') { rr(1, 1, W - 2, H - 2, P * 0.1, '#e8eef2', '#7a8a95'); circ(W * 0.3, H / 2, mn * 0.3, '#9fc4dd', '#5f8aa5'); circ(W * 0.7, H / 2, mn * 0.3, '#9fc4dd', '#5f8aa5');
+    } else if (type === 'generator') {
+      rr(1, 1, W - 2, H - 2, P * 0.12, '#e3b51c', '#7a5f0a'); rect(1, 1, W - 2, H - 2, lin(0, 0, 0, H, [[0, 'rgba(255,255,255,.25)'], [1, 'rgba(0,0,0,.18)']]));
+      for (var gv = 0; gv < 5; gv++) line(W * (0.12 + gv * 0.07), H * 0.25, W * (0.12 + gv * 0.07), H * 0.75, 'rgba(60,45,0,.6)');
+      circ(W * 0.78, H / 2, Math.max(1.5, m(0.12)), '#333'); glow(W * 0.78, H / 2, mn * 0.45, 'rgb(190,190,190)', 0.45);
+      if (mn >= 18) { g.fillStyle = '#3a2d00'; g.font = 'bold ' + Math.round(H * 0.28) + 'px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('kVA', W * 0.52, H / 2); }
+    } else if (type === 'light') {
+      rr(1, H * 0.15, W * 0.75, H * 0.7, P * 0.1, '#f0f0f0', '#888'); glow(W * 0.7, H / 2, mn * 0.9, 'rgb(255,247,208)', 0.7); rr(W * 0.55, H * 0.2, W * 0.3, H * 0.6, P * 0.05, '#222');
+      for (var lt = 0; lt < 4; lt++) rect(W * 0.58, H * (0.25 + lt * 0.13), W * 0.24, H * 0.08, '#fff7d0');
+    } else if (type === 'bigscreen') {
+      rect(0, H * 0.3, W, H * 0.4, '#1d1d20'); rect(W * 0.04, H * 0.38, W * 0.92, H * 0.12, lin(0, 0, W, 0, [[0, '#3d7fd9'], [0.5, '#b9a0ff'], [1, '#f0a04b']])); rect(W * 0.1, H * 0.7, W * 0.12, H * 0.25, '#555'); rect(W * 0.78, H * 0.7, W * 0.12, H * 0.25, '#555'); edge('rgba(0,0,0,.2)');
+    } else if (type === 'pa') {
+      rr(1, 1, W - 2, H - 2, P * 0.1, '#2b2b2e', '#111'); rr(W * 0.1, H * 0.15, W * 0.8, H * 0.45, P * 0.05, '#3c3c42'); for (var fd = 0; fd < 12; fd++) rect(W * (0.13 + fd * 0.063), H * 0.2, Math.max(1, W * 0.03), H * 0.35, fd % 3 ? '#777' : '#e0892e'); rect(W * 0.3, H * 0.68, W * 0.4, H * 0.2, '#6bd3ff');
+    } else if (type === 'ride' || type === 'kidsride' || type === 'waltzer' || type === 'helter' || type === 'bonfire') {
+      var R = mn / 2, cx = W / 2, cy = H / 2, n = type === 'helter' ? 16 : 12;
+      if (type === 'bonfire') { for (var bf = 0; bf < 14; bf++) { var a = bf * 0.449; line(cx + Math.cos(a) * R * 0.2, cy + Math.sin(a) * R * 0.2, cx + Math.cos(a) * R * 0.95, cy + Math.sin(a) * R * 0.95, bf % 2 ? '#6b4423' : '#8a5a2e', Math.max(2, P * 0.35)); } glow(cx, cy, R * 0.8, 'rgb(255,140,40)', 0.6); }
+      else { for (var q = 0; q < n; q++) { g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R - 1, q * 2 * Math.PI / n, (q + 1) * 2 * Math.PI / n); g.closePath(); g.fillStyle = q % 2 ? ty.c : '#ffffff'; g.fill(); }
+        g.fillStyle = lin(0, 0, W, H, [[0, 'rgba(255,255,255,.25)'], [1, 'rgba(0,0,0,.25)']]); g.beginPath(); g.arc(cx, cy, R - 1, 0, 2 * Math.PI); g.fill();
+        if (type === 'waltzer') for (var c2 = 0; c2 < 7; c2++) { var a2 = c2 * 0.898; circ(cx + Math.cos(a2) * R * 0.62, cy + Math.sin(a2) * R * 0.62, R * 0.14, ['#f2c230', '#3d7fd9', '#2c9b4a'][c2 % 3], '#222'); }
+        circ(cx, cy, R * 0.18, '#ffd36b', '#8a6a00'); circ(cx, cy, R - 1, null, 'rgba(0,0,0,.4)'); }
+    } else if (type === 'ferris') {
+      rect(0, 0, W, H, 'rgba(0,0,0,0)'); rect(W * 0.08, H * 0.2, W * 0.84, H * 0.6, '#5a5f66'); rect(W * 0.1, H * 0.42, W * 0.8, H * 0.16, '#c0c6cc');
+      for (var fw = 0; fw < 9; fw++) rr(W * (0.1 + fw * 0.09), H * 0.08, W * 0.07, H * 0.14, P * 0.1, ['#e94b3c', '#f2c230', '#3d7fd9'][fw % 3]); for (var fw2 = 0; fw2 < 9; fw2++) rr(W * (0.1 + fw2 * 0.09), H * 0.78, W * 0.07, H * 0.14, P * 0.1, ['#3d7fd9', '#e94b3c', '#f2c230'][fw2 % 3]);
+      circ(W / 2, H / 2, mn * 0.12, '#ffd36b', '#333');
+    } else if (type === 'dodgems') {
+      rect(0, 0, W, H, '#3a3a3e'); rect(m(0.5), m(0.5), W - m(1), H - m(1), '#9aa0a6'); g.strokeStyle = 'rgba(255,255,255,.4)'; g.lineWidth = 1; for (var dg = 0; dg < W; dg += m(1)) line(dg, m(0.5), dg, H - m(0.5), 'rgba(0,0,0,.12)');
+      for (var cr = 0; cr < 10; cr++) rr(W * (0.1 + (cr * 0.37) % 0.75), H * (0.15 + (cr * 0.53) % 0.65), m(2), m(1.2), m(0.4), ['#e94b3c', '#f2c230', '#3d7fd9', '#2c9b4a', '#d86a9a'][cr % 5], '#222');
+      rect(0, 0, W, m(0.5), lin(0, 0, W, 0, [[0, '#e94b3c'], [0.5, '#f2c230'], [1, '#e94b3c']])); edge('#222');
+    } else if (type === 'bouncy' || type === 'inflatable') {
+      rr(1, 1, W - 2, H - 2, P * 0.6, '#e94b3c'); rr(W * 0.16, H * 0.16, W * 0.68, H * 0.68, P * 0.3, '#3d7fd9'); rect(W * 0.16, H * 0.16, W * 0.68, H * 0.68, lin(0, H * 0.16, 0, H * 0.84, [[0, 'rgba(255,255,255,.25)'], [1, 'rgba(0,0,0,.2)']]));
+      [[0.1, 0.1], [0.9, 0.1], [0.1, 0.9], [0.9, 0.9]].forEach(function (p) { circ(W * p[0], H * p[1], mn * 0.12, '#F2C230', '#b88a10'); });
+    } else if (type === 'slide') { rr(1, 1, W - 2, H - 2, P * 0.5, '#3D7FD9'); for (var sl = 0; sl < 4; sl++) rect(W * 0.35, H * (0.12 + sl * 0.2), W * 0.6, H * 0.14, sl % 2 ? '#f2c230' : '#e94b3c'); rr(2, 2, W * 0.32, H - 4, P * 0.3, '#2c5fa8');
+    } else if (type === 'assault') { rr(1, 1, W - 2, H - 2, P * 0.5, '#F2A93B'); for (var as = 0; as < 6; as++) circ(W * (0.1 + as * 0.16), H / 2, mn * 0.3, as % 2 ? '#e94b3c' : '#3d7fd9');
+    } else if (type === 'tent') { pyramid('#e2a13b', 'rgba(80,50,0,.3)'); circ(W / 2, H / 2, mn * 0.05, '#555');
+    } else if (type === 'grandstand') { var rows = Math.max(3, Math.round(d / 0.8)); for (var gs = 0; gs < rows; gs++) { rect(0, gs * H / rows, W, H / rows, gs % 2 ? '#b8bec3' : '#cfd4d8'); for (var st = 0; st < W; st += m(0.5)) rect(st + 1, gs * H / rows + H / rows * 0.2, m(0.42), H / rows * 0.55, '#1E5A43'); } edge('#666');
+    } else if (type === 'viewing') { rect(0, 0, W, H, '#9c7b55'); for (var vb = 0; vb < H; vb += m(0.15)) line(0, vb, W, vb, 'rgba(60,40,20,.3)', 1); g.strokeStyle = '#555'; g.lineWidth = Math.max(1, P * 0.08); g.strokeRect(2, 2, W - 4, H - 4); rect(W * 0.3, H - m(1.2), W * 0.4, m(1.2), lin(0, H - m(1.2), 0, H, [[0, '#8a6a45'], [1, '#6e5233']])); icon();
+    } else if (type === 'jump') { line(m(0.1), H / 2, W - m(0.1), H / 2, '#ffffff', Math.max(2, P * 0.18)); for (var jp = 0; jp < 5; jp++) line(W * (0.15 + jp * 0.17), H / 2, W * (0.15 + jp * 0.17) + m(0.3), H / 2, '#e94b3c', Math.max(2, P * 0.2)); rr(0, H * 0.2, m(0.35), H * 0.6, 2, '#2f6db5'); rr(W - m(0.35), H * 0.2, m(0.35), H * 0.6, 2, '#2f6db5');
+    } else if (type === 'picnic') { rect(0, H * 0.32, W, H * 0.36, '#9C6B3C'); for (var pp = 0; pp < 4; pp++) line(0, H * (0.36 + pp * 0.09), W, H * (0.36 + pp * 0.09), 'rgba(60,35,10,.4)', 1); rect(0, 0, W, H * 0.18, '#7A5230'); rect(0, H * 0.82, W, H * 0.18, '#7A5230');
+    } else if (type === 'bins' || type === 'waste') { if (type === 'bins') { circ(W / 2, H / 2, mn / 2 - 1, '#2f7d32', '#1d4d1f'); circ(W / 2, H / 2, mn * 0.3, '#3b8f3e'); } else { for (var wb = 0; wb < 3; wb++) { circ(W * (0.18 + wb * 0.32), H / 2, Math.min(W / 7, H / 2.3), ['#2f7d32', '#2E6DA4', '#5E6B66'][wb], '#222'); } }
+    } else if (type === 'skip') { g.beginPath(); g.moveTo(m(0.6), 1); g.lineTo(W - m(0.6), 1); g.lineTo(W - 1, H - 1); g.lineTo(1, H - 1); g.closePath(); g.fillStyle = '#C77A2A'; g.fill(); rr(m(0.8), H * 0.15, W - m(1.6), H * 0.7, 2, '#8a5520'); for (var sk = 0; sk < 6; sk++) rect(W * (0.2 + sk * 0.1), H * (0.3 + (sk % 3) * 0.12), m(0.6), m(0.4), ['#777', '#a0522d', '#ddd'][sk % 3]);
+    } else if (type === 'water' || type === 'fire' || type === 'charging') { circ(W / 2, H / 2, mn / 2 - 1, ty.c, 'rgba(0,0,0,.4)'); icon();
+    } else if (type === 'camera' || type === 'crane') { circ(W / 2, H / 2, mn * 0.25, '#222'); for (var tp = 0; tp < 3; tp++) { var ta = tp * 2.094 - 1.57; line(W / 2, H / 2, W / 2 + Math.cos(ta) * mn * 0.48, H / 2 + Math.sin(ta) * mn * 0.48, '#666', Math.max(1.5, P * 0.06)); } if (type === 'crane') { line(W / 2, H / 2, W - 2, H * 0.2, '#ccc', Math.max(2, P * 0.2)); rr(W * 0.82, H * 0.08, W * 0.16, H * 0.2, 2, '#c0392b'); }
+    } else if (type === 'dolly') { line(0, H * 0.3, W, H * 0.3, '#9aa0a6', Math.max(2, P * 0.08)); line(0, H * 0.7, W, H * 0.7, '#9aa0a6', Math.max(2, P * 0.08)); for (var dl = 0; dl < W; dl += m(0.6)) rect(dl, H * 0.22, Math.max(2, m(0.1)), H * 0.56, '#6e5233'); rr(W * 0.3, H * 0.15, m(1), H * 0.7, 3, '#333');
+    } else if (type === 'entrance' || type === 'exit' || type === 'security' || type === 'ticket') {
+      rect(0, 0, W, H, type === 'security' ? '#37474F' : type === 'ticket' ? '#1E5A43' : '#1F8A4C'); for (var lane = 1; lane < Math.max(2, Math.round(w / 1.2)); lane++) line(lane * W / Math.max(2, Math.round(w / 1.2)), 0, lane * W / Math.max(2, Math.round(w / 1.2)), H, 'rgba(255,255,255,.55)', Math.max(1, P * 0.08)); edge('rgba(0,0,0,.35)'); icon();
     } else { rect(0, 0, W, H, ty.c); shade(); edge(); icon(); }
-    function icon2() { if (Math.min(W, H) >= 18) { g.save(); g.globalAlpha = 0.9; icon(); g.restore(); } }
     return (imgCache[key] = cv.toDataURL('image/png'));
   }
   SP._draw = drawItem;
@@ -981,7 +1142,7 @@
       figures(); $('spKey').innerHTML = keyHtml(plan); $('spChecks').innerHTML = checksHtml(SP.checks(plan, api.context ? api.context() : {}));
       if (!map || !map.getSource('foot')) return;
       var g = geo(); ['foot', 'ext', 'lab', 'zones', 'lines', 'areas', 'safety', 'draft'].forEach(function (k) { map.getSource(k).setData(g[k]); });
-      syncImages();
+      syncImages(); if (m3) m3.sync(plan.items);
     }
     function figures() {
       var f = SP.figures(plan);
@@ -1091,11 +1252,22 @@
     $('sp3BgFit').onclick = function () { cornersOn(true); };
     $('sp3BgDel').onclick = function () { delete plan.bg; cornersOn(false); syncBg(); save(); $('sp3BgFile').value = ''; };
     // ---- views and background
+    // Build 93: proper 3D models (three.js), loaded the first time someone opens the 3D view. If they can't load, the 3D view keeps its simple blocks.
+    var m3 = null, m3Loading = false;
+    function models() {
+      if (m3 || m3Loading || !map) return; m3Loading = true;
+      import('/sp3d.js').then(function (mod) {
+        if (!map || !map.getLayer('lab')) { m3Loading = false; return; }
+        m3 = mod.create(SP, map, window.maplibregl); map.addLayer(m3.layer, 'lab'); m3.sync(plan.items); setView(view, true);
+      }).catch(function () { m3Loading = false; m3 = null; });
+    }
+    SP._m3 = function () { return m3; };
     function setView(v, quiet) {
       view = v; plan.view3d = v === '3d'; $('sp3V2').setAttribute('aria-pressed', String(v === '2d')); $('sp3V3').setAttribute('aria-pressed', String(v === '3d')); $('sp3Turn').hidden = v !== '3d';
       if (!map || !map.getLayer('ext')) return;
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      map.setLayoutProperty('ext', 'visibility', v === '3d' ? 'visible' : 'none');
+      if (v === '3d') models();
+      map.setLayoutProperty('ext', 'visibility', v === '3d' && !m3 ? 'visible' : 'none'); if (m3) m3.setVisible(v === '3d');
       if (!quiet) map.easeTo(v === '3d' ? { pitch: 60, bearing: map.getBearing() || -25, duration: reduce ? 0 : 1200 } : { pitch: 0, bearing: 0, duration: reduce ? 0 : 800 });
       (map.getStyle().layers || []).forEach(function (l) { if (l.id.indexOf('lyr-') === 0) map.setPaintProperty(l.id, 'raster-opacity', v === '3d' ? 0.85 : 1); });
       save();
@@ -1202,6 +1374,13 @@
 (function () {
   'use strict';
   var KEY = 'showready-film-v1';
+  // Build 86: the Film page reads settings.json too, so site plans use the map keys set there (Esri aerial photos).
+  // If a plan was already drawn with the built-in key, draw it again once the settings arrive.
+  if (window.fetch && /^https?:$/.test(location.protocol)) fetch('/settings.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || !j.maps) return;
+    window.SR_SETTINGS_LIVE = window.SR_SETTINGS_LIVE || {}; window.SR_SETTINGS_LIVE.maps = j.maps;
+    if (j.maps.esriKey && typeof planFor !== 'undefined' && planFor) { planFor = null; drawPlan(); }
+  }).catch(function () {});
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var uid = function () { return Math.random().toString(36).slice(2, 9); };
@@ -1533,6 +1712,337 @@
     });
   }
 
+  // ---------- Build 85: unit vehicles and accommodation ----------
+  // What each location needs in facility vehicles and beds, a button to put them on the unit base plan, and a
+  // search of ShowReady suppliers who offer them (venues and accommodation, toilets and welfare).
+  var FV = [
+    ['artist', 'Artist trailers', 'artisttrailer', 'venue:Artist trailers and motorhomes for film and TV'],
+    ['motorhome', 'Motorhomes or campervans', 'motorhome', 'venue:Motorhomes'],
+    ['honeywagon', 'Honeywagons', 'honeywagon', 'toilets:Honeywagons and welfare units (film and TV)'],
+    ['welfare', 'Welfare units', 'welfareunit', 'toilets:Honeywagons and welfare units (film and TV)'],
+    ['makeup', 'Make-up and costume trailers', 'makeup', ''],
+    ['rooms', 'Crew hotel rooms (a night)', '', 'venue:Hotel rooms nearby']
+  ];
+  var FV_CHIPS = ['venue:Artist trailers and motorhomes for film and TV', 'venue:Motorhomes', 'venue:Glamping', 'venue:Bell tents', 'venue:Holiday cottages', 'venue:Hotel rooms nearby', 'venue:Bedrooms on site',
+    'toilets:Honeywagons and welfare units (film and TV)', 'toilets:Luxury trailers', 'toilets:Showers'];
+  function fvOf(l) {
+    var v = l.fv = l.fv || {};
+    if (!v.n) v.n = { artist: l.crew === 'large' ? 4 : l.crew === 'medium' ? 2 : 0, motorhome: 0, honeywagon: l.crew === 'small' ? 0 : 1, welfare: l.crew === 'large' ? 1 : 0, makeup: l.crew === 'small' ? 0 : 1, rooms: 0 };
+    v.sent = v.sent || {}; v.notes = v.notes || ''; return v;
+  }
+  var fvRes = {}, fvCompose = null;
+  function findFv(l, radius) {
+    var r = fvRes[l.id] = { radius: radius, loading: true, list: null, err: '' }; drawFv();
+    var url = SB.url + '/rest/v1/supplier_listings?select=owner,business,categories,chips,town,outcode,lat,lon,miles,about,google,insured_until&listed=eq.true&categories=ov.%7Bvenue,toilets%7D&limit=300';
+    return fetch(url, { headers: { apikey: SB.key, Authorization: 'Bearer ' + SB.key } }).then(function (x) { if (!x.ok) throw new Error('http'); return x.json(); }).then(function (rows) {
+      var v = fvOf(l), wanted = FV.filter(function (f) { return +v.n[f[0]] > 0 && f[3]; }).map(function (f) { return f[3]; });
+      r.list = (rows || []).map(function (s) {
+        var chips = s.chips || [], has = FV_CHIPS.filter(function (c) { return chips.indexOf(c) !== -1; });
+        return Object.assign({}, s, { has: has, dist: milesBetween(l.geo, s), score: has.filter(function (c) { return wanted.indexOf(c) !== -1; }).length * 10 + has.length });
+      }).filter(function (s) { return s.has.length && (radius >= 9999 || (s.dist != null && s.dist <= radius)); })
+        .sort(function (a, b) { return (b.score - a.score) || ((a.dist == null ? 1e9 : a.dist) - (b.dist == null ? 1e9 : b.dist)); });
+      r.loading = false; drawFv();
+    }).catch(function () { r.loading = false; r.list = []; r.err = 'Couldn’t search ShowReady suppliers just now. Check your connection and try again.'; drawFv(); });
+  }
+  function fvAsk(l) {
+    var v = fvOf(l); return FV.filter(function (f) { return +v.n[f[0]] > 0; }).map(function (f) { return v.n[f[0]] + ' × ' + f[1].replace(/ \(a night\)$/, '').toLowerCase() + (f[0] === 'rooms' ? ' a night' : ''); });
+  }
+  function fvText(l, s) {
+    var bs = blocks(l), dates = bs.map(function (b) { return fmt(parse(b.from)) + (b.to && b.to !== b.from ? ' to ' + fmt(parse(b.to)) : ''); }).join('; ');
+    var area = (l.geo && l.geo.postcode ? l.geo.postcode.split(' ')[0] : '') + (l.geo && l.geo.district ? ' (' + l.geo.district + ')' : ''), ask = fvAsk(l), v = fvOf(l);
+    return 'Hello ' + s.business + ',\n\nWe’re filming ' + (state.name || 'a production') + (state.company ? ' for ' + state.company : '') + ' at a location in ' + area + ' on ' + dates + '.' +
+      (ask.length ? ' We’re looking for ' + ask.join(', ') + '.' : ' We’re looking for facility vehicles or accommodation for the unit.') + (v.notes ? ' ' + v.notes : '') +
+      ' Are you available, and what would you charge, including delivery, drivers and power?\n\nThanks';
+  }
+  function fvForm(l, s) {
+    return '<form data-fvsend="' + esc(s.owner) + '" novalidate><label for="fq-name">Your name</label><input type="text" id="fq-name" maxlength="120" value="' + esc(catOf(l).me || '') + '">' +
+      '<div class="two"><div><label for="fq-phone">Phone (optional)</label><input type="tel" id="fq-phone" maxlength="30"></div><div><label for="fq-email">Email (optional)</label><input type="email" id="fq-email" maxlength="254"></div></div>' +
+      '<label for="fq-msg">Message</label><textarea id="fq-msg" maxlength="4000" style="min-height:150px">' + esc(fvText(l, s)) + '</textarea>' +
+      '<div class="row"><button class="btn small" type="submit">Send enquiry</button><button class="link" type="button" data-fvquote="">Cancel</button></div><p class="msg" id="fq-say" role="status"></p>' +
+      '<p class="msg">Sent through ShowReady Messages. You need a free ShowReady account; your contact details are shared with this supplier only.</p></form>';
+  }
+  function fvSend(l, s) {
+    var v = function (id) { var x = $(id); return x ? x.value.trim() : ''; }, say = function (t, bad) { var x = $('fq-say'); if (x) { x.className = 'msg' + (bad ? ' err' : ''); x.innerHTML = t; } };
+    if (!v('fq-name')) { say('Add your name.', true); return Promise.resolve(); }
+    if (!v('fq-msg')) { say('Write a message.', true); return Promise.resolve(); }
+    catOf(l).me = v('fq-name').slice(0, 120); save();
+    var b = blocks(l)[0], fv = fvOf(l), ask = fvAsk(l);
+    var row = { supplier: s.owner, event_name: ((state.name || 'Filming') + ' (filming)').slice(0, 120), event_date: b ? b.from : null, people: catSums(l).people || null,
+      event_town: ((l.geo && l.geo.postcode ? l.geo.postcode.split(' ')[0] : '') || (l.geo && l.geo.district) || '').slice(0, 80) || null,
+      service: ('Unit vehicles and accommodation' + (ask.length ? ': ' + ask.join(', ') : '')).slice(0, 120), money: 'Please quote me a price',
+      organiser_contact: { name: v('fq-name').slice(0, 120), phone: v('fq-phone').slice(0, 30), email: v('fq-email').slice(0, 254) } };
+    say('Sending…');
+    return sb().then(function (cl) {
+      return cl.auth.getSession().then(function (r) {
+        var sess = r && r.data && r.data.session;
+        if (!sess) { sbClient = null; sbLoading = null; say('Log in to ShowReady first: <a href="/app/" target="_blank" rel="noopener">open ShowReady</a> (it’s free), log in, then come back and press Send enquiry again.', true); return; }
+        return cl.from('enquiries').insert(row).select('*').single().then(function (x) { if (x.error) throw x.error; return x.data; }).then(function (e) {
+          return cl.from('enquiry_messages').insert({ enquiry_id: e.id, body: v('fq-msg') }).then(function (x) { if (x.error) throw x.error; });
+        }).then(function () { fv.sent[s.owner] = iso(today()); fvCompose = null; save(); drawFv(); });
+      });
+    }).catch(function (err) {
+      var m = (err && err.message) || '';
+      say(/row-level security|violates/i.test(m) ? 'That supplier isn’t taking enquiries through ShowReady at the moment. Please choose another.' : /network/.test(m) ? 'Couldn’t reach ShowReady. Check your connection and try again.' : 'Couldn’t send that: ' + esc(m || 'try again'), true);
+    });
+  }
+  var FV_LABEL = {}; FV_CHIPS.forEach(function (c) { FV_LABEL[c] = c.split(':')[1].replace(' (film and TV)', '').replace(' for film and TV', ''); });
+  // Put the vehicles on this location's unit base plan, in a row by the plan's centre, at typical sizes
+  function fvToPlan(l) {
+    var v = fvOf(l), T = window.SRSitePlan && window.SRSitePlan.TYPES; if (!T) return 0;
+    if (!l.plan || !l.plan.items) l.plan = { items: [], lines: [], base: 'aerial' };
+    var c = l.plan.center || (l.geo && l.geo.lat != null ? [l.geo.lat, l.geo.lng] : null); if (!c) return 0;
+    var have = {}; l.plan.items.forEach(function (it) { have[it.type] = (have[it.type] || 0) + 1; });
+    var added = 0, x = 0, mLon = 111320 * Math.cos(c[0] * Math.PI / 180);
+    FV.forEach(function (f) {
+      var type = f[2], want = +v.n[f[0]] || 0; if (!type || !T[type]) return;
+      for (var i = have[type] || 0; i < Math.min(want, 20); i++) {
+        var ty = T[type]; l.plan.items.push({ id: 'p' + uid(), type: type, lat: c[0] - 0.00012 * (1 + (added % 3)), lon: c[1] + (x - 15) / mLon, w: ty.w, d: ty.d, rot: 0, label: '' });
+        x += 4; added++;
+      }
+    });
+    if (added) { l.plan.center = l.plan.center || c; save(); if (planFor === l.id) { planFor = null; drawPlan(); } }
+    return added;
+  }
+  function drawFv() {
+    var host = $('fvHost'), l = locById($('fvLoc').value);
+    if (!l) { host.innerHTML = '<p class="empty">Add a location to plan its unit vehicles and accommodation.</p>'; return; }
+    var v = fvOf(l), r = fvRes[l.id], n = state.locs.indexOf(l) + 1, onPlan = {};
+    ((l.plan && l.plan.items) || []).forEach(function (it) { onPlan[it.type] = (onPlan[it.type] || 0) + 1; });
+    var h = '<p class="msg" style="margin:0"><b>' + n + '. ' + esc(l.name) + '</b> · ' + shootDays(l) + ' shoot day' + (shootDays(l) === 1 ? '' : 's') + '</p>' +
+      '<h3 style="margin-top:12px">What you need</h3><div class="ca-grid">' + FV.map(function (f) {
+        return '<div><label for="fv-' + f[0] + '">' + f[1] + '</label><input type="number" min="0" max="200" step="1" inputmode="numeric" id="fv-' + f[0] + '" data-fv="' + f[0] + '" value="' + esc(v.n[f[0]] || 0) + '">' +
+          (f[2] && onPlan[f[2]] ? '<span class="msg">' + onPlan[f[2]] + ' on the plan</span>' : '') + '</div>';
+      }).join('') + '</div>' +
+      '<label for="fv-notes">Anything suppliers should know</label><input type="text" id="fv-notes" data-fv="notes" maxlength="200" value="' + esc(v.notes) + '" placeholder="e.g. 2 artist trailers need a step-free entrance; parking on hardstanding">' +
+      '<div class="row noprint" style="margin-top:8px"><button type="button" class="btn small" data-fvplan="1">Put these on the unit base plan</button><span class="msg" id="fvPlanMsg" role="status"></span></div>';
+    h += '<h3 style="margin-top:16px">Suppliers near this location</h3><div class="row noprint" style="margin-top:6px"><label class="sr" for="fv-radius">Within</label><select id="fv-radius" style="width:auto">' +
+      [['15', '15 miles'], ['30', '30 miles'], ['60', '60 miles'], ['9999', 'Any distance']].map(function (x) { return '<option value="' + x[0] + '"' + (String(r ? r.radius : 30) === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select>' +
+      '<button type="button" class="btn small" data-findfv="1">' + (r ? 'Search again' : 'Find suppliers on ShowReady') + '</button></div>';
+    if (!r) h += '<p class="msg">Searches ShowReady suppliers offering artist trailers, motorhomes, honeywagons, welfare units and accommodation, best matches first.</p>';
+    else if (r.loading) h += '<p class="msg">Searching…</p>';
+    else if (r.err) h += '<p class="msg err">' + esc(r.err) + '</p>';
+    else if (!r.list.length) h += '<p class="msg">No ShowReady suppliers for these within ' + (r.radius >= 9999 ? 'range' : r.radius + ' miles') + ' yet. Try a wider distance, or <a href="https://www.google.com/search?q=' + encodeURIComponent('film facility vehicles artist trailers hire ' + ((l.geo && l.geo.district) || l.pc)) + '" target="_blank" rel="noopener">search the web</a>.</p>';
+    else h += r.list.map(function (s) {
+      var sent = v.sent[s.owner];
+      return '<div class="sup"><b>' + esc(s.business) + '</b><div class="msg">' + esc(s.town || '') + (s.dist != null ? (s.dist <= 2 ? ' · in the area' : ' · about ' + s.dist + ' miles away') : '') + (s.dist != null && s.miles != null && s.dist > s.miles ? ' · beyond their usual travel distance' : '') + '</div>' +
+        '<div class="tags">' + s.has.map(function (c) { return '<span>' + esc(FV_LABEL[c]) + '</span>'; }).join('') + (s.insured_until && s.insured_until >= iso(today()) ? '<span>Insured</span>' : '') + '</div>' +
+        (s.about ? '<p style="margin:4px 0">' + esc(s.about) + '</p>' : '') +
+        '<div class="row" style="margin-top:6px">' + (s.google ? '<a class="btn ghost small" href="' + esc(s.google) + '" target="_blank" rel="noopener">Google reviews</a>' : '') +
+        (sent ? '<span class="msg"><b>Enquiry sent ' + esc(fmt(parse(sent))) + '.</b> Replies arrive in <a href="/app/" target="_blank" rel="noopener">ShowReady Messages</a>.</span>' : '<button type="button" class="btn small" data-fvquote="' + esc(s.owner) + '">Ask for a quote</button>') + '</div>' +
+        (fvCompose === l.id + ':' + s.owner ? fvForm(l, s) : '') + '</div>';
+    }).join('');
+    h += '<p class="msg" style="margin-top:12px">Hire out motorhomes, artist trailers or welfare units? <a href="/suppliers/">List free on ShowReady</a> and tick <b>Artist trailers and motorhomes for film and TV</b> or <b>Honeywagons and welfare units</b>.</p>';
+    host.innerHTML = h;
+  }
+
+  // ---------- Build 85: call sheets ----------
+  // One per shoot day: times, the day's scenes and cast filled in here; everything else (location, unit base,
+  // nearest A&E, police, sun times, weather, catering, permits and safety) taken from the rest of the project.
+  var CS_ROLES = ['Producer', 'Director', 'Production manager', '1st assistant director', 'Location manager', 'Unit manager', 'Unit medic or first aider'];
+  var CS_TIMES = [['crew', 'Crew call'], ['breakfast', 'Breakfast'], ['shoot', 'Shooting call'], ['lunch', 'Lunch'], ['wrap', 'Estimated wrap']];
+  function csDays() {
+    var all = [];
+    state.locs.forEach(function (l) {
+      blocks(l).forEach(function (b) {
+        var d = parse(b.from), z = parse(b.to || b.from) || d, k = 0;
+        while (d && d <= z && k < 200) { all.push({ date: iso(d), loc: l }); d = addDays(d, 1); k++; }
+      });
+    });
+    all.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : state.locs.indexOf(a.loc) - state.locs.indexOf(b.loc); });
+    var dates = []; all.forEach(function (x) { if (dates.indexOf(x.date) === -1) dates.push(x.date); });
+    all.forEach(function (x) { x.n = dates.indexOf(x.date) + 1; x.of = dates.length; x.key = x.date + '|' + x.loc.id; });
+    return all;
+  }
+  function csOf(key) {
+    state.cs = state.cs || {}; var c = state.cs[key] = state.cs[key] || {};
+    c.t = c.t || { crew: '07:00', breakfast: '07:00', shoot: '08:00', lunch: '13:00', wrap: '19:00' };
+    c.scenes = Array.isArray(c.scenes) ? c.scenes : []; c.cast = Array.isArray(c.cast) ? c.cast : []; c.notes = c.notes || ''; c.parking = c.parking || '';
+    return c;
+  }
+  function csContacts() {
+    if (!Array.isArray(state.contacts) || !state.contacts.length) state.contacts = CS_ROLES.map(function (r) { return { role: r, name: '', phone: '' }; });
+    return state.contacts;
+  }
+  var WMO = { 0: 'Clear', 1: 'Mostly clear', 2: 'Partly cloudy', 3: 'Overcast', 45: 'Fog', 48: 'Freezing fog', 51: 'Light drizzle', 53: 'Drizzle', 55: 'Heavy drizzle', 56: 'Freezing drizzle', 57: 'Freezing drizzle',
+    61: 'Light rain', 63: 'Rain', 65: 'Heavy rain', 66: 'Freezing rain', 67: 'Freezing rain', 71: 'Light snow', 73: 'Snow', 75: 'Heavy snow', 77: 'Snow grains', 80: 'Light showers', 81: 'Showers', 82: 'Heavy showers',
+    85: 'Snow showers', 86: 'Heavy snow showers', 95: 'Thunderstorms', 96: 'Thunderstorms with hail', 99: 'Thunderstorms with hail' };
+  var wx = {};
+  function weatherFor(day) {
+    var g = day.loc.geo, k = day.key; if (!g || g.lat == null) return Promise.resolve(null);
+    var ahead = Math.round((parse(day.date) - today()) / 864e5); if (ahead < 0 || ahead > 15) return Promise.resolve(null);
+    if (wx[k] && wx[k].at > Date.now() - 36e5) return Promise.resolve(wx[k].v);
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + g.lat.toFixed(3) + '&longitude=' + g.lng.toFixed(3) + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&timezone=Europe%2FLondon&wind_speed_unit=mph&start_date=' + day.date + '&end_date=' + day.date;
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); }).then(function (j) {
+      var d = j && j.daily; if (!d || !d.time || !d.time.length) return null;
+      var v = { text: (WMO[d.weather_code[0]] || 'Mixed') + ', ' + Math.round(d.temperature_2m_min[0]) + '–' + Math.round(d.temperature_2m_max[0]) + '°C', rain: d.precipitation_probability_max[0], wind: Math.round(d.wind_speed_10m_max[0]), gust: Math.round(d.wind_gusts_10m_max[0]) };
+      wx[k] = { at: Date.now(), v: v }; return v;
+    }).catch(function () { return null; });
+  }
+  function wxLine(v, day) {
+    if (v) return v.text + (v.rain != null ? ' · ' + v.rain + '% chance of rain' : '') + ' · wind ' + v.wind + ' mph, gusts ' + v.gust + ' mph';
+    var ahead = Math.round((parse(day.date) - today()) / 864e5);
+    return ahead > 15 ? 'Forecast available from ' + fmt(addDays(parse(day.date), -15)) + '. Check the Met Office before the day.' : ahead < 0 ? 'Past date.' : 'Forecast unavailable: check the Met Office.';
+  }
+  // Everything the call sheet takes from the rest of the project
+  function csAuto(day) {
+    var l = day.loc, g = l.geo || {}, a = authorities(g), f = l.f || {}, c = catOf(l), cs = catSums(l), items = (l.plan && l.plan.items) || [], T = (window.SRSitePlan && window.SRSitePlan.TYPES) || {};
+    var counts = {}; items.forEach(function (it) { var lab = (T[it.type] || { t: it.type }).t; counts[lab] = (counts[lab] || 0) + 1; });
+    var fac = Object.keys(counts).map(function (k) { return counts[k] + ' × ' + k; });
+    var permits = rows().filter(function (r) { return r.loc === l && r.block.from <= day.date && (r.block.to || r.block.from) >= day.date; }).map(function (r) { return { t: r.p.title, st: (STATUS.filter(function (s) { return s[0] === r.st; })[0] || STATUS[0])[1] }; });
+    var hz = hazardsFor(l).filter(function (h) { return !h.na; }).map(function (h) { return { h: h.h, c: h.c, r: rating(h.l, h.s)[0] }; })
+      .sort(function (x, y) { return ['High', 'Medium', 'Low'].indexOf(x.r) - ['High', 'Medium', 'Low'].indexOf(y.r); });
+    var alerts = [];
+    if (f.drone) alerts.push('Drone filming: only the named pilot flies; keep crew and public clear of the take-off and landing area.');
+    if (f.sfx) alerts.push('Special effects, smoke or pyrotechnics today: SFX supervisor briefs everyone before use; fire cover in place.');
+    if (f.weapons) alerts.push('Replica weapons, police uniforms or staged crime: armourer in charge; police informed; weapons covered between takes.');
+    if (f.child) alerts.push('Children on set: licences and chaperones present; keep to the licensed hours.');
+    if (f.night) alerts.push('Night filming: keep noise down near homes; hi-vis after dark; no idling engines.');
+    if (f.traffic || f.closure) alerts.push((f.closure ? 'Road closure' : 'Traffic control') + ': only trained traffic management staff stop traffic.');
+    if (f.rail) alerts.push('Railway: the railway’s safety briefing and escort rules apply.');
+    if (f.water) alerts.push('Waterway: life jackets near open water; safety boat if working on the water.');
+    var meals = MEALS.filter(function (m) { return c.meals[m[0]]; }).map(function (m) { return m[1].replace(/ \(.*\)$/, ''); });
+    var diet = DIETS.filter(function (d) { return +c.diet[d[0]] > 0; }).map(function (d) { return c.diet[d[0]] + ' ' + d[1].toLowerCase(); });
+    var sun = g.lat != null ? SUN(new Date(parse(day.date).getTime() + 12 * 36e5), g.lat, g.lng) : null, ae = l.checks && l.checks.ae;
+    return { l: l, address: [l.name, g.postcode || l.pc, g.district].filter(Boolean).join(', '), council: a.council, police: a.police, filmOffice: a.filmOffice,
+      ae: ae, sunrise: sun ? hm(sun.rise) : '', sunset: sun ? hm(sun.set) : '', fac: fac, permits: permits, hz: hz, alerts: alerts, ra: raStatusName(raOf(l).status),
+      catering: cs.people ? cs.people + ' people' + (meals.length ? ': ' + meals.join(', ') : '') + (diet.length ? ' · ' + diet.join(', ') : '') + (c.allergies ? ' · allergies: ' + c.allergies : '') : '',
+      map: g.lat != null ? 'https://www.google.com/maps/search/?api=1&query=' + g.lat.toFixed(5) + ',' + g.lng.toFixed(5) : '' };
+  }
+  function csRow(kind, i, r) {
+    var inp = function (k, lab, w, ph) { return '<td><label class="sr" for="cs-' + kind + i + k + '">' + lab + '</label><input id="cs-' + kind + i + k + '" data-csr="' + kind + '" data-i="' + i + '" data-k="' + k + '" value="' + esc(r[k] || '') + '" maxlength="' + w + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + '></td>'; };
+    if (kind === 'scenes') return '<tr>' + inp('sc', 'Scene', 10, '12') + inp('set', 'Set and description', 120, 'INT. KITCHEN: Ana finds the letter') + '<td><label class="sr" for="cs-scenes' + i + 'dn">Day or night</label><select id="cs-scenes' + i + 'dn" data-csr="scenes" data-i="' + i + '" data-k="dn">' + ['D', 'N', 'D/N'].map(function (x) { return '<option' + (r.dn === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></td>' + inp('pages', 'Pages', 8, '1 2/8') + inp('cast', 'Cast numbers', 30, '1, 3') + '<td><button type="button" class="link" data-csdel="scenes" data-i="' + i + '" aria-label="Remove scene">Remove</button></td></tr>';
+    return '<tr>' + inp('no', 'Cast number', 4, '1') + inp('artist', 'Artist', 60, 'Name') + inp('character', 'Character', 60, '') + inp('pickup', 'Pick-up', 8, '06:15') + inp('mu', 'Make-up and costume', 8, '06:45') + inp('set', 'On set', 8, '08:00') + '<td><button type="button" class="link" data-csdel="cast" data-i="' + i + '" aria-label="Remove cast member">Remove</button></td></tr>';
+  }
+  var csWx = {};
+  function drawCs() {
+    var host = $('csHost'), sel = $('csDay'), days = csDays(), cur = sel.value;
+    sel.innerHTML = days.length ? days.map(function (d) { return '<option value="' + esc(d.key) + '">Day ' + d.n + ' of ' + d.of + ' · ' + esc(fmt(parse(d.date))) + ' · ' + (state.locs.indexOf(d.loc) + 1) + '. ' + esc(d.loc.name) + '</option>'; }).join('') : '<option value="">Add a location and shoot days first</option>';
+    if (cur && days.some(function (d) { return d.key === cur; })) sel.value = cur;
+    var day = days.filter(function (d) { return d.key === sel.value; })[0];
+    if (!day) { host.innerHTML = '<p class="empty">Add a location with shoot days, and each day gets a call sheet here.</p>'; return; }
+    var c = csOf(day.key), au = csAuto(day), w = csWx[day.key];
+    var h = '<h3 style="margin-top:12px">Times</h3><div class="ca-grid">' + CS_TIMES.map(function (t) { return '<div><label for="cs-t-' + t[0] + '">' + t[1] + '</label><input type="time" id="cs-t-' + t[0] + '" data-cst="' + t[0] + '" value="' + esc(c.t[t[0]] || '') + '"></div>'; }).join('') + '</div>';
+    h += '<h3 style="margin-top:14px">Scenes</h3><div class="cs-wrap"><table class="cs-t"><thead><tr><th>Sc</th><th>Set and description</th><th>D/N</th><th>Pages</th><th>Cast</th><th></th></tr></thead><tbody>' + c.scenes.map(function (r, i) { return csRow('scenes', i, r); }).join('') + '</tbody></table></div><button type="button" class="btn small noprint" data-csadd="scenes">Add a scene</button>';
+    h += '<h3 style="margin-top:14px">Cast</h3><div class="cs-wrap"><table class="cs-t"><thead><tr><th>No.</th><th>Artist</th><th>Character</th><th>Pick-up</th><th>M/U and costume</th><th>On set</th><th></th></tr></thead><tbody>' + c.cast.map(function (r, i) { return csRow('cast', i, r); }).join('') + '</tbody></table></div><button type="button" class="btn small noprint" data-csadd="cast">Add cast</button>';
+    h += '<h3 style="margin-top:14px">Key contacts <span class="note">(the same on every call sheet)</span></h3><div class="cs-wrap"><table class="cs-t"><thead><tr><th>Role</th><th>Name</th><th>Mobile</th></tr></thead><tbody>' + csContacts().map(function (r, i) {
+      return '<tr><td><label class="sr" for="cc-r' + i + '">Role</label><input id="cc-r' + i + '" data-cc="role" data-i="' + i + '" maxlength="60" value="' + esc(r.role) + '"></td><td><label class="sr" for="cc-n' + i + '">Name</label><input id="cc-n' + i + '" data-cc="name" data-i="' + i + '" maxlength="60" value="' + esc(r.name) + '"></td><td><label class="sr" for="cc-p' + i + '">Mobile</label><input id="cc-p' + i + '" type="tel" data-cc="phone" data-i="' + i + '" maxlength="30" value="' + esc(r.phone) + '"></td></tr>';
+    }).join('') + '</tbody></table></div><button type="button" class="btn small noprint" data-ccadd="1">Add a contact</button>';
+    h += '<label for="cs-parking" style="margin-top:12px">Unit base and crew parking</label><input id="cs-parking" data-csf="parking" maxlength="300" value="' + esc(c.parking) + '" placeholder="e.g. Unit base in the leisure centre car park, enter from Mill Lane; crew park on level 2">' +
+      '<label for="cs-notes">Notes for the day</label><textarea id="cs-notes" data-csf="notes" maxlength="1500" placeholder="Wardrobe, props, vehicles, special requirements, rushes, tomorrow’s call…">' + esc(c.notes) + '</textarea>';
+    h += '<div class="cs-auto"><h3>Filled in for you</h3><ul>' +
+      '<li><b>Location:</b> ' + esc(au.address) + '</li>' +
+      '<li><b>Weather:</b> ' + (w === undefined ? 'Checking…' : esc(wxLine(w, day))) + (au.sunrise ? ' · sunrise ' + esc(au.sunrise) + ', sunset ' + esc(au.sunset) : '') + '</li>' +
+      '<li><b>Nearest A&amp;E:</b> ' + (au.ae ? esc(au.ae.name + ', about ' + au.ae.miles + ' miles' + (au.ae.address ? ', ' + au.ae.address : '') + (au.ae.phone ? ', ' + au.ae.phone : '')) : 'not found yet (it’s looked up when the location is added)') + '</li>' +
+      '<li><b>Police:</b> ' + esc(au.police) + ' · <b>Council:</b> ' + esc(au.council) + '</li>' +
+      '<li><b>Unit base:</b> ' + (au.fac.length ? esc(au.fac.join(', ')) : 'nothing on the plan yet') + '</li>' +
+      '<li><b>Catering:</b> ' + (au.catering ? esc(au.catering) : 'not set') + '</li>' +
+      '<li><b>Permits for this day:</b> ' + (au.permits.length ? esc(au.permits.map(function (p) { return p.t + ' (' + p.st.toLowerCase() + ')'; }).join('; ')) : 'none listed') + '</li>' +
+      '<li><b>Risk assessment:</b> ' + esc(au.ra) + ', ' + au.hz.length + ' hazards' + (au.alerts.length ? '; ' + au.alerts.length + ' safety note' + (au.alerts.length === 1 ? '' : 's') + ' for the day' : '') + '</li></ul></div>';
+    h += '<div class="row noprint" style="margin-top:12px"><button type="button" class="btn" data-cspdf="1">Download call sheet (PDF)</button><span class="msg" id="csMsg" role="status"></span></div>';
+    host.innerHTML = h;
+    if (w === undefined) weatherFor(day).then(function (v) { csWx[day.key] = v; if ($('csDay').value === day.key) drawCs(); });
+  }
+  // ---- the PDF (A4 portrait)
+  function csPdf(jsPDF, day, w) {
+    var P = window.SRSitePdf, t = P.t, c = csOf(day.key), au = csAuto(day), doc = new jsPDF({ unit: 'mm', format: 'a4' }), W = 210, H = 297, M = 10, y = 0;
+    var G = [30, 90, 67], INK = [21, 35, 28], MUT = [90, 104, 96], LN = [205, 214, 208], SOFT = [236, 243, 239];
+    function font(sz, b, col) { doc.setFont('helvetica', b ? 'bold' : 'normal'); doc.setFontSize(sz); doc.setTextColor.apply(doc, col || INK); }
+    function need(h) { if (y + h > H - 14) { foot(); doc.addPage(); y = M; } }
+    var page = 1;
+    function foot() { font(7, false, MUT); doc.text(t('No changes to this call sheet without the 1st AD’s say-so. Made with ShowReady on ' + fmt(today()) + '. Check permits, weather and hospital details before the day.'), M, H - 6); doc.text('Page ' + page, W - M, H - 6, { align: 'right' }); page++; }
+    function head(s) { need(12); doc.setFillColor.apply(doc, G); doc.rect(M, y, W - 2 * M, 6, 'F'); font(9, true, [255, 255, 255]); doc.text(t(s.toUpperCase()), M + 2, y + 4.2); y += 8; }
+    function para(s, sz) { font(sz || 8.5); var ls = doc.splitTextToSize(t(s), W - 2 * M); ls.forEach(function (ln) { need(4.2); doc.text(ln, M, y + 3); y += 4.2; }); y += 1; }
+    function table(cols, rows, empty) {
+      var ws = cols.map(function (c) { return c[1]; }), tot = ws.reduce(function (a, b) { return a + b; }, 0), k = (W - 2 * M) / tot; ws = ws.map(function (x) { return x * k; });
+      function hdr() { doc.setFillColor.apply(doc, SOFT); doc.rect(M, y, W - 2 * M, 5.5, 'F'); font(7.5, true); var x = M; cols.forEach(function (c, i) { doc.text(t(c[0]), x + 1.2, y + 3.8); x += ws[i]; }); y += 5.5; }
+      need(12); hdr();
+      if (!rows.length) { font(8, false, MUT); doc.text(t(empty || 'None'), M + 1.2, y + 3.8); y += 6; return; }
+      rows.forEach(function (r) {
+        font(8); var cells = r.map(function (v, i) { return doc.splitTextToSize(t(v == null ? '' : v), ws[i] - 2.4); }), lines = Math.max.apply(null, cells.map(function (x) { return x.length || 1; })), rh = lines * 3.6 + 2;
+        if (y + rh > H - 14) { foot(); doc.addPage(); y = M; hdr(); font(8); }
+        var x = M; cells.forEach(function (ls, i) { doc.text(ls, x + 1.2, y + 3.6); x += ws[i]; });
+        doc.setDrawColor.apply(doc, LN); doc.setLineWidth(0.2); doc.line(M, y + rh, W - M, y + rh); y += rh;
+      });
+      y += 2;
+    }
+    // Header band
+    doc.setFillColor.apply(doc, G); doc.rect(0, 0, W, 26, 'F');
+    font(17, true, [255, 255, 255]); doc.text(t(state.name || 'Production'), M, 11);
+    font(9, false, [220, 236, 228]); doc.text(t((state.company ? state.company + ' · ' : '') + 'Location: ' + day.loc.name), M, 17);
+    font(15, true, [255, 255, 255]); doc.text('CALL SHEET', W - M, 10, { align: 'right' });
+    font(10, true, [255, 255, 255]); doc.text(t(fmt(parse(day.date))), W - M, 16, { align: 'right' });
+    font(9, false, [220, 236, 228]); doc.text(t('Shoot day ' + day.n + ' of ' + day.of), W - M, 21.5, { align: 'right' });
+    y = 30;
+    // Times
+    var bw = (W - 2 * M - 4 * 2) / 5;
+    CS_TIMES.forEach(function (tm, i) {
+      var x = M + i * (bw + 2); doc.setDrawColor.apply(doc, G); doc.setLineWidth(0.5); doc.rect(x, y, bw, 15);
+      font(7.5, true, MUT); doc.text(t(tm[1].toUpperCase()), x + bw / 2, y + 5, { align: 'center' }); font(14, true, tm[0] === 'crew' ? G : INK); doc.text(t(c.t[tm[0]] || '–'), x + bw / 2, y + 12, { align: 'center' });
+    });
+    y += 19;
+    // Weather, sun, location and emergency side by side
+    var colW = (W - 2 * M - 4) / 2, y0 = y;
+    function box(x, title, lines) {
+      var yy = y0; font(8, true, G); doc.text(t(title.toUpperCase()), x, yy + 3); yy += 5;
+      lines.forEach(function (l) { font(8, !!l.b, l.c); if (l.url) { doc.textWithLink(t(l.s), x, yy + 3, { url: l.url }); yy += 3.8; return; } doc.splitTextToSize(t(l.s), colW).forEach(function (ln) { doc.text(ln, x, yy + 3); yy += 3.8; }); });
+      return yy;
+    }
+    var left = [{ s: au.address, b: true }];
+    if (c.parking) left.push({ s: 'Unit base and parking: ' + c.parking });
+    if (au.map) { var gg = day.loc.geo; left.push({ s: 'Map pin: ' + gg.lat.toFixed(5) + ', ' + gg.lng.toFixed(5) + ' (tap to open the map)', url: au.map, c: G }); }
+    left.push({ s: 'Weather: ' + wxLine(w, day) }, { s: au.sunrise ? 'Sunrise ' + au.sunrise + ' · sunset ' + au.sunset : '' });
+    var right = [{ s: 'In an emergency call 999 and give the location address.', b: true },
+      { s: 'Nearest A&E: ' + (au.ae ? au.ae.name + ', about ' + au.ae.miles + ' miles' + (au.ae.address ? ' · ' + au.ae.address : '') + (au.ae.phone ? ' · ' + au.ae.phone : '') : 'check before the day') },
+      { s: 'Police: ' + au.police + ' (101 for non-emergencies)' }, { s: 'Film office: ' + au.filmOffice }];
+    var medic = csContacts().filter(function (r) { return /medic|first aid/i.test(r.role) && (r.name || r.phone); })[0];
+    if (medic) right.push({ s: 'Unit medic or first aider: ' + [medic.name, medic.phone].filter(Boolean).join(', '), b: true });
+    var y1 = box(M, 'Location', left.filter(function (l) { return l.s; })), y2 = box(M + colW + 4, 'Safety and emergencies', right);
+    y = Math.max(y1, y2) + 3;
+    if (au.alerts.length) { head('Safety notes for the day'); au.alerts.forEach(function (a) { para('• ' + a); }); }
+    head('Schedule');
+    table([['Sc', 10], ['Set and description', 80], ['D/N', 10], ['Pages', 14], ['Cast', 22]], c.scenes.filter(function (r) { return r.sc || r.set; }).map(function (r) { return [r.sc, r.set, r.dn || 'D', r.pages, r.cast]; }), 'Add the day’s scenes on ShowReady.');
+    head('Cast');
+    table([['No.', 8], ['Artist', 38], ['Character', 34], ['Pick-up', 16], ['M/U & costume', 20], ['On set', 14]], c.cast.filter(function (r) { return r.artist || r.character; }).map(function (r) { return [r.no, r.artist, r.character, r.pickup, r.mu, r.set]; }), 'No cast listed.');
+    head('Key contacts');
+    table([['Role', 40], ['Name', 40], ['Mobile', 30]], csContacts().filter(function (r) { return r.name || r.phone; }).map(function (r) { return [r.role, r.name, r.phone]; }), 'Add key contacts on ShowReady.');
+    head('Unit base and catering');
+    para('Unit base: ' + (au.fac.length ? au.fac.join(', ') : 'see the unit base plan') + '.');
+    if (au.catering) para('Catering: ' + au.catering + '.');
+    if (au.permits.length) { head('Permits and permissions'); table([['Permit', 80], ['Status', 20]], au.permits.map(function (p) { return [p.t, p.st]; })); }
+    var hz = au.hz.filter(function (h) { return h.r !== 'Low'; }).slice(0, 8);
+    if (hz.length) { head('Main hazards (risk assessment: ' + au.ra.toLowerCase() + ')'); table([['Hazard', 40], ['Controls', 70], ['Risk', 10]], hz.map(function (h) { return [h.h, h.c, h.r]; })); }
+    if (c.notes) { head('Notes'); para(c.notes); }
+    var nxt = csDays().filter(function (d) { return d.date > day.date; })[0];
+    head('Advance schedule');
+    para(nxt ? 'Next shoot day: day ' + nxt.n + ', ' + fmt(parse(nxt.date)) + ' at ' + nxt.loc.name + ' (' + [(nxt.loc.geo && nxt.loc.geo.postcode) || nxt.loc.pc, nxt.loc.geo && nxt.loc.geo.district].filter(Boolean).join(', ') + '). Call time on that day’s call sheet.' : 'This is the last scheduled shoot day.');
+    foot();
+    return doc;
+  }
+  function csDownload() {
+    var days = csDays(), day = days.filter(function (d) { return d.key === $('csDay').value; })[0], msg = $('csMsg');
+    if (!day) return;
+    if (!window.SRSitePdf) { msg.textContent = 'The PDF maker didn’t load. Refresh the page and try again.'; return; }
+    msg.textContent = 'Preparing the call sheet…';
+    var w = csWx[day.key];
+    return Promise.all([window.SRSitePdf.load(), w === undefined ? weatherFor(day) : w]).then(function (r) {
+      var doc = csPdf(r[0], day, r[1]);
+      var name = 'Call sheet - ' + String(state.name || 'Production').replace(/[^\w \-]/g, '').slice(0, 40).trim() + ' - day ' + day.n + ' ' + day.date + '.pdf';
+      return window.SRSitePdf.save(name, doc.output('blob'));
+    }).then(function () { msg.textContent = 'Call sheet saved.'; }, function () { msg.textContent = 'Couldn’t make the PDF. Check your connection and try again.'; });
+  }
+  // The council site plan PDF for the Film page's unit base plans (the Unit base plans card's PDF button)
+  window.SRPack = window.SRPack || {};
+  window.SRPack.downloadSitePlan = function () {
+    var l = locById(planFor), b = document.getElementById('sp3Pdf');
+    if (!l) return Promise.resolve(false);
+    if (!window.SRSitePdf) { if (window.SRSitePlan && window.SRSitePlan.print) window.SRSitePlan.print(); return Promise.resolve(false); }
+    var keep = b ? b.textContent : '', done = function (s) { if (b) { b.textContent = s; b.disabled = false; setTimeout(function () { b.textContent = keep; }, 2500); } };
+    if (b) { b.disabled = true; b.textContent = 'Preparing…'; }
+    var addr = [l.name, (l.geo && l.geo.postcode) || l.pc, l.geo && l.geo.district].filter(Boolean).join(', ');
+    return window.SRSitePdf.download(l.plan, (state.name ? state.name + ': ' : '') + 'unit base, ' + l.name, addr).then(function () { done('Saved'); return true; },
+      function (e) { done(e && e.message === 'empty' ? 'Add items first' : 'Couldn’t make the PDF'); return false; });
+  };
+
   // ---------- state ----------
   var EMPTY = function () { return { v: 2, name: '', company: '', locs: [], status: {}, costs: [] }; };
   var state = load();
@@ -1748,6 +2258,11 @@
     cl.innerHTML = state.locs.length ? state.locs.map(function (l, i) { return '<option value="' + esc(l.id) + '">' + (i + 1) + '. ' + esc(l.name) + '</option>'; }).join('') : '<option value="">Add a location first</option>';
     if (ccur && locById(ccur)) cl.value = ccur;
     drawCa();
+    var fl = $('fvLoc'), fcur = fl.value;
+    fl.innerHTML = state.locs.length ? state.locs.map(function (l, i) { return '<option value="' + esc(l.id) + '">' + (i + 1) + '. ' + esc(l.name) + '</option>'; }).join('') : '<option value="">Add a location first</option>';
+    if (fcur && locById(fcur)) fl.value = fcur;
+    drawFv();
+    if (!document.querySelector('#csHost :focus')) drawCs();
     drawMap();
   }
   function renderCosts() {
@@ -1882,6 +2397,42 @@
     e.preventDefault(); var l = locById($('caLoc').value), id = e.target.getAttribute('data-sendq'), r = l && catRes[l.id];
     var s = r && r.list && r.list.filter(function (x) { return x.owner === id; })[0]; if (s) sendQuote(l, s);
   });
+  $('fvLoc').addEventListener('change', function () { fvCompose = null; drawFv(); });
+  $('fvHost').addEventListener('change', function (e) {
+    var t = e.target, l = locById($('fvLoc').value), k = t.getAttribute('data-fv'); if (!l || !k || t.closest('form')) return;
+    var v = fvOf(l); if (k === 'notes') v.notes = String(t.value).slice(0, 200); else v.n[k] = Math.max(0, Math.min(200, Math.round(+t.value || 0)));
+    save(); drawFv();
+  });
+  $('fvHost').addEventListener('click', function (e) {
+    var t = e.target, l = locById($('fvLoc').value), id; if (!l) return;
+    if (t.getAttribute('data-findfv')) { findFv(l, +$('fv-radius').value); return; }
+    if (t.getAttribute('data-fvplan')) { var n = fvToPlan(l), m = $('fvPlanMsg'); drawFv(); m = $('fvPlanMsg'); if (m) m.textContent = n ? 'Added ' + n + ' to the plan for ' + l.name + '. Drag them into place on the unit base plan.' : (l.geo ? 'They’re already on the plan.' : 'The plan needs the location’s postcode first.'); return; }
+    if (t.hasAttribute('data-fvquote')) { id = t.getAttribute('data-fvquote'); fvCompose = id ? l.id + ':' + id : null; drawFv(); var q = $('fq-name'); if (q && !q.value) q.focus(); }
+  });
+  $('fvHost').addEventListener('submit', function (e) {
+    e.preventDefault(); var l = locById($('fvLoc').value), id = e.target.getAttribute('data-fvsend'), r = l && fvRes[l.id];
+    var s = r && r.list && r.list.filter(function (x) { return x.owner === id; })[0]; if (s) fvSend(l, s);
+  });
+  $('csDay').addEventListener('change', drawCs);
+  $('csHost').addEventListener('input', function (e) {
+    var t = e.target, key = $('csDay').value, k; if (!key) return;
+    var c = csOf(key), i = +t.getAttribute('data-i');
+    if ((k = t.getAttribute('data-cst'))) c.t[k] = String(t.value).slice(0, 5);
+    else if ((k = t.getAttribute('data-csf'))) c[k] = String(t.value).slice(0, k === 'notes' ? 1500 : 300);
+    else if ((k = t.getAttribute('data-csr'))) { var row = c[k][i]; if (row) row[t.getAttribute('data-k')] = String(t.value).slice(0, 120); }
+    else if ((k = t.getAttribute('data-cc'))) { var cc = csContacts()[i]; if (cc) cc[k] = String(t.value).slice(0, 60); }
+    else return;
+    save();
+  });
+  $('csHost').addEventListener('change', function (e) { if (e.target.tagName === 'SELECT') e.target.dispatchEvent(new Event('input', { bubbles: true })); });
+  $('csHost').addEventListener('click', function (e) {
+    var t = e.target, key = $('csDay').value, k; if (!key) return;
+    var c = csOf(key);
+    if ((k = t.getAttribute('data-csadd'))) { if (c[k].length < 60) c[k].push(k === 'scenes' ? { dn: 'D' } : { no: String(c.cast.length + 1) }); save(); drawCs(); var ins = document.querySelectorAll('[data-csr="' + k + '"]'); if (ins.length) ins[ins.length - (k === 'scenes' ? 5 : 6)].focus(); return; }
+    if ((k = t.getAttribute('data-csdel'))) { c[k].splice(+t.getAttribute('data-i'), 1); save(); drawCs(); return; }
+    if (t.getAttribute('data-ccadd')) { var cs = csContacts(); if (cs.length < 30) cs.push({ role: '', name: '', phone: '' }); save(); drawCs(); return; }
+    if (t.getAttribute('data-cspdf')) csDownload();
+  });
   $('raPrintBtn').addEventListener('click', function () {
     if (!locById($('raLoc').value)) return;
     document.body.classList.add('print-ra'); window.print(); setTimeout(function () { document.body.classList.remove('print-ra'); }, 500);
@@ -1964,15 +2515,16 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
 /*NAV-START*/
 // ShowReady menu (top left) and, on pages without the account panel, Log in / Sign up buttons (top right).
 (function () {
-  var HOME = 'https://claude.ai/artifact/SMuqGzCFnd2WoqfTgdfLNe', APP = 'https://claude.ai/artifact/AcHwAnHTsptFTVKq31eNrB', DESK = 'https://claude.ai/artifact/KiSiwnEKypSmtAKkqHrDME',
-    TOOLS = 'https://claude.ai/artifact/RBpocxMgabJ4KaqaetoHPq', PRIV = 'https://claude.ai/artifact/Pb9icBayyHkfLLQ9eKDEVQ', TERMS = 'https://claude.ai/artifact/SwhAr5K2DvgxyCbKkoYj3E';
+  var HOME = '/', APP = '/app/', DESK = '/suppliers/',
+    TOOLS = '/toolkit.html', PRIV = '/privacy.html', TERMS = '/terms.html';
   var here = document.documentElement.getAttribute('data-page') || (window.SR_NAV_PAGE || '');
   var ITEMS = [
     { id: 'home', href: HOME, t: 'Home', d: 'What ShowReady does' },
     { id: 'planner', href: APP, t: 'Plan an event', d: 'Licences, suppliers, deadlines' },
     { id: 'desk', href: DESK, t: 'Supplier desk', d: 'Enquiries and your profile' },
     { id: 'film', href: '/film/', t: 'Film & TV', d: 'Locations, permits and shoot days' },
-    { id: 'tools', href: TOOLS, t: 'Tools and pricing', d: 'Every tool and plan' },
+    { id: 'pricing', href: TOOLS + '#pricing', t: 'Pricing and plans', d: 'What each plan costs and includes' },
+    { id: 'tools', href: TOOLS, t: 'All the tools', d: 'Everything ShowReady does' },
     { id: 'join', href: HOME + '#join', t: 'Join the pilot', d: 'Founding member sign-up' },
     { id: 'install', href: '#install', t: 'Install the apps', d: 'Organiser, Supplier and Film & TV on your phone or computer', install: true },
     { id: 'feedback', href: '#feedback', t: 'Send feedback', d: 'A problem, an idea or a question', feedback: true },
@@ -1996,7 +2548,8 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     '.srn-acct a.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink,#fff)}' +
     '.top .nav .srn-acct a{display:inline-flex!important}.top .nav .btn[data-planner-link]{display:none}.top .inner>a[data-home-link]:not(.logo){display:none}' +
     '@media (max-width:440px){.srn-left{gap:8px}.srn-btn{min-height:38px;min-width:38px;padding:0 8px}.srn-acct a,.sr-acct-btn{padding:0 10px!important;font-size:13px!important;min-height:36px}.srn-acct,.sr-acct-btns,.sr-acct-right{gap:5px!important}.top .logo,.topbar .brand{gap:6px}.top .logo svg,.topbar .brand svg{width:30px;height:30px}.top .logo .word,.topbar .brand .word{font-size:18px}.top .inner,.topbar .wrap{gap:8px}}' +
-    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}';
+    '@media (max-width:374px){.top .logo .word,.topbar .brand .word{display:none}}' +
+    '.srn-price{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:12px;font-weight:700;font-size:15px;color:var(--brand-text,var(--ink));text-decoration:none;white-space:nowrap}.srn-price:hover,.srn-price:focus-visible{background:var(--brand-soft)}@media (max-width:600px){.srn-price{display:none}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var box = document.createElement('div'); box.className = 'srn';
@@ -2012,6 +2565,8 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
   var logo = bar.querySelector('.brand, .logo');
   var left = document.createElement('div'); left.className = 'srn-left';
   bar.insertBefore(left, bar.firstChild); left.appendChild(box); if (logo) left.appendChild(logo);
+  // Build 89: Pricing always visible at the top, next to the logo
+  var price = document.createElement('a'); price.className = 'srn-price'; price.href = TOOLS + '#pricing'; price.textContent = 'Pricing'; left.appendChild(price);
 
   var btn = box.querySelector('#srnBtn'), menu = box.querySelector('#srnMenu');
   function setOpen(o) { menu.hidden = !o; btn.setAttribute('aria-expanded', String(o)); }
@@ -2237,7 +2792,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
   A._reload = function () { location.reload(); };
   A._go = function (url) { location.assign(url); };
   // Where each kind of account starts. (These addresses become /app/ and /suppliers/ on the live site.)
-  var START = { plans: 'https://claude.ai/artifact/AcHwAnHTsptFTVKq31eNrB', desk: 'https://claude.ai/artifact/KiSiwnEKypSmtAKkqHrDME', film: '/film/' };
+  var START = { plans: '/app/', desk: '/suppliers/', film: '/film/' };
   // "I'm mainly": four kinds of account (build 51)
   var ROLES = [['organiser', 'Organising events'], ['supplier', 'Supplying events'], ['film', 'Film and TV productions'], ['both', 'Organising and supplying (Combined plan)']];
   function roleOptions(cur) { return ROLES.map(function (r) { return '<option value="' + r[0] + '"' + (r[0] === cur ? ' selected' : '') + '>' + r[1] + '</option>'; }).join(''); }
@@ -2320,7 +2875,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
   function say(t, kind) { A.msg = t; A.msgKind = kind || 'ok'; render(); }
   A.say = say;
   A.open = function (view) { A.view = view === 'signup' ? 'signup' : 'signin'; open(); };
-  function setBusy(b) { A.busy = b; var bs = back.querySelectorAll('button[data-act]'); for (var i = 0; i < bs.length; i++) bs[i].disabled = b; }
+  function setBusy(b) { A.busy = b; var bs = back.querySelectorAll('button[data-act]'); for (var i = 0; i < bs.length; i++) bs[i].disabled = b || (bs[i].id === 'srResend' && !!resendWait()); }
 
   function updateButton() {
     var t = btn.querySelector('.t');
@@ -2343,6 +2898,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
       h += '<h2 id="srAcctTitle">Choose a new password</h2><p class="muted">At least 8 characters.</p>' +
         '<form data-form="newpass"><label for="srNewPass">New password</label><span class="sr-pw"><input id="srNewPass" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="sr-pwt" data-pwt aria-label="Show password" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span>' +
         '<div class="row"><button class="btn primary" type="submit" data-act>Save new password</button></div></form>';
+    } else if (!A.user && A.view === 'checkemail') {
+      // Build 79: after signing up (or trying to log in before confirming) there is one clear next step
+      var wait = resendWait();
+      h += '<h2 id="srAcctTitle">' + (A.unconfirmed ? 'You haven’t confirmed your email yet' : 'Check your email') + '</h2>' +
+        '<p>We’ve sent a link to <strong>' + esc(A.sentTo || 'your email') + '</strong> from hello@beshowready.co.uk. Open it on this device to finish. If it isn’t in your inbox in a few minutes, check your junk or spam folder.</p>' +
+        '<div class="row"><button class="btn" type="button" id="srResend" data-act="resendConfirm"' + (wait ? ' disabled' : '') + '>' + resendLabel(wait) + '</button></div>' +
+        '<p><button type="button" class="linky" data-view="signin">I’ve confirmed: log in</button> · <button type="button" class="linky" data-view="signup">Use a different email</button></p>';
     } else if (!A.user) {
       var up = A.view === 'signup';
       h += '<h2 id="srAcctTitle">' + (up ? 'Create your account' : 'Log in') + '</h2>' +
@@ -2377,23 +2939,28 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
       var other = P.kind === 'plans' ? { k: 'desk', t: 'Go to my Supplier desk' } : { k: 'plans', t: 'Go to the event planner' };
       var curRole = (A.profile && A.profile.role) || 'organiser';
       h += '<div class="rolebar"><label for="srMyRole">I’m mainly</label><select id="srMyRole">' + roleOptions(curRole) + '</select>' +
-        '<button class="btn small" type="button" data-act="switchSide">' + other.t + '</button></div>' +
+        '<button class="btn small" type="button" data-act="switchSide">' + other.t + '</button>' + (P.kind !== 'film' && curRole === 'film' ? '<a class="btn small" href="' + START.film + '">Go to Film &amp; TV</a>' : '') + '</div>' +
         '<label for="srAlertMode" style="display:block;margin-top:12px;font-weight:700">Email me about enquiries and messages</label>' +
         '<select id="srAlertMode" style="width:100%;margin-top:4px">' + [['instant', 'Straight away, every time'], ['smart', 'New enquiries straight away, the rest in one 7am summary'], ['daily', 'One summary each morning at 7am'], ['off', 'No emails (check Messages yourself)']].map(function (o) { return '<option value="' + o[0] + '"' + (alertMode() === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
         '<label class="remember" style="margin-top:10px"><input type="checkbox" id="srAlerts"' + (A.profile && A.profile.email_alerts === false ? '' : ' checked') + '> Email me about changes to my council’s details</label>';
       var pi = planInfo(A.profile);
       h += '<div class="plancard" id="srPlanCard"><div class="ptop"><span class="plbl">Your plan</span><b class="pname">' + esc(pi.lapsed ? 'Free' : pi.name) + '</b>' +
         (pi.founding ? '<span class="pbadge">Founding member</span>' : '') + '</div><p>' +
-        (pi.lapsed ? 'Your ' + esc(pi.name) + ' plan ended on ' + esc(niceDate(pi.expires)) + ', so you’re back on Free.'
+        (pi.lapsed ? 'Your ' + esc(pi.name) + ' plan ended on ' + esc(niceDate(pi.expires)) + ', so you’re back on Free. Everything you made is still here; the paid extras come back as soon as you choose a plan again.'
+          : pi.paid && pi.granted ? (pi.expires ? 'Given to you by ShowReady until <b>' + esc(niceDate(pi.expires)) + '</b>.' : 'Given to you by ShowReady, with no end date.')
+          : pi.paid && pi.status === 'past_due' ? '<b class="danger">Your last payment didn’t go through.</b> Stripe will try again over the next few days. To keep your plan, update your card in Manage billing.'
+          : pi.paid && pi.cancelAt ? 'Your plan is set to end on <b>' + esc(niceDate(pi.cancelAt)) + '</b> and won’t renew. You can switch renewal back on in Manage billing.'
+          : pi.paid && pi.status === 'trialing' ? 'Free trial: your first payment is due on <b>' + esc(niceDate(new Date(Date.parse(pi.expires) - 3 * 864e5).toISOString().slice(0, 10))) + '</b>. You can cancel before then in Manage billing.'
           : pi.paid ? (pi.expires ? 'Paid up until <b>' + esc(niceDate(pi.expires)) + '</b>.' : 'Paid plan.')
-          : pi.founding && !(A.offer && A.offer.tier === 'founding') ? 'Free for now. As a founding member you get 6 months free, then 30% off for life (excludes Enterprise).'
+          : pi.founding && !(A.offer && A.offer.tier === 'founding') ? 'Free for now. As a founding member you get ' + srFoundLine(srV1(), A.offer && A.offer.category) + ' (excludes Enterprise).'
           : 'During the pilot every tool and any number of events are free.') +
         (!(A.settings && A.settings.ads && A.settings.ads.enabled) ? '' : pi.adFree ? ' No adverts.' : ' Adverts show along the bottom of the page.') + '</p>' +
         (pi.needsCombined && !pi.lapsed ? '<p class="muted" style="font-size:13px">You organise and supply, so after the pilot you’ll need the <b>Combined plan</b> (£12 a month or £115 a year, + VAT)' + (pi.founding ? ', with your founding discount' : '') + '.</p>' : '') +
         (pi.student ? '<p class="muted" style="font-size:13px">Student account: 50% off Film plans.</p>' : '') +
         offerHtml() +
-        '<div class="row"><a class="btn small" href="https://claude.ai/artifact/RBpocxMgabJ4KaqaetoHPq#pricing">' + (pi.paid ? 'Change plan' : 'See plans and upgrade') + '</a></div>' +
+        '<div class="row"><a class="btn small" href="/toolkit.html?from=film#pricing">' + (pi.paid ? 'Change plan' : 'See plans and upgrade') + '</a>' + (pi.hasSub && !pi.granted ? ' <button type="button" class="btn small" data-sr-portal>Manage billing</button>' : '') + '</div>' +
         '<p class="muted" style="font-size:13px">Paying online opens at launch. Until then, to change your plan email <a href="mailto:' + esc(CFG.contact) + '">' + esc(CFG.contact) + '</a>.</p></div>';
+      if (window.SRLogo && A.profile) h += window.SRLogo.html();
       h += '<p>' + (A.status === 'saving' ? 'Saving…' : A.status === 'error' ? '<span class="danger">Not saved to your account yet. It’s safe in this browser and will try again.</span>' : !P.isOwn(readLocal() || {}) ? (P.kind === 'plans' ? 'You’re looking at the example. Start your own event and it saves to your account.' : 'Add your own enquiries or profile and they save to your account.') : A.savedAt ? 'Saved to your account ' + ago(A.savedAt) + '.' : 'Changes save to your account automatically.') + '</p>';
       if (A.conflict) {
         h += '<div class="msg bad">This device has a different ' + (P.label || 'supplier desk') + ' from the one in your account. Which do you want to keep?</div>' +
@@ -2410,14 +2977,14 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
         h += '<hr><h2 style="font-size:16px">Team, vans and depots</h2>';
         if (!td) h += '<p class="muted">Loading…</p>';
         else {
-          var lim = td.limits || {}, pl = { pilot: 'Free during the pilot', 'vendor-business': 'Vendor Business', enterprise: 'Enterprise' }[lim.plan] || 'Vendor Pro';
+          var lim = td.limits || {}, pl = { pilot: 'Free during the pilot', 'vendor-business': 'Vendor Business', agency: 'Agency', enterprise: 'Enterprise' }[lim.plan] || 'Vendor Pro';
           h += '<p class="muted" style="font-size:13px">' + esc(pl) + ': ' + (lim.logins || 1) + (lim.logins === 1 ? ' login' : ' logins') + ' and ' + (lim.bases >= 1000 ? 'as many depots as you run' : (lim.bases || 1) + (lim.bases === 1 ? ' base' : ' bases')) + ', travelling ' + (lim.max_miles >= 1000 ? 'any distance' : 'up to ' + (lim.max_miles || 50) + ' miles') + ' from each base. You’re using ' + (lim.logins_used || 1) + ' and ' + (lim.bases_used || 1) + '.</p>' +
             '<p style="font-size:14px"><b>People</b> (you, plus anyone you invite). They log in with their own email and work on this desk; what they send goes out as your business.</p>' +
             '<ul class="plans">' + (td.members || []).map(function (m) { return '<li><div class="n"><b>' + esc(m.email) + '</b><span>' + (m.status === 'active' ? 'Active' : 'Invited: they sign up or log in with this email') + '</span></div><button class="btn small" type="button" data-act="teamRemove" data-id="' + esc(m.id) + '">Remove</button></li>'; }).join('') + '</ul>' +
-            ((lim.logins_used || 1) < (lim.logins || 1) ? '<div class="row"><input id="srTeamEmail" type="email" maxlength="254" placeholder="Their email" style="flex:1"><button class="btn small" type="button" data-act="teamInvite">Invite</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'enterprise' ? 'For more than ' + lim.logins + ' logins, email us and we’ll add seats.' : lim.plan === 'vendor-business' ? 'To add more people, move to Enterprise (10 logins).' : lim.plan === 'pilot' ? 'During the pilot you can have up to 3 logins. For more, Enterprise has 10.' : 'To add more people, move to Vendor Business (3 logins) or Enterprise (10).') + '</p>') +
+            ((lim.logins_used || 1) < (lim.logins || 1) ? '<div class="row"><input id="srTeamEmail" type="email" maxlength="254" placeholder="Their email" style="flex:1"><button class="btn small" type="button" data-act="teamInvite">Invite</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'enterprise' ? 'For more than ' + lim.logins + ' logins, email us and we’ll add seats.' : lim.plan === 'vendor-business' || lim.plan === 'agency' ? 'To add more people, move to Enterprise (10 logins).' : lim.plan === 'pilot' ? 'During the pilot you can have up to 3 logins. For more, Enterprise has 10.' : 'To add more people, move to Vendor Business (3 logins) or Enterprise (10).') + '</p>') +
             '<p style="font-size:14px;margin-top:12px"><b>Extra bases</b>: each van, trailer or depot with its own base and travel area. Organisers are matched to your nearest one, and the enquiry says which.</p>' +
             '<ul class="plans">' + (td.units || []).map(function (u) { return '<li><div class="n"><b>' + esc(u.name) + '</b><span>' + esc([u.town, u.outcode, u.miles ? 'up to ' + u.miles + ' miles' : ''].filter(Boolean).join(' · ')) + '</span></div><button class="btn small" type="button" data-act="unitRemove" data-id="' + esc(u.id) + '">Remove</button></li>'; }).join('') + '</ul>' +
-            ((lim.bases_used || 1) < (lim.bases || 1) ? '<div class="row" style="flex-wrap:wrap"><input id="srUnitName" maxlength="80" placeholder="Name, e.g. Van 2 or Leeds depot" style="flex:2 1 180px"><input id="srUnitPc" maxlength="8" placeholder="Postcode" style="flex:1 1 90px"><input id="srUnitMiles" type="number" min="1" max="500" placeholder="Miles" style="flex:1 1 70px"><button class="btn small" type="button" data-act="unitAdd">Add base</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'vendor-business' || lim.plan === 'pilot' ? 'To add more bases, move to Enterprise: £99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot.' : 'To add more bases, move to Vendor Business (5) or Enterprise (£99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot).') + '</p>') +
+            ((lim.bases_used || 1) < (lim.bases || 1) || lim.plan === 'enterprise' || srBaseHit(lim) ? '<div class="row" style="flex-wrap:wrap"><input id="srUnitName" maxlength="80" placeholder="Name, e.g. Van 2 or Leeds depot" style="flex:2 1 180px"><input id="srUnitPc" maxlength="8" placeholder="Postcode" style="flex:1 1 90px"><input id="srUnitMiles" type="number" min="1" max="500" placeholder="Miles" style="flex:1 1 70px"><button class="btn small" type="button" data-act="unitAdd">Add base</button></div>' : '<p class="muted" style="font-size:13px">' + (lim.plan === 'pilot' ? 'During the pilot you can have up to ' + (lim.bases || 5) + ' bases. For more, move to Enterprise: built for national firms with several depots, any distance from every depot. During the pilot, Enterprise is free until 1 February 2027; then £99 a month + VAT for up to 10 depots, and £8 a month + VAT for each extra depot.' : lim.plan === 'vendor-business' || lim.plan === 'agency' ? 'To add more bases, move to Enterprise: £99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot.' : 'To add more bases, move to Vendor Business (5) or Enterprise (£99 a month + VAT for up to 10 depots, then £8 a month + VAT for each extra depot).') + '</p>' + (lim.plan === 'vendor-business' || lim.plan === 'pilot' ? '<p><a class="btn small primary" href="#enterprise" data-enterprise>Ask for an Enterprise quote</a></p>' : '')) +
             '<p style="font-size:14px;margin-top:12px"><b>Companies House number</b> (needed for Vendor Business and Enterprise)</p><div class="row"><input id="srCoNo" maxlength="10" value="' + esc(td.company_no || '') + '" placeholder="e.g. 01234567" style="flex:1"><button class="btn small" type="button" data-act="coSave">Save</button></div>' +
             '<p class="muted" style="font-size:12px">One Vendor Pro account per business. A business with more than one base or more than one person uses Vendor Business or Enterprise.</p>';
         }
@@ -2461,7 +3028,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
       switchSide: function () { goTo(P.kind === 'plans' ? 'desk' : 'plans'); return Promise.resolve(); },
       keepRemote: function () { var c = A.conflict; A.conflict = null; return pullDesk(c); }, keepLocal: function () { A.conflict = null; setLink({ user: A.owner(), dirty: true }); return push(); },
       useTeam: function () { return switchTeam(id); }, useOwn: function () { return switchTeam('own'); },
-      teamInvite: teamInvite, unitAdd: unitAdd, coSave: coSave,
+      teamInvite: teamInvite, unitAdd: unitAdd, coSave: coSave, resendConfirm: resendConfirm,
       teamRemove: function () { return teamJob(A.client.from('supplier_members').delete().eq('id', id)); },
       unitRemove: function () { return teamJob(A.client.from('supplier_units').delete().eq('id', id)); } }[act];
     if (job) { setBusy(true); job().catch(function (err) { say(friendly(err), 'bad'); }).then(function () { setBusy(false); }); }
@@ -2473,7 +3040,9 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     var here = location.origin + location.pathname;
     setBusy(true);
     ensureClient().then(function (c) {
-      if (f === 'signin') { A.freshLogin = true; return c.auth.signInWithPassword({ email: email, password: pass }).then(function (r) { if (r.error) { A.freshLogin = false; throw r.error; } A.msg = ''; }); }
+      if (f === 'signin') { A.freshLogin = true; return c.auth.signInWithPassword({ email: email, password: pass }).then(function (r) {
+        if (r.error) { A.freshLogin = false; if (/email not confirmed/i.test(r.error.message || '')) { showConfirm(email, here, true); return; } throw r.error; }
+        A.msg = ''; try { sessionStorage.removeItem('showready-confirm'); } catch (e2) {} }); }
       if (f === 'signup') {
         if (pass.length < 8) throw new Error('Use at least 8 characters for your password.');
         var role = v('srRole') || P.role;
@@ -2485,7 +3054,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
           if (r.error) throw r.error;
           // Build 57: an email that already has an account comes back with no identities and no email is sent
           if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0) { say('There’s already a ShowReady account for ' + email + '. Choose Log in, or Forgot password if you don’t know the password.'); return; }
-          if (!r.data || !r.data.session) say('Nearly there. We’ve emailed a link to ' + email + '. Open it on this device to finish. Check your junk folder if it isn’t there in a few minutes. Already have an account with this email? Log in instead.');
+          if (!r.data || !r.data.session) { A.sentAt = Date.now(); showConfirm(email, landAt, false); }
         });
       }
       if (f === 'magic') return c.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false, emailRedirectTo: here } }).then(function (r) { if (r.error) throw r.error; say('If there’s an account for ' + email + ', a sign-in link is on its way.'); });
@@ -2497,12 +3066,44 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     }).catch(function (err) { say(friendly(err), 'bad'); }).then(function () { setBusy(false); });
   });
 
+  // ---- Build 79: confirmation email waiting screen, with a resend that respects Supabase's 60-second limit
+  var RESEND_GAP = 60000;
+  function resendWait() { return A.sentAt ? Math.max(0, Math.ceil((A.sentAt + RESEND_GAP - Date.now()) / 1000)) : 0; }
+  function resendLabel(w) { return w ? 'Resend confirmation email (' + w + 's)' : 'Resend confirmation email'; }
+  function showConfirm(email, land, unconfirmed) {
+    A.sentTo = email; A.sentLand = land; A.unconfirmed = !!unconfirmed; A.view = 'checkemail'; A.msg = '';
+    try { sessionStorage.setItem('showready-confirm', JSON.stringify({ to: email, land: land, at: A.sentAt || 0 })); } catch (e) {}
+    render(); tickResend();
+  }
+  function tickResend() {
+    clearInterval(A.resendTimer);
+    A.resendTimer = setInterval(function () {
+      var b = el('srResend'); var w = resendWait();
+      if (b) { b.textContent = resendLabel(w); b.disabled = !!w || !!A.busy; }
+      if (!w || A.view !== 'checkemail' || back.hidden) clearInterval(A.resendTimer);
+    }, 1000);
+  }
+  function resendConfirm() {
+    if (resendWait()) return Promise.resolve();
+    return ensureClient().then(function (c) {
+      return c.auth.resend({ type: 'signup', email: A.sentTo, options: { emailRedirectTo: A.sentLand || (location.origin + location.pathname) } });
+    }).then(function (r) {
+      if (r && r.error) throw r.error;
+      A.sentAt = Date.now(); A.unconfirmed = false;
+      try { sessionStorage.setItem('showready-confirm', JSON.stringify({ to: A.sentTo, land: A.sentLand, at: A.sentAt })); } catch (e) {}
+      say('Sent again. Check your inbox and junk folder for the email from hello@beshowready.co.uk.'); tickResend();
+    });
+  }
+  try { var keep = JSON.parse(sessionStorage.getItem('showready-confirm') || 'null'); if (keep && keep.to) { A.sentTo = keep.to; A.sentLand = keep.land; A.sentAt = keep.at || 0; } } catch (e) {}
+
   function friendly(err) {
     var m = String((err && (err.message || err.error_description)) || err || '');
     if (/invalid login credentials/i.test(m)) return 'That email and password don’t match. Try again, or use “Forgot password?”.';
     if (/email not confirmed/i.test(m)) return 'Confirm your email first: open the link we sent you. Check your junk folder too.';
     if (/already registered|already been registered/i.test(m)) return 'There’s already an account with that email. Log in instead.';
-    if (/rate limit|too many|security purposes/i.test(m)) return 'Too many attempts or emails just now. Wait a few minutes and try again.';
+    var secs = /after (\d+) seconds?/i.exec(m);
+    if (secs) { A.sentAt = Date.now() - (60 - Number(secs[1])) * 1000; tickResend(); return 'Please wait ' + secs[1] + ' seconds and try again.'; }
+    if (/rate limit|too many|security purposes/i.test(m)) return 'Please wait a few seconds and try again. If it keeps happening, wait a few minutes.';
     if (/password/i.test(m) && /(short|least|weak)/i.test(m)) return 'That password is too short or too common. Use at least 8 characters.';
     if (/fetch|network|load failed/i.test(m)) return 'Couldn’t reach ShowReady’s servers. Check your connection and try again.';
     return m || 'Something went wrong. Try again.';
@@ -2531,7 +3132,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
 
   function onAuth(event, session) {
     var before = A.user && A.user.id;
-    A.user = session && session.user ? session.user : null;
+    A.user = session && session.user ? session.user : null; window.SR_USER = A.user;
     // Build 76: hide an account's saved copy when nobody is signed in; give it back after signing in
     if (!A.user) holdLocal(); else restoreHeld();
     if (event === 'PASSWORD_RECOVERY') { A.view = 'recovery'; back.hidden = false; }
@@ -2623,7 +3224,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     var all = ((A.settings && A.settings.plans) || {}), list = [].concat(all.organisers || [], all.suppliers || [], all.combined || [], all.film || []);
     var found = list.filter(function (x) { return x.id === id; })[0];
     return { id: id, name: id === 'free' ? 'Free' : found ? found.name : id, paid: id !== 'free' && !lapsed, lapsed: !!lapsed, expires: exp,
-      founding: !!p.founding, student: !!p.student, needsCombined: p.role === 'both' && !/^(combined|enterprise)$/.test(id), adFree: !!((id !== 'free' && !lapsed) || p.founding || p.ad_free) };
+      founding: !!p.founding, student: !!p.student, status: p.billing_status || '', cancelAt: p.plan_cancel_at || '', granted: !!p.plan_grant_reason, hasSub: !!p.stripe_subscription_id, needsCombined: p.role === 'both' && !/^(combined|enterprise)$/.test(id), adFree: !!((id !== 'free' && !lapsed) || p.founding || p.ad_free || p.is_admin) };
   }
   A.planInfo = planInfo;
   function foundingOpen() { try { return typeof srFounding === 'function' && A.settings ? srFounding(A.settings).state !== 'closed' : true; } catch (e) { return true; } }
@@ -2635,7 +3236,7 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     return A.client.from('founding_signups').insert({ role: roleMap[p.role] || (P.role === 'supplier' ? 'Supplier or trader' : 'Organiser'), name: nm.slice(0, 120), email: A.user.email, consent_text: consent, founding_offer: true })
       .then(function (r) {
         if (r.error && r.error.code !== '23505') throw r.error;
-        A.msg = 'You’re a founding member. You get 6 months free, then 30% off for life (excludes Enterprise).' + (o.category === 'suppliers' ? ' As a supplier you stay free until 31 October 2027.' : '') + ''; A.msgKind = 'ok';
+        A.msg = 'You’re a founding member. You get ' + srFoundLine(srV1(), o.category) + ' (excludes Enterprise).'; A.msgKind = 'ok';
         A.profile = Object.assign({}, A.profile, { founding: true });
         checkAdFree(); render();
       });
@@ -2651,26 +3252,27 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
   function offerHtml() {
     var NAMES = { organisers: 'organisers', suppliers: 'suppliers', film: 'Film & TV accounts' }, o = A.offer, c = A.offerCounts || window.SR_OFFERS;
     var fcap = c ? c.founding_cap : 100, ecap = c ? c.early_cap : 200, pct = c ? c.early_discount_pct : 20;
-    if (o && o.tier === 'founding') return '<p class="muted" style="font-size:13px"><b>Founding place ' + o.place_no + ' of ' + fcap + ' (' + NAMES[o.category] + ').</b> You get 6 months free, then 30% off for life (excludes Enterprise).' + (o.category === 'suppliers' ? ' As a supplier you stay free until 31 October 2027.' : '') + '</p>';
-    if (o && o.tier === 'early') return '<p class="muted" style="font-size:13px"><b>Early-adopter place ' + o.place_no + ' of ' + ecap + ' (' + NAMES[o.category] + ').</b> ' + pct + '% off for life (excludes Enterprise).</p>';
+    if (o && o.tier === 'founding') return '<p class="muted" style="font-size:13px"><b>Founding place ' + o.place_no + ' of ' + fcap + ' (' + NAMES[o.category] + ').</b> You get ' + srFoundLine(srV1(), o.category) + ' (excludes Enterprise).</p>';
+    if (o && o.tier === 'early') return '<p class="muted" style="font-size:13px"><b>Early-adopter place ' + o.place_no + ' of ' + ecap + ' (' + NAMES[o.category] + ').</b> ' + srEarlyLine(srV1(), pct) + ' (excludes Enterprise).</p>';
     if (o || !c || !c.categories) return '';
     var role = A.profile && A.profile.role, cat = role === 'film' ? 'film' : (role === 'supplier' || role === 'both') ? 'suppliers' : 'organisers', x = c.categories[cat]; if (!x) return '';
     var fl = fcap - x.founding_taken, el = ecap - x.early_taken, what = P.kind === 'plans' ? 'Save your first plan' : P.kind === 'desk' ? 'Save your profile' : 'Save your first Film project';
     var dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(c.early_deadline || ''), dl = dm ? (+dm[3]) + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][+dm[2] - 1] + ' ' + dm[1] : '';
     // Organisers: basic planning is always free; a place is claimed only by upgrading to a paid plan
     if (cat === 'organisers') {
-      if (fl > 0) return '<div class="joinf"><b>Basic planning is always free.</b> If you upgrade to a paid plan, you could take one of the ' + fl + ' founding places left for organisers: 6 months free, then 30% off for life (excludes Enterprise).</div>';
-      if (c.early_open && el > 0) return '<div class="joinf"><b>Basic planning is always free.</b> Organisers who upgrade to a paid plan by ' + dl + ' get ' + pct + '% off for life (' + el + ' of ' + ecap + ' early-adopter places left, excludes Enterprise).</div>';
+      if (fl > 0) return '<div class="joinf"><b>Basic planning is always free.</b> If you upgrade to a paid plan, you could take one of the ' + fl + ' founding places left for organisers: ' + srFoundNow('organisers') + '.</div>';
+      if (c.early_open && el > 0) return '<div class="joinf"><b>Basic planning is always free.</b> Organisers who upgrade to a paid plan by ' + dl + ' get ' + srEarlyLine(Date.now() < SR_TERMS_CUT, pct) + ' (' + el + ' of ' + ecap + ' early-adopter places left, excludes Enterprise).</div>';
       return '';
     }
-    if (fl > 0) return '<div class="joinf"><b>Founding places: ' + fl + ' of ' + fcap + ' left for ' + NAMES[cat] + '.</b> ' + what + ' to claim one: 6 months free, then 30% off for life (excludes Enterprise).</div>';
-    if (c.early_open && el > 0) return '<div class="joinf"><b>Founding places are full. Early-adopter places: ' + el + ' of ' + ecap + ' left.</b> ' + what + ' by ' + dl + ' for ' + pct + '% off for life (excludes Enterprise).</div>';
+    if (fl > 0) return '<div class="joinf"><b>Founding places: ' + fl + ' of ' + fcap + ' left for ' + NAMES[cat] + '.</b> ' + what + ' to claim one: ' + srFoundNow(cat) + '.</div>';
+    if (c.early_open && el > 0) return '<div class="joinf"><b>Founding places are full. Early-adopter places: ' + el + ' of ' + ecap + ' left.</b> ' + what + ' by ' + dl + ' for ' + srEarlyLine(Date.now() < SR_TERMS_CUT, pct) + ' (excludes Enterprise).</div>';
     return '';
   }
   function checkAdFree() {
     var uid = A.user.id;
-    A.client.from('profiles').select('plan, plan_expires, founding, ad_free, role, display_name, email_alerts, alert_mode, student, is_admin').maybeSingle().then(function (r) {
+    A.client.from('profiles').select('plan, plan_expires, founding, ad_free, role, display_name, email_alerts, alert_mode, student, is_admin, logo_v, billing_status, plan_cancel_at, plan_grant_reason, stripe_subscription_id').maybeSingle().then(function (r) {
       var p = r && !r.error && r.data ? r.data : {};
+      if (window.SRLogo) window.SRLogo.bind(A.client, uid, p.logo_v, function () { if (!back.hidden) render(); });
       A.profile = p; var free = planInfo(p).adFree; if (!back.hidden) render(); loadOffer();
       try { localStorage.setItem('showready-adfree', JSON.stringify({ user: uid, adFree: free })); } catch (e) {}
       A.adFree = free; if (window.SRAds) window.SRAds.update();
@@ -2694,10 +3296,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     if (!A.client || !A.user) return;
     A.teamLoading = true;
     Promise.all([A.client.rpc('my_supplier_limits'), A.client.from('supplier_members').select('id, email, status').eq('owner', A.user.id).order('created_at'),
-      A.client.from('supplier_units').select('id, name, town, outcode, miles').eq('owner', A.user.id).order('created_at'), A.client.from('profiles').select('company_no').eq('id', A.user.id).maybeSingle()]).then(function (r) {
+      A.client.from('supplier_units').select('id, name, town, outcode, miles').eq('owner', A.user.id).eq('kind', 'base').order('created_at').then(function (r) { return r.error ? A.client.from('supplier_units').select('id, name, town, outcode, miles').eq('owner', A.user.id).order('created_at') : r; }), A.client.from('profiles').select('company_no').eq('id', A.user.id).maybeSingle()]).then(function (r) {
       A.teamData = { limits: (r[0].data || [])[0] || {}, members: r[1].data || [], units: r[2].data || [], company_no: r[3].data ? r[3].data.company_no : '' };
     }, function () { A.teamData = { limits: {}, members: [], units: [] }; }).then(function () { A.teamLoading = false; if (!back.hidden) render(); });
   }
+  // Build 109: at the base limit (not Enterprise) counts as a limit hit for the Enterprise candidate list. During the pilot, filling all bases flags straight away (checked on the server).
+  var srBaseHitDone = false;
+  function srBaseHit(lim) { if (!srBaseHitDone && lim.plan !== 'enterprise' && A.client && A.client.rpc) { srBaseHitDone = true; A.client.rpc('log_limit_hit', { p_kind: 'bases' }).then(function () {}, function () {}); } return false; }
   function teamJob(p) { return p.then(function (r) { if (r && r.error) throw r.error; A.teamData = null; if (!back.hidden) render(); }); }
   function teamInvite() {
     var em = (el('srTeamEmail') || {}).value || ''; em = em.trim().toLowerCase();
@@ -2908,12 +3513,13 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     return flush().then(function () { A.signingOut = true; return A.client.auth.signOut(); }, function () {
       throw new Error('Your latest changes couldn’t be saved to your account, so you’re still logged in. Check your connection and try again.');
     }).then(function () {
+      if (window.SRLogo) window.SRLogo.bind(null, null);
       try { localStorage.removeItem(P.store); localStorage.removeItem(P.remoteKey); localStorage.removeItem(heldKey()); localStorage.removeItem('showready-adfree'); } catch (e) {}
       A.signingOut = false; A.user = null; A._reload();
     });
   }
   function deleteAccount() {
-    return removeDocs(null).then(function () { return A.client.rpc('delete_my_account'); }).then(function (r) {
+    return removeDocs(null).then(function () { return A.client.storage.from('logos').remove([A.user.id + '/logo']).catch(function () {}); }).then(function () { return A.client.rpc('delete_my_account'); }).then(function (r) {
       if (r.error) {
         if (/delete_my_account|PGRST202|not find|does not exist/i.test(r.error.message + ' ' + (r.error.code || ''))) throw new Error('Deleting from here isn’t switched on yet. Email ' + CFG.contact + ' and your account will be deleted within 7 days.');
         throw r.error;
@@ -2964,6 +3570,26 @@ window.SR_ACCOUNT_PAGE = { kind: 'film', store: 'showready-film-v1', remoteKey: 
     try { i.focus({ preventScroll: true }); var n = i.value.length; i.setSelectionRange(n, n); } catch (x) {}
   });
 })();
+</script>
+<script src="/admin-tools.js?v=80" defer></script>
+<script src="/logo-tools.js?v=83" defer></script>
+<script src="/planmark.js?v=114" defer></script>
+<script src="/sitepdf.js?v=114" defer></script>
+
+<script>
+// Build 101: Manage billing from the plan card (opens Stripe's customer portal)
+document.addEventListener('click', function (e) {
+  var b = e.target && e.target.closest && e.target.closest('[data-sr-portal]'); if (!b) return;
+  var a = window.SRAccount; var c = a && a.client; if (!c) return;
+  b.disabled = true; var t = b.textContent; b.textContent = 'Opening…';
+  c.auth.getSession().then(function (r) {
+    var tok = r && r.data && r.data.session && r.data.session.access_token;
+    return fetch('https://osqlwddeobiklrpdnons.supabase.co/functions/v1/billing', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'portal' }) });
+  }).then(function (res) { return res.json(); }).then(function (d) {
+    if (d && d.url && /^https:\/\/billing\.stripe\.com\//.test(d.url)) location.href = d.url;
+    else { b.disabled = false; b.textContent = t; alert('Couldn’t open your billing page. Email hello@beshowready.co.uk and we’ll sort it.'); }
+  }, function () { b.disabled = false; b.textContent = t; alert('Couldn’t open your billing page. Check your connection and try again.'); });
+});
 </script>
 </body>
 </html>
